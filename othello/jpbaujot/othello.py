@@ -177,7 +177,9 @@ class Jeu :
                     # ici il faudrait un compteur des formes X et O
                     forme = 3-forme # changement de joueur                    
                     break 
-            
+        totalrond,totalcroix = self.grille.compteformes() 
+        print (f"Compteur final : Rond = {totalrond} Croix = {totalcroix} ")
+        
     def entreevalide(self,forme) : 
         # teste la validite de la saisie des cases par les joueurs
         while True :
