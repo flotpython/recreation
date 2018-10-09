@@ -104,7 +104,7 @@ class Grille :
     
     
     def partie_terminee (self):
-        # teste si toutes cases occupées : aucune case à 0
+        # teste si toutes cases occupées : aucune case à 0 ou jeu bloqué pour les 2
         return  self.tableaurempli() or self.jeubloque()
 
     
