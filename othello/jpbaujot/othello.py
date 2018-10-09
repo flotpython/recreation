@@ -6,7 +6,7 @@ Evolutions avec prise en compte compteur et fin de jeu , mais reste à debugguer
 """
 import numpy as np
 class Grille :
-    
+    # classe pour gerer la grille
     def __init__(self) :
         self.tableau = np.zeros((8,8))
         self.tableau[3][3], self.tableau[4][4]=1,1
@@ -23,8 +23,6 @@ class Grille :
             msg+=f" {i+1}\n"
         msg += nom_col
         return msg
-
-
     
     def pose(self,forme,ligne,colonne) :        
         #verifie si pose d'un pion forme permet ou pas de retouner 
@@ -109,9 +107,11 @@ class Grille :
 
     
     def jeubloque(self):
+        # teste si les 2 joueurs sont bloqués
         return not (self.testejeupossible(1) or self.testejeupossible(2)) 
         
     def testejeupossible(self,forme):
+        # regarde si on poser un pion sur une des cases vides
         for i in range(8):
             for j in range(8):
                 if not self.tableau[i][j]:# case vide
@@ -141,6 +141,7 @@ class Jeu :
          self.joueur = ["Rond","Croix"]
          
     def partie(self):
+        #partie principale
         forme = 1 # les O commencent
         condstop = False
         while not self.grille.partie_terminee() and not condstop:
@@ -196,8 +197,8 @@ class Jeu :
             
          
     def joue (self,forme,ligne,colonne) : 
-        
-        if self.grille.pose(forme,ligne,colonne) : # verifie pose possible
+        # verifie si la case choisie permet de poser un pion et si oui retourne les pions autre forme
+        if self.grille.pose(forme,ligne,colonne) : # verifie pose possible et retourne les pions
             print (self.grille)
             return True
         else :
@@ -205,17 +206,13 @@ class Jeu :
             return False
         
     def jouetest(self,forme) :         
-        
-        if self.grille.testejeupossible(forme):
+        # verifie la possibilité de poser du joueur sinon passera son tour
+        if self.grille.testejeupossible(forme): #verifie qu'au moins une case peut etre jouee
             return True
                    
         print (f"Joueur {self.joueur[forme-1]} ne peut jouer")    
         return False      
-                    
-        
-        
-        
-        
+   
         
 jeu = Jeu() 
 jeu.partie()             
