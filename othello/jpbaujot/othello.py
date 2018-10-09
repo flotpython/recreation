@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Oct  7 21:07:27 2018
-Evolurions avec prise en compte competur et fin de jeu , mais reste à debugguer ...
+Evolutions avec prise en compte compteur et fin de jeu , mais reste à debugguer ...
 @author: JP
 """
 import numpy as np
