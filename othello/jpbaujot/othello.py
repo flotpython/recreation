@@ -46,7 +46,9 @@ class Grille :
             formeadj = self.tableau[ligne+dx][colonne+dy]
             if not formeadj==3-forme: #case adj vide ou meme couleur
                 continue
-            i=2 # case couleur differente
+            
+            # case adj de couleur differente, on teste les cases audelà ds cette direction
+            i=2 
             while self.testcase (ligne+i*dx,colonne+i*dy):
                 formeadj = self.tableau[ligne+i*dx][colonne+i*dy]
                 if formeadj ==0 :# on tombe sur case vide = mauvaise direction
@@ -75,7 +77,9 @@ class Grille :
             formeadj = self.tableau[ligne+dx][colonne+dy]
             if not formeadj==3-forme: #case adj vide ou meme couleur
                 continue
-            i=2 # case couleur differente
+           
+            # case adj de couleur differente, on teste les cases audelà ds cette direction
+            i=2 
             while self.testcase (ligne+i*dx,colonne+i*dy):
                 formeadj = self.tableau[ligne+i*dx][colonne+i*dy]
                 if formeadj ==0 :# on tombe sur case vide = mauvaise direction
@@ -83,6 +87,7 @@ class Grille :
                 if formeadj == forme :                    
                     return True # possible                    
                 i+=1 # on continue dans la direction
+                
         return retour # True si on peut poser un pion False sinon
     
     
