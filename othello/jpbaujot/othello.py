@@ -136,7 +136,7 @@ class Jeu :
          
     def partie(self):
         #partie principale
-        forme = 1 # les O commencent
+        forme = 2 # les X commencent
         condstop = False
         while not self.grille.partie_terminee() and not condstop:
             totalrond,totalcroix = self.grille.compteformes()
