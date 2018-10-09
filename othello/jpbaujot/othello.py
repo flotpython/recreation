@@ -35,6 +35,14 @@ class Grille:
         msg += nom_col
         return msg
 
+    @staticmethod
+    def adjacents():
+        # précédemment
+        # adj = [(-1, -1), (-1, 0), (-1, 1), (0, -1),
+        #        (0, 1), (1, -1), (1, 0), (1, 1)]
+        return [(dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if dx or dy]
+
+
     def pose(self, forme, ligne, colonne):
         # verifie si pose d'un pion forme permet ou pas de retouner
         # des pions del'autre forme
@@ -48,9 +56,7 @@ class Grille:
         retour = False
 
         # tuples des cellules adjacentes possibles en relatifs
-        adj = [(-1, -1), (-1, 0), (-1, 1), (0, -1),
-               (0, 1), (1, -1), (1, 0), (1, 1)]
-        for dx, dy in adj:
+        for dx, dy in self.adjacents():
             if not self.testcase(ligne+dx, colonne+dy):  # case adj hors grille
                 continue
             formeadj = self.tableau[ligne+dx][colonne+dy]
@@ -75,10 +81,7 @@ class Grille:
         # des pions del'autre forme
         # redondance de code avec pose : optimisation à voir
 
-        # tuples des cellules adjacentes possibles en relatifs
-        adj = [(-1, -1), (-1, 0), (-1, 1), (0, -1),
-               (0, 1), (1, -1), (1, 0), (1, 1)]
-        for dx, dy in adj:
+        for dx, dy in self.adjacents():
             if not self.testcase(ligne+dx, colonne+dy):  # case adj hors grille
                 continue
             formeadj = self.tableau[ligne+dx][colonne+dy]
@@ -99,9 +102,7 @@ class Grille:
 
     def testcase(self, x, y):
         # teste si une case est bien dans la grille
-        if x < 0 or x > 7 or y < 0 or y > 7:
-            return False
-        return True
+        return 0 <= x <= 7 and 0 <= y <= 7
 
     def remplitcases(self, ligne, colonne, i, dx, dy, forme):
         # remplit les cases qu'on peut retourner dans la direction validee
@@ -145,6 +146,7 @@ class Jeu:
         self.lignes = [str(i+1) for i in range(8)]
         self.joueur = ["Rond", "Croix"]
 
+
     def partie(self):
         # partie principale
         forme = 2  # les X commencent
@@ -183,6 +185,7 @@ class Jeu:
         totalrond, totalcroix = self.grille.compteformes()
         print(f"Compteur final : Rond = {totalrond} Croix = {totalcroix} ")
 
+
     def entreevalide(self, forme):
         # teste la validite de la saisie des cases par les joueurs
         while True:
@@ -200,6 +203,7 @@ class Jeu:
                 continue
             return case
 
+
     def joue(self, forme, ligne, colonne):
         # verifie si la case choisie permet de poser un pion
         # et si oui retourne les pions autre forme
@@ -210,6 +214,7 @@ class Jeu:
         else:
             print("rejouez case non autorisée pour vous")
             return False
+
 
     def jouetest(self, forme):
         # verifie la possibilité de poser du joueur sinon passera son tour
