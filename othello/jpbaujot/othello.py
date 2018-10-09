@@ -64,9 +64,7 @@ class Grille :
         #des pions del'autre forme
         #redondance de code avec pose : optimisation à voir
         
-        # init retour à False si pas de pions retournables      
-        retour = False
-        
+                
         ## tuples des cellules adjacentes possibles en relatifs
         adj = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)]
         for dx,dy in adj :
@@ -86,7 +84,7 @@ class Grille :
                     return True # possible                    
                 i+=1 # on continue dans la direction
                 
-        return retour # True si on peut poser un pion False sinon
+        return False 
     
     
     def testcase(self,x,y):
