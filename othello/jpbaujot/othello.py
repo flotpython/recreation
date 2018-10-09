@@ -125,15 +125,7 @@ class Grille :
     
     def compteformes(self):
         # renvoie un tuple des nombres de croix et de ronds
-        count_croix = 0
-        count_rond = 0
-        for i in range (8):
-            for j in range (8):
-                if self.tableau[i][j]==1:
-                    count_rond +=1
-                if self.tableau[i][j]==2: 
-                    count_croix +=1
-        return count_rond,count_croix
+        return np.count_nonzero(self.tableau == 1), np.count_nonzero(self.tableau == 2)
         
 class Jeu :
     def __init__(self) :
