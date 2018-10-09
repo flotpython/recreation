@@ -119,12 +119,8 @@ class Grille :
         return False
     
     def tableaurempli(self) :
-        # verifie si le tableau est bien rempli
-        for i in range(8) :
-            for j in range (8):
-                if int(self.tableau[i][j]) ==0 :            
-                    return False
-        return True
+        # teste si le tableau est rempli
+        return (np.count_nonzero(self.tableau == 0)==0)
     
     def compteformes(self):
         # renvoie un tuple des nombres de croix et de ronds
