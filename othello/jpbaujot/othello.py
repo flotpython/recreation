@@ -105,14 +105,10 @@ class Grille :
         return not (self.teste_pose_possible(1) or self.teste_pose_possible(2)) 
         
     def teste_pose_possible(self,forme):
-        # regarde si on poser un pion sur une des cases vides
-        for i in range(8):
-            for j in range(8):
-                if not self.tableau[i][j]:# case vide
-                    result,listeretourne=self.pose_test(forme,i,j)
-                    if result : # verifie pose possible
-                        return True
-        return False
+        # renvoie le nombre de pions retournables 
+        return (sum([self.pose_test(forme,i,j)[0]\
+                for i in range(8) for j in range(8)\
+                if not self.tableau[i][j]]))
     
     def tableau_rempli(self) :
         # verifie si le tableau est bien rempli
