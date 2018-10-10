@@ -105,7 +105,7 @@ class Grille :
         return not (self.teste_pose_possible(1) or self.teste_pose_possible(2)) 
         
     def teste_pose_possible(self,forme):
-        # renvoie le nombre de pions retournables 
+        # renvoie le nombre de pions retournables sur l'ensemble de la grille pour une couleur(forme) donnée
         return (sum([self.pose_test(forme,i,j)[0]\
                 for i in range(8) for j in range(8)\
                 if not self.tableau[i][j]]))
