@@ -47,11 +47,11 @@ class Grille :
         #verifie si pose d'un pion forme permet ou pas de retouner 
         #des pions del'autre forme et renvoie booleen sur la pose possible
         # et un  tableau des nombre de pions retournes 
-        listeRetournables =[0,0,0,0,0,0,0,0]
+        tableauRetournables =np.zeros((8))
         #teste case jouee non vide        
         if int(self.tableau[ligne][colonne]) :
             print("erreur : case non vide")
-            return False,listeRetournables        
+            return False,tableauRetournables        
          
           
         for idx,(dx,dy) in enumerate(self.adjacents()) :
@@ -68,22 +68,22 @@ class Grille :
                 if formeAdjacent ==0 :# on tombe sur case vide = mauvaise direction
                     break # on regarde les autres cases adjacentes
                 if formeAdjacent == forme :
-                    listeRetournables[idx]=i-1 
+                    tableauRetournables[idx]=i-1 
                     break # on regarde les autres cases adjacentes
                 i+=1 # on continue dans la direction
            
         ## Retourne True si on peut  retourner des pions False sinon, + liste contenant les pions retournables       
-        return (sum(listeRetournables)>0),listeRetournables 
+        return (sum(tableauRetournables)>0),tableauRetournables 
     
     def pose(self,forme,ligne,colonne) :        
         #verifie si pose d'un pion forme permet ou pas de retouner 
         #des pions del'autre forme , retourne les pions si possibles et retourne 
         #un booleen pour dire si le tableau a été modifié ou pas
        
-        result,listeRetournables = self.pose_test(forme,ligne,colonne)
+        result,tableauRetournables = self.pose_test(forme,ligne,colonne)
         if result : ## remplit les cases du tableau  
             for idx,(dx,dy) in enumerate(self.adjacents()) : 
-                for j in range(listeRetournables[idx]+1):
+                for j in range(int(tableauRetournables[idx])+1):
                     self.tableau[ligne+j*dx][colonne+j*dy] = forme                
          
         return result
@@ -103,13 +103,25 @@ class Grille :
     def jeu_bloque(self):
         # teste si les 2 joueurs sont bloqués
         return not (self.teste_pose_possible(1) or self.teste_pose_possible(2)) 
-        
+    
+    '''   
+    def teste_pose_possible(self,forme):
+        # regarde si on poser un pion sur une des cases vides
+        for i in range(8):
+            for j in range(8):
+                if not self.tableau[i][j]:# case vide
+                    result,listeretourne=self.pose_test(forme,i,j)
+                    if result : # verifie pose possible
+                        return True
+        return False        
+    '''
+    
     def teste_pose_possible(self,forme):
         # renvoie le nombre de pions retournables sur l'ensemble de la grille pour une couleur(forme) donnée
         return (sum([self.pose_test(forme,i,j)[0]\
                 for i in range(8) for j in range(8)\
                 if not self.tableau[i][j]]))
-    
+                    
     def tableau_rempli(self) :
         # verifie si le tableau est bien rempli
         return (np.count_nonzero(self.tableau == 0)==0)
