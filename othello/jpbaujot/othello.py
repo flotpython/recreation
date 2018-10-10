@@ -40,36 +40,36 @@ class Grille :
     
     @staticmethod
     def adjacents():
-        #liste des cases ajdacentes en relatif
+        #liste des caseTableaus ajdacentes en relatif
         return [(dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if dx or dy] 
     
     def pose_test(self,forme,ligne,colonne) :        
         #verifie si pose d'un pion forme permet ou pas de retouner 
         #des pions del'autre forme et renvoie booleen sur la pose possible
-        # et un  tableau des nombre de pions retournes 
+        # et un  tableau des nombre de pions retournables 
         tableauRetournables =np.zeros((8))
-        #teste case jouee non vide        
+        #teste caseTableau jouee non vide        
         if int(self.tableau[ligne][colonne]) :
-            print("erreur : case non vide")
+            print("erreur : case  non vide")
             return False,tableauRetournables        
          
           
         for idx,(dx,dy) in enumerate(self.adjacents()) :
-            if not self.test_case(ligne+dx, colonne+dy):# case adj hors grille
+            if not self.test_caseTableau(ligne+dx, colonne+dy):# caseTableau adj hors grille
                 continue
             formeAdjacent = self.tableau[ligne+dx][colonne+dy]
-            if not formeAdjacent==3-forme: #case adj vide ou meme couleur
+            if not formeAdjacent==3-forme: #caseTableau adj vide ou meme forme
                 continue
             
-            # case adj de couleur differente, on teste les cases audelà ds cette direction
+            # caseTableau adj de forme differente, on teste les caseTableaus audelà ds cette direction
             i=2 
-            while self.test_case (ligne+i*dx,colonne+i*dy):
+            while self.test_caseTableau (ligne+i*dx,colonne+i*dy):
                 formeAdjacent = self.tableau[ligne+i*dx][colonne+i*dy]
-                if formeAdjacent ==0 :# on tombe sur case vide = mauvaise direction
-                    break # on regarde les autres cases adjacentes
+                if formeAdjacent ==0 :# on tombe sur caseTableau vide = mauvaise direction
+                    break # on regarde les autres caseTableaus adjacentes
                 if formeAdjacent == forme :
                     tableauRetournables[idx]=i-1 
-                    break # on regarde les autres cases adjacentes
+                    break # on regarde les autres caseTableaus adjacentes
                 i+=1 # on continue dans la direction
            
         ## Retourne True si on peut  retourner des pions False sinon, + liste contenant les pions retournables       
@@ -81,7 +81,7 @@ class Grille :
         #un booleen pour dire si le tableau a été modifié ou pas
        
         result,tableauRetournables = self.pose_test(forme,ligne,colonne)
-        if result : ## remplit les cases du tableau  
+        if result : ## remplit les caseTableaus du tableau  
             for idx,(dx,dy) in enumerate(self.adjacents()) : 
                 for j in range(int(tableauRetournables[idx])+1):
                     self.tableau[ligne+j*dx][colonne+j*dy] = forme                
@@ -89,14 +89,14 @@ class Grille :
         return result
     
     
-    def test_case(self,x,y):
-        # teste si une case est bien dans la grille
+    def test_caseTableau(self,x,y):
+        # teste si une caseTableau est bien dans la grille
         return not (x<0 or x>7 or y<0 or y>7)   
 
     
     
     def partie_terminee (self):
-        # teste si toutes cases occupées : aucune case à 0 ou jeu bloqué pour les 2
+        # teste si toutes caseTableaus occupées : aucune caseTableau à 0 ou jeu bloqué pour les 2
         return  self.tableau_rempli() or self.jeu_bloque()
 
     
@@ -104,20 +104,8 @@ class Grille :
         # teste si les 2 joueurs sont bloqués
         return not (self.teste_pose_possible(1) or self.teste_pose_possible(2)) 
     
-    '''   
     def teste_pose_possible(self,forme):
-        # regarde si on poser un pion sur une des cases vides
-        for i in range(8):
-            for j in range(8):
-                if not self.tableau[i][j]:# case vide
-                    result,listeretourne=self.pose_test(forme,i,j)
-                    if result : # verifie pose possible
-                        return True
-        return False        
-    '''
-    
-    def teste_pose_possible(self,forme):
-        # renvoie le nombre de pions retournables sur l'ensemble de la grille pour une couleur(forme) donnée
+        # renvoie le nombre de pions retournables sur l'ensemble de la grille pour une forme(forme) donnée
         return (sum([self.pose_test(forme,i,j)[0]\
                 for i in range(8) for j in range(8)\
                 if not self.tableau[i][j]]))
@@ -145,57 +133,57 @@ class Jeu :
         while not self.grille.partie_terminee() and not condstop:
             totalRond,totalCroix = self.grille.compte_formes()
             
-            print (f"Compteur : Rond = {totalRond} Croix = {totalCroix} ")
+            print (f"Compteur : Croix = {totalCroix} Rond = {totalRond} ")
             
             while True :
-                #teste si le joueur a une case possible pour poser sa forme
-                #presque le meme code que pose en testant toutes les cases à 0 
+                #teste si le joueur a une caseTableau possible pour poser sa forme
+                #presque le meme code que pose en testant toutes les caseTableaus à 0 
                 # mais sans modifier
                 
                 if not self.joue_test(forme):
                     forme = 3-forme
                     break
                 
-                # saisie case valide
-                case = self.entree_valide(forme)
+                # saisie caseTableau valide
+                caseTableau = self.entree_valide(forme)
                 # condition arret
-                if case =='00':
+                if caseTableau =='00':
                     condstop = True
                     break
                 
                 #transcrit la saisie en ligne colonne du tableau
-                idxlign, idxcol = case[1],case[0].upper()
+                idxlign, idxcol = caseTableau[1],caseTableau[0].upper()
                 ligne = self.lignes.index(idxlign)                
                 colonne = self.colonnes.index(idxcol)
                 
-                # test si case permet de retourner des pions 
+                # test si caseTableau permet de retourner des pions 
                 if self.joue (forme,ligne,colonne):
                     forme = 3-forme # changement de joueur                    
                     break 
                     
         totalRond,totalCroix = self.grille.compte_formes() 
-        print (f"Compteur final : Rond = {totalRond} Croix = {totalCroix} ")
+        print (f"Compteur final : Croix = {totalCroix} Rond = {totalRond} ")
         
     def entree_valide(self,forme) : 
-        # teste la validite de la saisie des cases par les joueurs
+        # teste la validite de la saisie des caseTableaus par les joueurs
         while True :
-            case = input(f"Joueur {self.joueur[forme-1]} quelle case(ex: A4 ? (00 pour arreter) ")
-            if not len(case)==2  :
+            caseTableau = input(f"Joueur {self.joueur[forme-1]} quelle caseTableau(ex: A4 ? (00 pour arreter) ")
+            if not len(caseTableau)==2  :
                 print ("ce n'est pas une case valide")
                 continue
-            if case =='00': # condition sortie 
+            if caseTableau =='00': # condition sortie 
                 print("OK on arrete")
-                return case
+                return caseTableau
                 
-            if case[0].upper() not in self.colonnes or case[1] not in self.lignes :
-                print ("ce n'est pas une case valide")
+            if caseTableau[0].upper() not in self.colonnes or caseTableau[1] not in self.lignes :
+                print ("ce n'est pas une caseTableau valide")
                 continue
-            return case
+            return caseTableau
                  
             
          
     def joue (self,forme,ligne,colonne) : 
-        # verifie si la case choisie permet de poser un pion et si oui retourne les pions autre forme
+        # verifie si la caseTableau choisie permet de poser un pion et si oui retourne les pions autre forme
         if self.grille.pose(forme,ligne,colonne) : # verifie pose possible et retourne les pions
             print (self.grille)
             return True
@@ -205,7 +193,7 @@ class Jeu :
         
     def joue_test(self,forme) :         
         # verifie la possibilité de poser du joueur sinon passera son tour
-        if self.grille.teste_pose_possible(forme): #verifie qu'au moins une case peut etre jouee
+        if self.grille.teste_pose_possible(forme): #verifie qu'au moins une caseTableau peut etre jouee
             return True
                    
         print (f"Joueur {self.joueur[forme-1]} ne peut jouer")    
