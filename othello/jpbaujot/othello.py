@@ -110,7 +110,7 @@ class Grille :
             for j in range(8):
                 if not self.tableau[i][j]:# case vide
                     result,listeretourne=self.posetest(forme,i,j)
-                    if sum(listeretourne)>0 : # verifie pose possible
+                    if result : # verifie pose possible
                         return True
         return False
     
@@ -162,9 +162,9 @@ class Jeu :
                 
                 # test si case permet de retourner des pions 
                 if self.joue (forme,ligne,colonne):
-                    # ici il faudrait un compteur des formes X et O
                     forme = 3-forme # changement de joueur                    
                     break 
+                    
         totalrond,totalcroix = self.grille.compteformes() 
         print (f"Compteur final : Rond = {totalrond} Croix = {totalcroix} ")
         
