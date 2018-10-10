@@ -167,7 +167,7 @@ class Jeu :
     def entree_valide(self,forme) : 
         # teste la validite de la saisie des caseTableaus par les joueurs
         while True :
-            caseTableau = input(f"Joueur {self.joueur[forme-1]} quelle caseTableau(ex: A4 ? (00 pour arreter) ")
+            caseTableau = input(f"Joueur {self.joueur[forme-1]} quelle case (ex: A4 ? (00 pour arreter) ")
             if not len(caseTableau)==2  :
                 print ("ce n'est pas une case valide")
                 continue
@@ -176,7 +176,7 @@ class Jeu :
                 return caseTableau
                 
             if caseTableau[0].upper() not in self.colonnes or caseTableau[1] not in self.lignes :
-                print ("ce n'est pas une caseTableau valide")
+                print ("ce n'est pas une case valide")
                 continue
             return caseTableau
                  
