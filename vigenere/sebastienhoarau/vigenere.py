@@ -17,6 +17,11 @@ class Code:
         self.infinite_key = cycle(cle)
 
     def translate_one_car(self, x, mode):
+        """ Donne le caractère codant/decodant x en utilisant la 
+            formule suivante (indice sont les indices des caractères
+            dans self.alpha, l'alphabet utilisé) :
+            indice_new_car = (indice_x + indice_k) % self.size
+            k étant la lettre de la clé obtenue de façon cyclique """
         if x in self.alpha:
             k = next(self.infinite_key)
             i = self.alpha.index(x)
