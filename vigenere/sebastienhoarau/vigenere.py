@@ -4,39 +4,33 @@
     Auteur : Sébastien Hoarau
     Date : 2018-10-10
 """
+
 from string import ascii_letters
+from itertools import cycle
+
 
 class Code:
 
     def __init__(self, cle):
         self.alpha = ascii_letters
         self.size = len(self.alpha)
-        self.cle = cle
-        self.pass_phrase = ''
+        self.infinite_key = cycle(cle)
 
-    def set_pass_phrase(self, msg):
-        i = 0
-        for c in msg.lower():
-            if c in self.alpha:
-                self.pass_phrase += self.cle[i]
-                i = (i + 1) % len(self.cle)
-            else:
-                self.pass_phrase += ' '
+    def translate_one_car(self, x, mode):
+        if x in self.alpha:
+            k = next(self.infinite_key)
+            i = self.alpha.index(x)
+            j = mode * self.alpha.index(k)
+            return self.alpha[(i + j) % self.size]
+        else:
+            return x
 
 
     def translate(self, msg, mode=1):
         """ Effectue la translation positive (mode = 1) pour le codage
-            ou négative (mode = -1) pour le décodage """
-        self.set_pass_phrase(msg)
-        coded_or_decoded = ''
-        for idc, c in enumerate(msg):
-            if c in self.alpha:
-                i = self.alpha.index(c)
-                j = mode * self.alpha.index(self.pass_phrase[idc])
-                coded_or_decoded +=  self.alpha[(i + j) % self.size]
-            else:
-                coded_or_decoded += c
-        return coded_or_decoded
+            ou négative (mode = -1) pour le décodage sur chacun des caractères
+            du message (initial ou codé) """
+        return ''.join([self.translate_one_car(c, mode) for c in msg])
 
 
     def encode(self, msg):
