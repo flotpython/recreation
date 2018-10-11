@@ -12,7 +12,7 @@ from itertools import cycle
 class Code:
 
     def __init__(self, cle):
-        self.alpha = ascii_letters
+        self.alpha = ascii_letters + 'éèêàçïùüöô'
         self.size = len(self.alpha)
         self.infinite_key = cycle(cle)
 
@@ -47,7 +47,7 @@ class Code:
 
 def main():
     cle = 'musique'
-    msg = "J'adore ecouter FUN-RADIO toute la journee"
+    msg = "J'adore écouter FUN-RADIO toute la journée"
     codec = Code(cle)
     coded = codec.encode(msg)
     print('Message codé :')
