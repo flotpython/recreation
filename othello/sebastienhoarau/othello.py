@@ -2,17 +2,6 @@
     Othello.py (1re version, très naïve)
     Auteur : Sébastien Hoarau
     Date : 2018-10-11
-
-    Ami lecteur attention sache que :
-    1. Mon code n'est pas commenté (pas le temps)
-    2. J'ai du mal encore avec la programmation objet
-        notamment sur le découpage (ici l'objet Game et l'objet Othello)
-        qui s'occupe de quoi, quel attribut, chez qui ? etc...
-        Ce premier jet est donc très naïf, n'hésitez pas à commenter :)
-        Typiquement je ne sais pas où mettre mon attribut player (joueur courant) :
-        mon objet game qui gère le jeu (un peu le contrôleur) en a besoin (par exemple
-        pour mettre à jour les scores mais l'objet métier Othello en a aussi besoin :
-        faut-il dupliquer cette info ? la mettre dans Othello seulement ?)
 """
 
 # -- CONSTANTES
@@ -110,8 +99,8 @@ class Othello:
             self.g[nidl][nidc] = self.player
         return len(self.candidats[(idc, idl)]) + 1
 
-    def memorise(self, idc, idl):
-        self.last_move = idc, idl
+    def memorise(self, move):
+        self.last_move = move
 
     def check_move(self, pos):
         """ Teste qu'une pos style D4 est jouable ie qu'en transformant
@@ -139,7 +128,7 @@ class Othello:
     def passe(self):
         """ Affiche que le joueur courant a passé et met à jour last_move """
         print(f'  {LABELS[self.player]} PASS')
-        self.last_move = PASS
+        self.memorise(PASS)
 
 
 class Game:
@@ -223,7 +212,7 @@ class Game:
         """ mise à jour de la partie : mémorisation du dernier coup
             mise à jour de l'échiquier, mise à jour des scores
             ensuite on passe au joueur suivant, on met à jour les candidats """
-        self.othello.memorise(idc, idl)
+        self.othello.memorise((idc, idl))
         delta_score = self.othello.update_g()
         self.update_scores(delta_score)
         self.othello.next_player()
@@ -250,7 +239,6 @@ class Game:
                     self.passe()
             else:
                 move = self.get_move()
-                self.last_move = move
                 if move == QUIT:
                     self.quit(abandon=True)
                 else:
