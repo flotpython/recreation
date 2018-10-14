@@ -40,7 +40,7 @@ class Grille :
     
     @staticmethod
     def adjacents():
-        #liste des caseTableaus ajdacentes en relatif
+        #liste des caseTableau ajdacentes en relatif
         return [(dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if dx or dy] 
     
     def pose_test(self,forme,ligne,colonne) :        
@@ -60,15 +60,15 @@ class Grille :
             if not formeAdjacent==3-forme: #caseTableau adj vide ou meme forme
                 continue
             
-            # caseTableau adj de forme differente, on teste les caseTableaus audelà ds cette direction
+            # caseTableau adj de forme differente, on teste les caseTableau audelà ds cette direction
             i=2 
             while self.test_caseTableau (ligne+i*dx,colonne+i*dy):
                 formeAdjacent = self.tableau[ligne+i*dx][colonne+i*dy]
                 if formeAdjacent ==0 :# on tombe sur caseTableau vide = mauvaise direction
-                    break # on regarde les autres caseTableaus adjacentes
+                    break # on regarde les autres caseTableau adjacentes
                 if formeAdjacent == forme :
                     tableauRetournables[idx]=i-1 
-                    break # on regarde les autres caseTableaus adjacentes
+                    break # on regarde les autres caseTableau adjacentes
                 i+=1 # on continue dans la direction
            
         ## Retourne True si on peut  retourner des pions False sinon, + liste contenant les pions retournables       
@@ -80,7 +80,7 @@ class Grille :
         #un booleen pour dire si le tableau a été modifié ou pas
        
         result,tableauRetournables = self.pose_test(forme,ligne,colonne)
-        if result : ## remplit les caseTableaus du tableau  
+        if result : ## remplit les caseTableau du tableau  
             for idx,(dx,dy) in enumerate(self.adjacents()) : 
                 for j in range(int(tableauRetournables[idx])+1):
                     self.tableau[ligne+j*dx][colonne+j*dy] = forme 
@@ -91,7 +91,7 @@ class Grille :
         return not (x<0 or x>7 or y<0 or y>7)
     
     def partie_terminee (self):
-        # teste si toutes caseTableaus occupées : aucune caseTableau à 0 ou jeu bloqué pour les 2
+        # teste si toutes caseTableau occupées : aucune caseTableau à 0 ou jeu bloqué pour les 2
         return  self.tableau_rempli() or self.jeu_bloque()
 
     
