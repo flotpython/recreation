@@ -50,7 +50,7 @@ class Grille :
         tableauRetournables =np.zeros((8))
         #teste caseTableau jouee non vide        
         if int(self.tableau[ligne][colonne]) :
-            print("erreur : case  non vide")
+            #◘print("erreur : case  non vide")
             return False,tableauRetournables 
           
         for idx,(dx,dy) in enumerate(self.adjacents()) :
@@ -126,7 +126,24 @@ class Jeu :
          self.grille = Grille()
          print(self.grille)
          # version à 2 humains , evoluera avec possibilité AI et donc choix demarrer ou pas 
-         self.Joueurs = [JoueurHumain("Croix"),JoueurHumain("Rond")]
+         
+         while True :
+             premierJoueur = input("Qui joue les croix ? Humain =0 ou AI = 1")
+             if self.saisieJoueurValide(premierJoueur) :
+                 break
+         while True :
+             deuxiemeJoueur = input("Qui joue les ronds ? Humain =0 ou AI = 1")
+             if self.saisieJoueurValide(deuxiemeJoueur) :
+                 break
+         
+         J1 = JoueurHumain("Croix") if premierJoueur == '0' else JoueurAI("Croix")
+         J2 = JoueurHumain("Rond") if deuxiemeJoueur == '0' else JoueurAI("Rond")
+         
+            
+         self.Joueurs = [J1,J2]
+    
+    def saisieJoueurValide(self,saisie) :
+        return len(saisie)==1 and saisie  in '01'
          
     def partie(self):
         #partie principale
@@ -136,34 +153,44 @@ class Jeu :
             print (f"Compteur :"+self.grille.compte_formes())
             
             joueur = self.Joueurs[indexJoueur]
-            #verifie si pose pion possible pour JoueurHumain
+            #verifie si pose pion possible pour le joueur
             if not joueur.joue_test(self):
                 indexJoueur = 1-indexJoueur
                 continue 
             
-            while True :  #saisie entree case JoueurHumain 
-                condstop, pionPose = joueur.joue() 
-                 # condition arret
-                if condstop :
-                    break                
-                # test si  pion a pu etre posé
-                if pionPose:
-                    print (self.grille)
-                    indexJoueur = 1-indexJoueur # changement de JoueurHumain                    
-                    break
+            if joueur.joue() :
+                print (self.grille)
+                indexJoueur = 1-indexJoueur                
+                continue
+            condstop = True
+   
         
         print (f"Compteur final :"+self.grille.compte_formes())
-        
+ 
 
-class JoueurHumain :
+class Joueur :
     formes = ["Croix","Rond"]
     colonnes = ['A','B','C','D','E','F','G','H']
-    lignes = [str(i+1) for i in range(8)]
-    
+    lignes = [str(i+1) for i in range(8)]   
+
     def __init__(self,formeWord) :
          self.formeWord = formeWord
-         self.forme = self.formes.index(formeWord)+1
-    
+         self.forme = self.formes.index(formeWord)+1  
+         
+    def joue_test(self,jeu) :         
+        # verifie la possibilité de poser du Joueur sinon passera son tour 
+        # sera une méthode commune aux 2 types de joueurs
+        if jeu.grille.teste_pose_possible(self.forme):       
+            return True
+                   
+        print (f"Joueur {self.formeWord} ne peut jouer")    
+        return False    
+
+class JoueurHumain(Joueur) :
+
+    def __init__(self, formeWord):        
+        Joueur.__init__(self, formeWord)
+           
 
     def entree_valide(self,forme) : 
         # renvoie une saisie autorisée de la case ex A4 ou de l'arret 00
@@ -171,55 +198,94 @@ class JoueurHumain :
         while True :
             caseTableau = input(f"Joueur {self.formeWord} quelle case \
                                 (ex: A4 ? (00 pour arreter) ").upper()
-            if not len(caseTableau)==2  :
-                print ("ce n'est pas une case valide")
-                continue
-            if caseTableau =='00': # condition sortie 
-                print("OK on arrete")
-                return caseTableau
-            if caseTableau[0] not in self.colonnes or caseTableau[1] not in self.lignes :
+ 
+            if len(caseTableau)!=2 or (caseTableau !='00' and \
+            (caseTableau[0]not  in self.colonnes or caseTableau[1] not in self.lignes)) :
                 print ("ce n'est pas une case valide")
                 continue
             return caseTableau
          
     def joue (self) : 
-        # renvoie un tuple : boolen arretjeu , booleen pion posé
-        # verifie si la caseTableau choisie permet de poser un pion 
-        # et si oui retourne les pions autre forme : dans ce cas renvoie
-        # si 00 renvoie True , False
-        # si pion posé False,True - si pion non posé False,False
-        
-        # saisie caseTableau valide
-        caseTableau = self.entree_valide(self.forme) 
-        # condition arret
-        if caseTableau =='00':
-            return True,False  # arret 
-   
-        ligne = self.lignes.index(caseTableau[1])                
-        colonne = self.colonnes.index(caseTableau[0])         
-        
-        if jeu.grille.pose(self.forme,ligne,colonne) : # verifie pose possible et retourne les pions
-            return False ,True
-        else :
+        # renvoie  un booleen pion posé = True arretjeu = False         
+        #  verifie une saisie correcte et retourne les pions 
+            
+        while True :  #saisie entree case JoueurHumain 
+            caseTableau = self.entree_valide(self.forme)
+            
+            # condition arret
+            if caseTableau =='00':
+                print("OK on arrete")
+                return False
+            
+            ligne = self.lignes.index(caseTableau[1])                
+            colonne = self.colonnes.index(caseTableau[0]) 
+            if jeu.grille.pose(self.forme,ligne,colonne) : # verifie pose possible et retourne les pions
+                return True
+            
             print ("rejouez case non autorisée pour vous")
-            return False,False
+
         
-    def joue_test(self,jeu) :         
-        # verifie la possibilité de poser du Joueur sinon passera son tour 
-        # sera une méthode commune aux 2 types de joueurs
-        if jeu.grille.teste_pose_possible(self.forme):       
-            return True
-                   
-        print (f"Joueur {self.formWord} ne peut jouer")    
-        return False      
+class JoueurAI(Joueur) :
+
+    def __init__(self, formeWord):        
+        Joueur.__init__(self, formeWord)  
    
+    def joue(self):
+        #meme nom mais comportement different : va analyser les priorités essentiellement
+        
+        return self.priorites()
+    
+    
     def priorites(self) :
-        # joue coins si possibles
         # joue max points sauf si permet à autre acceder au coup suivant 
         # sur un coin ou un coté 
         # pire cas case adjacente d'un coin si retournable : methode à creer dans grille
-        pass
+        
+        
+        # coins prioritaires
+        maxPions = 0
+        for l,c in [(x, y) for x in (0,7) for y in (0, 7) ] :
+            pose,retourne = jeu.grille.pose_test(self.forme,l,c)  # verifie pose possible et retourne les pions
+            if sum(retourne)>maxPions :
+                maxPions = sum(retourne)
+                lmax,cmax = l,c
+        if maxPions>0:
+            print(f"\nAI {self.formeWord} joue en {self.colonnes[cmax]}{self.lignes[lmax]}  " )
+            return jeu.grille.pose(self.forme,lmax,cmax) 
     
+        
+        #maxpoints sauf cases à éviter
+        maxPions = 0
+        for l,c in [(x, y) for x in range(8) for y in range(8) ] :
+            if (l,c) in self.cases_a_eviter():
+                continue
+            pose,retourne = jeu.grille.pose_test(self.forme,l,c)  # verifie pose possible et retourne les pions
+            if sum(retourne)>maxPions :
+                maxPions = sum(retourne)
+                lmax,cmax = l,c
+        if maxPions>0:
+            print(f"\nAI {self.formeWord} joue en {self.colonnes[cmax]}{self.lignes[lmax]} " )
+            return jeu.grille.pose(self.forme,lmax,cmax)
+        
+        # au pire cases à eviter
+        maxPions = 0
+        for (l,c) in self.cases_a_eviter() :
+ 
+            pose,retourne = jeu.grille.pose_test(self.forme,l,c)  # verifie pose possible et retourne les pions
+            if sum(retourne)>maxPions :
+                maxPions = sum(retourne)
+                lmax,cmax = l,c
+        if maxPions>0:
+            print(f"\nAI {self.formeWord} joue en {self.colonnes[cmax]}{self.lignes[lmax]} " )
+            return jeu.grille.pose(self.forme,lmax,cmax)
+        
+
+    @staticmethod
+    def cases_a_eviter():
+        return list(set( [(x, y) for x in (1,6) for y in (0, 7)]\
+              +[(x, y) for x in (0,7) for y in (1, 6) ]\
+              +[(x, y) for x in (1,6) for y in range(1, 7)]\
+              +[(x, y) for x in range(1, 7) for y in (1,6)]))
     
 jeu = Jeu() 
 jeu.partie()
