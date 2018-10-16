@@ -8,37 +8,34 @@ import random
 
 class Myst:
     """
-    Devinez le nombre mytérieux...
-    par recherche dichotomique bien sûr !
+    Devinez le nombre mytérieux... par recherche dichotomique bien sûr !
     Jeu disponible, au choix, en français ou en anglais !
     """
 
     def __init__(self, minimum, maximum, locale):
+
+        self.locales = ('fr', 'en') # localisations dispos (cf put_on_screen)
 
         # on vérifie les paramètres minimum, maximum et locale
         if (isinstance(minimum, int)
                 and isinstance(maximum, int)
                 and minimum >= 0
                 and maximum > minimum
-                and locale in ('fr', 'en')):
+                and locale in self.locales):
             self.min, self.max = (minimum, maximum)
             self.myst = random.randint(self.min, self.max)
             self.locale = locale
         else:
-            # exit() devrait être appelée avec un entier
-            # exit(0) signifie que tout s'est bien passé
-            # exit(1) signifie un échec
-            # cela étant dit, voici comment présenter un code
-            # qui contient une chaine très longue, on peut acoller
-            # plusieurs chaines ou f-strings
-            exit(f"Conditions initiales incorrectes : "
+            print(f"Conditions initiales incorrectes : "
                  f"vérifiez les bornes ({minimum} .. {maximum}) "
                  f"ou la locale utilisée ({locale}).")
+            exit(1)
 
         self.count = 0 # compteur de tentatives
         self.chall = -1 # nombre proposé par le challenger
 
-        # dictionnaire profondeur 2 des phrases à afficher suivant la localisation
+        # dictionnaire profondeur 2 des phrases à afficher
+        # suivant la localisation
         self.put_on_screen = {
             'choice': {
                 'fr': "Choisissez un nombre entre {} et {} : ",
@@ -73,8 +70,7 @@ class Myst:
     def feedback(self, key, *params):
         return self.put_on_screen[key][self.locale].format(*params)
 
-    # le PEP008 recommande d'utiliser plutôt is_myst_number
-    def isMystNumber(self):
+    def is_myst_number(self):
 
         # demande à l'utilisateur un nombre compris entre 2 bornes
         try:
@@ -86,7 +82,8 @@ class Myst:
         # incrémente le nombre de tentatives quelque soit l'entrée fournie
         finally:
             self.count += 1
-        # différents test de comparaison du nombre fourni avec le nombre mystère
+        # différents tests de comparaison entre le nombre fourni
+        # et le nombre mystère
         if self.chall > self.max:
             print(self.feedback('too_big_out_of_range', self.chall, self.max))
         elif self.chall < self.min:
@@ -101,21 +98,11 @@ class Myst:
 
     def start(self):
         # on boucle tant que le nombre mystère n'est pas découvert
-        while not self.isMystNumber():
+        while not self.is_myst_number():
             pass
 
-# si vous écrivez
-# myst = Myst(0, 1000, 'fr').start()
-# vous affectez forcément `None` à la variable myst
-# or si elle s'appelle myst vous suggérez que ça va être une instance de Myst
+# TODO: utiliser argparse pour que l'utilisateur puisse choisir sa langue
+#       avec une option sur la ligne de commande
 
-
-# on fait plutôt comme ceci
 myst = Myst(0, 1000, 'fr')
 myst.start()
-
-# ou alors sinon simplement
-# Myst(0, 1000, 'fr').start()
-
-# exercice: utiliser argparse pour que l'utilisateur
-# puisse choisir sa langue avec une option sur la ligne de commande
