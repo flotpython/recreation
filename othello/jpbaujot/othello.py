@@ -18,6 +18,11 @@ Evolutions avec prise en compte compteur et fin de jeu , mais reste à debugguer
 @author: JP
 """
 import numpy as np
+
+CROIX = 'Croix'
+ROND = 'Rond'
+formes = [CROIX,ROND]
+
 class Grille :
     # classe pour gerer la grille
     def __init__(self) :
@@ -49,8 +54,7 @@ class Grille :
         # et un  tableau des nombre de pions retournables 
         tableauRetournables =np.zeros((8))
         #teste caseTableau jouee non vide        
-        if int(self.tableau[ligne][colonne]) :
-            #◘print("erreur : case  non vide")
+        if int(self.tableau[ligne][colonne]) :            
             return False,tableauRetournables 
           
         for idx,(dx,dy) in enumerate(self.adjacents()) :
@@ -125,25 +129,25 @@ class Jeu :
     def __init__(self) :
          self.grille = Grille()
          print(self.grille)
-         # version à 2 humains , evoluera avec possibilité AI et donc choix demarrer ou pas 
-         
-         while True :
-             premierJoueur = input("Qui joue les croix ? Humain =0 ou AI = 1")
-             if self.saisieJoueurValide(premierJoueur) :
-                 break
-         while True :
-             deuxiemeJoueur = input("Qui joue les ronds ? Humain =0 ou AI = 1")
-             if self.saisieJoueurValide(deuxiemeJoueur) :
-                 break
-         
-         J1 = JoueurHumain("Croix") if premierJoueur == '0' else JoueurAI("Croix")
-         J2 = JoueurHumain("Rond") if deuxiemeJoueur == '0' else JoueurAI("Rond")
-         
-            
-         self.Joueurs = [J1,J2]
+         # version avec choix AI ou Humain pour les 2 joeurs 
+         self.Joueurs=[] # tableau des instances de Joueur
+
+         for forme in [CROIX,ROND] :
+             saisie = self.saisieJoueurValide(forme)
+             self.Joueurs.append(JoueurHumain(forme) if saisie == '0' else JoueurAI(forme))
+
     
-    def saisieJoueurValide(self,saisie) :
-        return len(saisie)==1 and saisie  in '01'
+    def saisieJoueurValide(self,forme) :
+        "verifie que le joueur choisi est bien dans les choix proposés "
+        msg = forme +('s'if forme==ROND else '')
+      
+        while True :
+             saisie = input(f"Qui joue les {msg} ? Humain =0 ou AI = 1  ")
+             if  len(saisie)==1 and saisie  in '01':
+                 break
+             print("saisie invalide")
+        
+        return saisie
          
     def partie(self):
         #partie principale
@@ -168,14 +172,13 @@ class Jeu :
         print (f"Compteur final :"+self.grille.compte_formes())
  
 
-class Joueur :
-    formes = ["Croix","Rond"]
+class Joueur :    
     colonnes = ['A','B','C','D','E','F','G','H']
     lignes = [str(i+1) for i in range(8)]   
 
     def __init__(self,formeWord) :
          self.formeWord = formeWord
-         self.forme = self.formes.index(formeWord)+1  
+         self.forme = formes.index(formeWord)+1  
          
     def joue_test(self,jeu) :         
         # verifie la possibilité de poser du Joueur sinon passera son tour 
@@ -237,55 +240,39 @@ class JoueurAI(Joueur) :
     
     
     def priorites(self) :
-        # joue max points sauf si permet à autre acceder au coup suivant 
-        # sur un coin ou un coté 
-        # pire cas case adjacente d'un coin si retournable : methode à creer dans grille
+        # joue max points en priorisant coins puis  
+        # autres cases sauf case adjacentes des coins et avant derniere rangee
+        # puis avant derniere rangee
+        # pire cas case adjacente d'un coin si retournable 
+        tout = {(x, y) for x in range(8) for y in range(8) }
+        coins = {(x, y) for x in (0,7) for y in (0, 7) }
+        casesEvitees1 = self.cases_a_eviter1()
+        casesEvitees2 = self.cases_a_eviter2()
+        normal = tout-coins-casesEvitees1-casesEvitees2
         
+        ensembles = [coins,normal,casesEvitees1,casesEvitees2]
         
         # coins prioritaires
-        maxPions = 0
-        for l,c in [(x, y) for x in (0,7) for y in (0, 7) ] :
-            pose,retourne = jeu.grille.pose_test(self.forme,l,c)  # verifie pose possible et retourne les pions
-            if sum(retourne)>maxPions :
-                maxPions = sum(retourne)
-                lmax,cmax = l,c
-        if maxPions>0:
-            print(f"\nAI {self.formeWord} joue en {self.colonnes[cmax]}{self.lignes[lmax]}  " )
-            return jeu.grille.pose(self.forme,lmax,cmax) 
-    
-        
-        #maxpoints sauf cases à éviter
-        maxPions = 0
-        for l,c in [(x, y) for x in range(8) for y in range(8) ] :
-            if (l,c) in self.cases_a_eviter():
-                continue
-            pose,retourne = jeu.grille.pose_test(self.forme,l,c)  # verifie pose possible et retourne les pions
-            if sum(retourne)>maxPions :
-                maxPions = sum(retourne)
-                lmax,cmax = l,c
-        if maxPions>0:
-            print(f"\nAI {self.formeWord} joue en {self.colonnes[cmax]}{self.lignes[lmax]} " )
-            return jeu.grille.pose(self.forme,lmax,cmax)
-        
-        # au pire cases à eviter
-        maxPions = 0
-        for (l,c) in self.cases_a_eviter() :
- 
-            pose,retourne = jeu.grille.pose_test(self.forme,l,c)  # verifie pose possible et retourne les pions
-            if sum(retourne)>maxPions :
-                maxPions = sum(retourne)
-                lmax,cmax = l,c
-        if maxPions>0:
-            print(f"\nAI {self.formeWord} joue en {self.colonnes[cmax]}{self.lignes[lmax]} " )
-            return jeu.grille.pose(self.forme,lmax,cmax)
-        
+        for ensemble in ensembles:         
+            maxPions = 0
+            for l,c in ensemble :
+                pose,retourne = jeu.grille.pose_test(self.forme,l,c)  # verifie pose possible et retourne les pions
+                if sum(retourne)>maxPions :
+                    maxPions = sum(retourne)
+                    lmax,cmax = l,c
+            if maxPions>0:
+                print(f"\nAI {self.formeWord} joue en {self.colonnes[cmax]}{self.lignes[lmax]}  " )
+                return jeu.grille.pose(self.forme,lmax,cmax) 
+      
 
     @staticmethod
-    def cases_a_eviter():
-        return list(set( [(x, y) for x in (1,6) for y in (0, 7)]\
-              +[(x, y) for x in (0,7) for y in (1, 6) ]\
-              +[(x, y) for x in (1,6) for y in range(1, 7)]\
-              +[(x, y) for x in range(1, 7) for y in (1,6)]))
+    def cases_a_eviter1():
+        return set( [(x, y) for x in (1,6) for y in range(1, 7)]\
+              +[(x, y) for x in range(1, 7) for y in (1,6)])
+    @staticmethod
+    def cases_a_eviter2():
+        return set( [(x, y) for x in (1,6) for y in (0, 7)]\
+              +[(x, y) for x in (0,7) for y in (1, 6) ])
     
 jeu = Jeu() 
 jeu.partie()
