@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # pour dire à pylint de ne pas vérifier la présence des docstring
@@ -23,8 +24,8 @@ class Grille:
     # classe pour gerer la grille
     def __init__(self):
         self.tableau = np.zeros((8, 8))
-        self.tableau[3][3], self.tableau[4][4] = 2, 2
-        self.tableau[3][4], self.tableau[4][3] = 1, 1
+        # un peu de slicing
+        self.tableau[3:5, 3:5] = np.array([2, 1, 1, 2]).reshape(2, 2)
         self.pions = [". ", "X ", "O "]
 
     def __str__(self):
@@ -101,7 +102,7 @@ class Grille:
     # soit test_case_tableau, soit testCaseTableau :)
     def test_caseTableau(self, x, y):
         # teste si une caseTableau est bien dans la grille
-        return not (x < 0 or x > 7 or y < 0 or y > 7)
+        return 0 <= x <= 7 and 0 <= y <= 7
 
     def partie_terminee(self):
         # teste si toutes caseTableau occupées : aucune caseTableau à 0 ou jeu bloqué pour les 2
@@ -129,7 +130,7 @@ class Grille:
         return f"Croix = {totalCroix} Rond = {totalRond} "
 
     def case_retournable(self, forme, ligne, colonne):
-        # teste si case peut etre retournee  au tour  suivant
+        # teste si case peut etre retournee  au tour suivant
         # necessite une deeepcopie de la grille pour poser pion
         # puis chercher une solution de retournement
         pass
@@ -142,11 +143,11 @@ class Jeu:
         # version à 2 humains , evoluera avec possibilité AI et donc choix demarrer ou pas
 
         while True:
-            premierJoueur = input("Qui joue les croix ? Humain =0 ou AI = 1")
+            premierJoueur = input("Qui joue les croix ? Humain = 0 ou AI = 1 ")
             if self.saisieJoueurValide(premierJoueur):
                 break
         while True:
-            deuxiemeJoueur = input("Qui joue les ronds ? Humain =0 ou AI = 1")
+            deuxiemeJoueur = input("Qui joue les ronds ? Humain = 0 ou AI = 1 ")
             if self.saisieJoueurValide(deuxiemeJoueur):
                 break
 
@@ -165,7 +166,7 @@ class Jeu:
         indexJoueur = 0  # les X commencent
         condstop = False
         while not self.grille.partie_terminee() and not condstop:
-            print(f"Compteur :"+self.grille.compte_formes())
+            print(f"Compteur :{self.grille.compte_formes()}")
 
             joueur = self.Joueurs[indexJoueur]
             # verifie si pose pion possible pour le joueur
@@ -179,7 +180,7 @@ class Jeu:
                 continue
             condstop = True
 
-        print(f"Compteur final :"+self.grille.compte_formes())
+        print(f"Compteur final : {self.grille.compte_formes()}")
 
 
 class Joueur:
@@ -206,20 +207,24 @@ class JoueurHumain(Joueur):
     def __init__(self, formeWord):
         Joueur.__init__(self, formeWord)
 
+    # union de deux ensembles
+    valid_inputs = {'00'} | {f"{x}{y}"
+                             for x in Joueur.colonnes for y in Joueur.lignes}
+
     def entree_valide(self, forme):
         # renvoie une saisie autorisée de la case ex A4 ou de l'arret 00
 
+        # je suis étonné que ça marche; caseTableau
+        # est utilisé avant d'être utilisé non ?
+        # du coup j'inverse..
         while True:
-            if len(caseTableau) != 2 or (caseTableau != '00' and
-                                         (caseTableau[0]not in self.colonnes or caseTableau[1] not in self.lignes)):
             # toujours sur la forme, préférez coller deux chaines
             # (le compilateur n'en crée qu'une) plutôt qu'un \
             caseTableau = input(f"Joueur {self.formeWord} quelle case "
                                 f"(ex: A4 ? (00 pour arreter) ").upper()
-
-                print("ce n'est pas une case valide")
-                continue
-            return caseTableau
+            if caseTableau in self.valid_inputs:
+                return caseTableau
+            print("ce n'est pas une case valide")
 
     def joue(self):
         # renvoie  un booleen pion posé = True arretjeu = False
@@ -301,10 +306,11 @@ class JoueurAI(Joueur):
 
     @staticmethod
     def cases_a_eviter():
-        return list(set([(x, y) for x in (1, 6) for y in (0, 7)]
-                        + [(x, y) for x in (0, 7) for y in (1, 6)]
-                        + [(x, y) for x in (1, 6) for y in range(1, 7)]
-                        + [(x, y) for x in range(1, 7) for y in (1, 6)]))
+        # pourquoi une liste ?
+        return ({(x, y) for x in (1, 6) for y in (0, 7)}
+                | {(x, y) for x in (0, 7) for y in (1, 6)}
+                | {(x, y) for x in (1, 6) for y in range(1, 7)}
+                | {(x, y) for x in range(1, 7) for y in (1, 6)})
 
 
 jeu = Jeu()
