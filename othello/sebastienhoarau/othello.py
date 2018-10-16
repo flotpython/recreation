@@ -4,6 +4,9 @@
     Date : 2018-10-11
 """
 
+# on dit à pylint d'ignorer l'absence de docstrings
+# pylint: disable=c0111
+
 # -- CONSTANTES
 # --
 
@@ -20,18 +23,25 @@ QUIT = 'QUIT'               # le coup qu consiste à arrêter prématurément
 PASS = 'PASS'               # quand on est bloqué, on doit passer
                             # quand y'a eu deux PASS consécutifs la partie est finie (comme au GO)
 
-# Pour calculer les voisins d'une case            
+# Pour calculer les voisins d'une case
 DELTAS = ((1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1), (1, 1), (-1, -1))
 
 
 def inside(x, y):
-    """ True ssi (x, y) est dans notre grille 8x8 """
+    """
+    True ssi (x, y) est dans notre grille 8x8
+    """
     return 0 <= x < SIZE and 0 <= y < SIZE
 
 
 class Othello:
 
     def __init__(self):
+        # le nom de l'attribut g est un peu court
+        # essayez d'utiliser au moins 3 caractères...
+        # aussi et surtout, je sais qu'on ne l'a pas encore abordé
+        # mais après la semaine 7 vous pourrez utiliser un tableau
+        # numpy pour implémenter votre 'g'
         self.g = [[VIDE] * SIZE for _ in range(SIZE)]   # l'échiquier remplit de VIDE pour l'instant
         self.g[3][3:5] = [BLANC, NOIR]                  # on met les 2 pions NOIR et le 2 BLANC
         self.g[4][3:5] = [NOIR, BLANC]
@@ -49,7 +59,7 @@ class Othello:
                 s += f'{LABELS[self.g[idl][idc]]} '
             s += f'{idl+1}'
         s += f'\n{letters_line}'
-        return s 
+        return s
 
 
     def empty(self, idc, idl):
@@ -59,13 +69,15 @@ class Othello:
         self.player = 1 - self.player
 
     def update_candidats(self):
-        """ Calcule le dictionnaire des cases jouables pour le joueur
-            courant sous la forme : {(idc, idl) : [(nidc, nidl),...]} où
-            idc et idl représente les coordonnées colonne x ligne des cases
-            vides jouables et nidc, nidl les coordonnées des cases qui seront
-            retournées dès lors """
+        """
+        Calcule le dictionnaire des cases jouables pour le joueur
+        courant sous la forme : {(idc, idl) : [(nidc, nidl),...]} où
+        idc et idl représente les coordonnées colonne x ligne des cases
+        vides jouables et nidc, nidl les coordonnées des cases qui seront
+        retournées dès lors
+        """
         self.candidats = {}
-        for idc in range(SIZE): 
+        for idc in range(SIZE):
             for idl in range(SIZE):
                 if self.empty(idc, idl):
                     tmp = []
@@ -87,12 +99,14 @@ class Othello:
 
 
     def update_g(self):
-        """ mise à jour de l'échiquier : on récupère les coordonnées du dernier coup
-            on met à jour la case avec le numéro du joueur courant
-            on met aussi à jour l'échiquier de toutes les cases retournables associées
-            à la case jouée
-            on retourne le nombre de cases obtenues pour le joueur courant 
-            (pour la mise à jour des scores) """
+        """
+        mise à jour de l'échiquier : on récupère les coordonnées du dernier coup
+        on met à jour la case avec le numéro du joueur courant
+        on met aussi à jour l'échiquier de toutes les cases retournables associées
+        à la case jouée
+        on retourne le nombre de cases obtenues pour le joueur courant
+        (pour la mise à jour des scores)
+        """
         idc, idl = self.last_move
         self.g[idl][idc] = self.player
         for nidc, nidl in self.candidats[(idc, idl)]:
@@ -102,6 +116,7 @@ class Othello:
     def memorise(self, move):
         self.last_move = move
 
+    # etc. pour les docstrings
     def check_move(self, pos):
         """ Teste qu'une pos style D4 est jouable ie qu'en transformant
             en coord (3, 3) ces coordonnées sont dans les cases candidates """
@@ -111,7 +126,7 @@ class Othello:
         return idc, idl, (idc, idl) in self.candidats
 
     def ia(self):
-        """ Une IA plus que basique : joue le coup qui maximise le gain de pion 
+        """ Une IA plus que basique : joue le coup qui maximise le gain de pion
             si possible, passe sinon """
         l_move = list(self.candidats.items())
         l_move.sort(key=lambda c: len(c[1]), reverse=True)
@@ -124,7 +139,7 @@ class Othello:
     def no_moves(self):
         """ True ssi il n'y a plus de coups possibles pour le joueur courant """
         return self.candidats == {}
-    
+
     def passe(self):
         """ Affiche que le joueur courant a passé et met à jour last_move """
         print(f'  {LABELS[self.player]} PASS')
@@ -144,7 +159,7 @@ class Game:
         s = '\n' + self.othello.__str__() + '\n\n'
         s += f'  {LABELS[NOIR]} {self.scores[NOIR]}\t{LABELS[BLANC]} {self.scores[BLANC]}'
         if self.game_over:
-            results =[f'\n  {LABELS[NOIR]} gagne !\n', f'\n  {LABELS[BLANC]} gagne !\n', 
+            results =[f'\n  {LABELS[NOIR]} gagne !\n', f'\n  {LABELS[BLANC]} gagne !\n',
                         '\n  Partie nulle.\n']
             s += results[self.winner]
         return s
@@ -183,7 +198,7 @@ class Game:
 
 
     def quit(self, abandon=False):
-        """ Pour quitter le jeu, éventuellement par abandon : le winner est 
+        """ Pour quitter le jeu, éventuellement par abandon : le winner est
             alors l'autre joueur, ie pas le joueur courant """
         self.game_over = True
         if abandon:
@@ -198,7 +213,7 @@ class Game:
         """ Quand on passe dans la partie, faut appeler la méthode passe du jeu
             passer au joueur suivant puis recalculer les candidats """
         self.othello.passe()
-        self.othello.next_player()                    
+        self.othello.next_player()
         self.othello.update_candidats()
 
 
@@ -207,7 +222,7 @@ class Game:
         player = self.othello.player
         self.scores[player] += delta
         self.scores[1 - player] -= delta - 1
-    
+
     def update(self, idc, idl):
         """ mise à jour de la partie : mémorisation du dernier coup
             mise à jour de l'échiquier, mise à jour des scores
