@@ -123,7 +123,14 @@ class Grille :
         #necessite une deeepcopie de la grille pour poser pion 
         #puis chercher une solution de retournement
         pass
-
+    
+    def simulation(self,forme):
+        # teste pour chaque case jouable , l'impact des meilleurs coups adv 
+        #dans les x tours suivants
+        #necessite -t il de mémoriser des objets grilles et de regarder toute la
+        #combinatoire des jeux possibles ?
+        pass
+        
         
 class Jeu :
     def __init__(self) :
@@ -246,17 +253,23 @@ class JoueurAI(Joueur) :
         # pire cas case adjacente d'un coin si retournable 
         tout = {(x, y) for x in range(8) for y in range(8) }
         coins = {(x, y) for x in (0,7) for y in (0, 7) }
-        casesEvitees1 = self.cases_a_eviter1()
-        casesEvitees2 = self.cases_a_eviter2()
-        normal = tout-coins-casesEvitees1-casesEvitees2
+        coins_adj = {(x, y) for x in (1,6) for y in (1, 6) }
+        tour =set( [(x, y) for x in (0,7) for y in range( 8)]\
+              +[(x, y) for x in range(1, 7) for y in (0,7)])
+        av_dern_rang = self.av_dern_rang()-coins_adj
+        adj_coins_tour = self.adj_coins_tour() | coins_adj
+        normal = tout-coins-av_dern_rang-adj_coins_tour-tour
         
-        ensembles = [coins,normal,casesEvitees1,casesEvitees2]
+        ensembles = [coins,tour-coins-adj_coins_tour,normal,av_dern_rang,adj_coins_tour]
         
         # coins prioritaires
         for ensemble in ensembles:         
             maxPions = 0
             for l,c in ensemble :
                 pose,retourne = jeu.grille.pose_test(self.forme,l,c)  # verifie pose possible et retourne les pions
+                # il faudrait en fait regarder quelle case est meilleure 
+                #vis à vis du meilleur jeu de l'adv aux x tours suivants (idem sudoku ?)
+                
                 if sum(retourne)>maxPions :
                     maxPions = sum(retourne)
                     lmax,cmax = l,c
@@ -266,11 +279,11 @@ class JoueurAI(Joueur) :
       
 
     @staticmethod
-    def cases_a_eviter1():
+    def av_dern_rang():
         return set( [(x, y) for x in (1,6) for y in range(1, 7)]\
               +[(x, y) for x in range(1, 7) for y in (1,6)])
     @staticmethod
-    def cases_a_eviter2():
+    def adj_coins_tour():
         return set( [(x, y) for x in (1,6) for y in (0, 7)]\
               +[(x, y) for x in (0,7) for y in (1, 6) ])
     
