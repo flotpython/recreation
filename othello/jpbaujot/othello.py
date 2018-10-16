@@ -47,12 +47,20 @@ class Grille:
         # verifie si pose d'un pion forme permet ou pas de retouner
         # des pions del'autre forme et renvoie booleen sur la pose possible
         # et un  tableau des nombre de pions retournables
+        # @jpbaudot:
+        # tableauRetournables est un exemple de ce que j'appelais un
+        # symbole non-casher; PEP8 recommande d'utiliser plutôt
+        # tableau_retournables
         tableauRetournables = np.zeros((8))
         # teste caseTableau jouee non vide
         if int(self.tableau[ligne][colonne]):
             # ◘print("erreur : case  non vide")
             return False, tableauRetournables
 
+        # @jpbaudot:
+        # de même dx et dy sont considérés comme trop courts
+        # ce sont des remarques émises dans mon environnement par pylint
+        # naturellement ce sont juste des guidelines :)
         for idx, (dx, dy) in enumerate(self.adjacents()):
             # caseTableau adj hors grille
             if not self.test_caseTableau(ligne+dx, colonne+dy):
@@ -72,7 +80,9 @@ class Grille:
                     break  # on regarde les autres caseTableau adjacentes
                 i += 1  # on continue dans la direction
 
-        # Retourne True si on peut  retourner des pions False sinon, + liste contenant les pions retournables
+        # toujours sur la forme, on évite les lignes kilométriques:
+        # Retourne True si on peut  retourner des pions False sinon,
+        # liste contenant les pions retournables
         return (sum(tableauRetournables) > 0), tableauRetournables
 
     def pose(self, forme, ligne, colonne):
@@ -87,6 +97,8 @@ class Grille:
                     self.tableau[ligne+j*dx][colonne+j*dy] = forme
         return result
 
+    # choisissez votre camp
+    # soit test_case_tableau, soit testCaseTableau :)
     def test_caseTableau(self, x, y):
         # teste si une caseTableau est bien dans la grille
         return not (x < 0 or x > 7 or y < 0 or y > 7)
@@ -107,7 +119,8 @@ class Grille:
 
     def tableau_rempli(self):
         # verifie si le tableau est bien rempli
-        return (np.count_nonzero(self.tableau == 0) == 0)
+        # pas de parenthèses
+        return np.count_nonzero(self.tableau == 0) == 0
 
     def compte_formes(self):
         # renvoie un tuple des nombres de croix et de ronds
@@ -197,11 +210,13 @@ class JoueurHumain(Joueur):
         # renvoie une saisie autorisée de la case ex A4 ou de l'arret 00
 
         while True:
-            caseTableau = input(f"Joueur {self.formeWord} quelle case \
-                                (ex: A4 ? (00 pour arreter) ").upper()
-
             if len(caseTableau) != 2 or (caseTableau != '00' and
                                          (caseTableau[0]not in self.colonnes or caseTableau[1] not in self.lignes)):
+            # toujours sur la forme, préférez coller deux chaines
+            # (le compilateur n'en crée qu'une) plutôt qu'un \
+            caseTableau = input(f"Joueur {self.formeWord} quelle case "
+                                f"(ex: A4 ? (00 pour arreter) ").upper()
+
                 print("ce n'est pas une case valide")
                 continue
             return caseTableau
