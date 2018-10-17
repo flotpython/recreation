@@ -6,37 +6,13 @@
 
 import random
 
-class Myst:
+class Phrases:
     """
-    Devinez le nombre mytérieux... par recherche dichotomique bien sûr !
-    Jeu disponible, au choix, en français ou en anglais !
+    Différentes phrases utilisées pour interagir avec le joueur
     """
-
-    def __init__(self, minimum, maximum, locale):
-
-        self.locales = ('fr', 'en') # localisations dispos (cf put_on_screen)
-
-        # on vérifie les paramètres minimum, maximum et locale
-        if (isinstance(minimum, int)
-                and isinstance(maximum, int)
-                and minimum >= 0
-                and maximum > minimum
-                and locale in self.locales):
-            self.min, self.max = (minimum, maximum)
-            self.myst = random.randint(self.min, self.max)
-            self.locale = locale
-        else:
-            print(f"Conditions initiales incorrectes : "
-                 f"vérifiez les bornes ({minimum} .. {maximum}) "
-                 f"ou la locale utilisée ({locale}).")
-            exit(1)
-
-        self.count = 0 # compteur de tentatives
-        self.chall = -1 # nombre proposé par le challenger
-
-        # dictionnaire profondeur 2 des phrases à afficher
-        # suivant la localisation
-        self.put_on_screen = {
+    def __init__(self):
+        self.available_locales = ('fr', 'en')
+        self.phrases = {
             'choice': {
                 'fr': "Choisissez un nombre entre {} et {} : ",
                 'en': "Choose a number between {} and {} : ",
@@ -66,15 +42,42 @@ class Myst:
                 'en': "Bravo, you've just found {} in {} tries !",
             },
         }
+    def get(self, key, locale, *params):
+        return self.phrases[key][locale].format(*params)
+
+class Myst:
+    """
+    Devinez le nombre mytérieux... par recherche dichotomique bien sûr !
+    """
+    def __init__(self, minimum, maximum, locale):
+
+        self.dialog = Phrases()
+
+        # on vérifie les paramètres minimum, maximum et locale
+        if (isinstance(minimum, int)
+                and isinstance(maximum, int)
+                and minimum >= 0
+                and maximum > minimum
+                and locale in self.dialog.available_locales):
+            self.min, self.max = (minimum, maximum)
+            self.myst = random.randint(self.min, self.max)
+            self.locale = locale
+        else:
+            raise ValueError(f"Conditions initiales incorrectes : "
+                             f"vérifiez les bornes ({minimum} .. {maximum}) "
+                             f"ou la locale utilisée ({locale}).")
+
+        self.count = 0 # compteur de tentatives
 
     def feedback(self, key, *params):
-        return self.put_on_screen[key][self.locale].format(*params)
+        return self.dialog.get(key, self.locale, *params)
 
-    def is_myst_number(self):
-
-        # demande à l'utilisateur un nombre compris entre 2 bornes
+    def ask_for_number(self):
+        """
+        demande à l'utilisateur un nombre compris entre 2 bornes
+        """
         try:
-            self.chall = int(input(self.feedback('choice', self.min, self.max)))
+            chall = int(input(self.feedback('choice', self.min, self.max)))
         # attrape l'exception en cas de valeur impropre
         except ValueError:
             print(self.feedback('invalid_input'))
@@ -82,27 +85,32 @@ class Myst:
         # incrémente le nombre de tentatives quelque soit l'entrée fournie
         finally:
             self.count += 1
-        # différents tests de comparaison entre le nombre fourni
-        # et le nombre mystère
-        if self.chall > self.max:
-            print(self.feedback('too_big_out_of_range', self.chall, self.max))
-        elif self.chall < self.min:
-            print(self.feedback('too_small_out_of_range', self.chall, self.min))
-        elif self.chall > self.myst:
-            print(self.feedback('too_big', self.chall))
-        elif self.chall < self.myst:
-            print(self.feedback('too_small', self.chall))
+        return chall
+
+    def is_myst_number(self, chall):
+        """
+        différents tests de comparaison entre le nombre fourni et le nombre mystère
+        """
+        if chall is False: # cas 'invalid_input' dans ask_for_number()
+            return False
+        if chall > self.max:
+            print(self.feedback('too_big_out_of_range', chall, self.max))
+        elif chall < self.min:
+            print(self.feedback('too_small_out_of_range', chall, self.min))
+        elif chall > self.myst:
+            print(self.feedback('too_big', chall))
+        elif chall < self.myst:
+            print(self.feedback('too_small', chall))
         else:
             print(self.feedback('jackpot', self.myst, self.count))
-        return self.chall == self.myst
+        return chall == self.myst
 
     def start(self):
         # on boucle tant que le nombre mystère n'est pas découvert
-        while not self.is_myst_number():
+        while not self.is_myst_number(self.ask_for_number()):
             pass
 
 # TODO: utiliser argparse pour que l'utilisateur puisse choisir sa langue
 #       avec une option sur la ligne de commande
 
-myst = Myst(0, 1000, 'fr')
-myst.start()
+Myst(0, 1000, 'fr').start()
