@@ -27,15 +27,17 @@ formes = [CROIX,ROND]
 
 class Grille :
     # classe pour gerer la grille
+    colonnes = ['A','B','C','D','E','F','G','H']
+    lignes = [str(i+1) for i in range(8)] 
+    
     def __init__(self) :
         self.tableau = np.zeros((8,8))
         self.tableau[3][3], self.tableau[4][4]=2,2
         self.tableau[3][4], self.tableau[4][3]=1,1
-        self.pions = [". ","X ","O "]
-        
+        self.pions = [". ","X ","O "]        
     
-    def __str__(self):
-        nom_col = "  A B C D E F G H\n"
+    def __str__(self): 
+        nom_col = "  "+" ".join(self.colonnes)+"\n"
         msg = "\n"+ nom_col       
         for i in range(8):            
             msg+=f"{i+1} "
@@ -50,11 +52,19 @@ class Grille :
         #liste des case_tab ajdacentes en relatif
         return [(delta_x, delta_y) for delta_x in (-1, 0, 1)\
                 for delta_y in (-1, 0, 1) if delta_x or delta_y] 
-    
-    def pose_test(self,forme,ligne,colonne) :        
+ 
+    def pose_test(self,forme,case_tab) :        
+        #intreface pour transformer les coordonnées de l'interface utilisateur 
+        # en coordonnées utilisables dans les fonctions internes de la classe
+        ligne = self.lignes.index(case_tab[1])                
+        colonne = self.colonnes.index(case_tab[0])
+        return self.pose_test_int(forme,ligne,colonne)        
+        
+    def pose_test_int(self,forme,ligne,colonne) :
         #verifie si pose d'un pion forme permet ou pas de retouner 
         #des pions del'autre forme et renvoie booleen sur la pose possible
         # et un  tableau des nombre de pions retournables 
+        
         tab_retournables =np.zeros((8))
         #teste case_tab jouee non vide        
         if int(self.tableau[ligne][colonne]) :            
@@ -83,14 +93,16 @@ class Grille :
            
         # Retourne True si on peut  retourner des pions False sinon, 
         # + liste contenant les pions retournables       
-        return (sum(tab_retournables)>0),tab_retournables 
+        return (sum(tab_retournables)>0),tab_retournables     
     
-    def pose(self,forme,ligne,colonne) :        
+    def pose(self,forme,case_tab) :        
         #verifie si pose d'un pion forme permet ou pas de retouner 
         #des pions del'autre forme , retourne les pions si possibles et retourne 
         #un booleen pour dire si le tableau a été modifié ou pas
-       
-        result,tab_retournables = self.pose_test(forme,ligne,colonne)
+        ligne = self.lignes.index(case_tab[1])                
+        colonne = self.colonnes.index(case_tab[0])         
+        
+        result,tab_retournables = self.pose_test_int(forme,ligne,colonne)
         if result : ## remplit les case_tab du tableau  
             for idx,(delta_x,delta_y) in enumerate(self.adjacents()) : 
                 for j in range(int(tab_retournables[idx])+1):
@@ -105,7 +117,6 @@ class Grille :
         # teste si toutes case_tab occupées : 
         #aucune case_tab à 0 ou jeu bloqué pour les 2
         return  self.tableau_rempli() or self.jeu_bloque()
-
     
     def jeu_bloque(self):
         # teste si les 2 JoueurHumains sont bloqués
@@ -114,7 +125,7 @@ class Grille :
     def teste_pose_possible(self,forme):
         # renvoie le nombre de pions retournables sur l'ensemble de la grille 
         #pour une forme(forme) donnée
-        return (sum([self.pose_test(forme,i,j)[0]\
+        return (sum([self.pose_test_int(forme,i,j)[0]\
                 for i in range(8) for j in range(8)\
                 if not self.tableau[i][j]]))
                     
@@ -153,7 +164,6 @@ class Jeu :
              saisie = self.saisieJoueurValide(forme)
              JoueurChoisi = JoueurHumain(forme) if saisie == '0' else JoueurAI(forme)
              self.Joueurs.append(JoueurChoisi)
-
     
     def saisieJoueurValide(self,forme) :
         "verifie que le joueur choisi est bien dans les choix proposés "
@@ -210,7 +220,6 @@ class JoueurHumain(Joueur) :
 
     def __init__(self, formeWord):        
         Joueur.__init__(self, formeWord)
-           
 
     def entree_valide(self,forme) : 
         # renvoie une saisie autorisée de la case ex A4 ou de l'arret 00
@@ -238,12 +247,9 @@ class JoueurHumain(Joueur) :
                 print("OK on arrete")
                 return False
             
-            ligne = self.lignes.index(case_tab[1])                
-            colonne = self.colonnes.index(case_tab[0]) 
             # verifie pose possible et retourne les pions
-            if jeu.grille.pose(self.forme,ligne,colonne) : 
+            if jeu.grille.pose(self.forme,case_tab) : 
                 return True
-            
             print ("rejouez case non autorisée pour vous")
 
         
@@ -253,53 +259,54 @@ class JoueurAI(Joueur) :
         Joueur.__init__(self, formeWord)  
    
     def joue(self):
-        # analyse les priorités essentiellement
-        
+        # analyse les priorités essentiellement        
         return self.priorites()
     
-    
     def priorites(self) :
+        import random 
         # joue max points en priorisant coins puis  
         # autres cases sauf case adjacentes des coins et avant derniere rangee
         # puis avant derniere rangee
         # pire cas case adjacente d'un coin si retournable 
-        tout = {(x, y) for x in range(8) for y in range(8) }
-        coins = {(x, y) for x in (0,7) for y in (0, 7) }
-        coins_adj = {(x, y) for x in (1,6) for y in (1, 6) }
-        tour =set( [(x, y) for x in (0,7) for y in range( 8)]\
-              +[(x, y) for x in range(1, 7) for y in (0,7)])
-        av_dern_rang = self.av_dern_rang()-coins_adj
-        adj_coins = self.adj_coins_tour() | coins_adj
-        normal = tout-coins-av_dern_rang-adj_coins-tour
+        lignes = self.lignes
+        colonnes = self.colonnes
         
-        ensembles = [coins,tour-coins-adj_coins,normal,av_dern_rang,adj_coins]
+        tout = {y+x for x in lignes for y in colonnes }
+        coins = {y+x  for x in ('18') for y in ('AH')}         
+        adj_coins = {y+x  for x in ('1278') for y in ('ABGH')} -coins        
+        tour =tout - {y+x for x in lignes[1:-1] for y in colonnes[1:-1] }        
+        av_dern_rang = tout - tour - adj_coins \
+                      - {y+x for x in lignes[2:-2] for y in colonnes[2:-2]}
+                                    
+        normal = tout - coins - av_dern_rang - adj_coins - tour
+        dern_ligne = tour - coins - adj_coins 
+        
+        ensembles1 = [coins, dern_ligne,normal, av_dern_rang, adj_coins]
+        ensembles = []
+        
+        for ensemble in ensembles1 :
+            ens = list(ensemble)
+            random.shuffle(ens)
+            ensembles.append(list(ens)) 
+            
         
         # coins prioritaires
         for ensemble in ensembles:         
             maxPions = 0
-            for ligne,colonne in ensemble :
+            case_max = None
+            for case_tab in ensemble :
                 # verifie pose possible et retourne les pions
-                pose,retourne = jeu.grille.pose_test(self.forme,ligne,colonne)  
+                pose,retourne = jeu.grille.pose_test(self.forme,case_tab)  
                 # il faudrait en fait regarder quelle case est meilleure 
                 #vis à vis du meilleur jeu de l'adv aux x tours suivants 
                 
                 if sum(retourne)>maxPions :
                     maxPions = sum(retourne)
-                    lmax,cmax = ligne,colonne
+                    case_max = case_tab
             if maxPions>0:
-                print(f"\nAI {self.formeWord} joue en {self.colonnes[cmax]}"
-                      f"{self.lignes[lmax]}  " )
-                return jeu.grille.pose(self.forme,lmax,cmax) 
-      
+                print(f"\nAI {self.formeWord} joue en {case_max}")
+                return jeu.grille.pose(self.forme,case_max) 
 
-    @staticmethod
-    def av_dern_rang():
-        return set( [(x, y) for x in (1,6) for y in range(1, 7)]\
-              +[(x, y) for x in range(1, 7) for y in (1,6)])
-    @staticmethod
-    def adj_coins_tour():
-        return set( [(x, y) for x in (1,6) for y in (0, 7)]\
-              +[(x, y) for x in (0,7) for y in (1, 6) ])
     
 jeu = Jeu() 
 jeu.partie()
