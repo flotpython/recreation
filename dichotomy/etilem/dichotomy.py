@@ -4,6 +4,7 @@
 # je configure pytlint pour qu'il ignore l'absence de docstrings
 # pylint: disable=c0111
 
+import argparse
 import random
 
 class Phrases:
@@ -54,18 +55,21 @@ class Myst:
         self.dialog = Phrases()
 
         # on vérifie les paramètres minimum, maximum et locale
-        if (isinstance(minimum, int)
-                and isinstance(maximum, int)
-                and minimum >= 0
-                and maximum > minimum
-                and locale in self.dialog.available_locales):
-            self.min, self.max = (minimum, maximum)
-            self.myst = random.randint(self.min, self.max)
-            self.locale = locale
-        else:
-            raise ValueError(f"Conditions initiales incorrectes : "
-                             f"vérifiez les bornes ({minimum} .. {maximum}) "
-                             f"ou la locale utilisée ({locale}).")
+        if not isinstance(minimum, int):
+            raise ValueError(f"minimum ({minimum}) doit être un entier.")
+        if not isinstance(maximum, int):
+            raise ValueError(f"maximum ({maximum}) doit être un entier.")
+        if minimum < 0:
+            raise ValueError(f"minimum ({minimum}) doit être positif ou nul.")
+        if maximum <= minimum:
+            raise ValueError(f"maximum ({maximum}) doit être supérieur à {minimum}")
+        if locale not in self.dialog.available_locales:
+            raise ValueError(f"locale inconnue ({locale}), "
+                             f"choisissez-la parmi {self.dialog.available_locales}")
+
+        self.min, self.max = (minimum, maximum)
+        self.myst = random.randint(self.min, self.max)
+        self.locale = locale
 
         self.count = 0 # compteur de tentatives
 
@@ -110,7 +114,10 @@ class Myst:
         while not self.is_myst_number(self.ask_for_number()):
             pass
 
-# TODO: utiliser argparse pour que l'utilisateur puisse choisir sa langue
-#       avec une option sur la ligne de commande
+# utilise argparse pour que l'utilisateur puisse choisir sa langue
+# avec une option sur la ligne de commande
+parser = argparse.ArgumentParser()
+parser.add_argument("-l", "--locale", default='fr', help="choix de la langue parmi 'fr' et 'en'")
+args = parser.parse_args()
 
-Myst(0, 1000, 'fr').start()
+Myst(0, 1000, args.locale).start()
