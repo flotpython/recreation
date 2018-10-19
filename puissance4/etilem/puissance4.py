@@ -3,10 +3,10 @@
 
 import random
 
-SPRITE = '◉◎ '
-WHITE = HUMAN = 0
-BLACK = MACHINE = 1
-VOID = 2
+SPRITE = ' ◉◎'
+HUMAN = 1
+MACHINE = 2
+VOID = 0
 WIDTH, HEIGHT = (7, 6)
 END = ''
 
@@ -16,6 +16,10 @@ class Board:
         """
         Matrice des jetons
         """
+        self.legal_positions = []
+        for x in range(WIDTH):
+            for y in range(HEIGHT):
+                self.legal_positions.append((x, y))
         self.matrix = [[VOID for y in range(HEIGHT)] for x in range(WIDTH)]
 
 
@@ -46,21 +50,21 @@ class Board:
                 print(f"{SPRITE[self.matrix[x][y]]} |", end=END)
             print()
 
-    def who_has_win(self):
+    def who_has_won(self):
         """
         Y a-t-il un gagnant ?
         """
         for y in range(HEIGHT):
             for x in range(WIDTH):
                 token = self.matrix[x][y]
-                if self.find_pattern(x, y) >= 4 and token != VOID:
+                if token != VOID and self.find_pattern(x, y) >= 4:
                     return token
         return VOID
 
     def find_pattern(self, x, y):
         """
-        Recherche en étoile pour un jeton d'une possible
-        combinaison de jetons se suivant dans une direction
+        Recherche en étoile pour un jeton de possibles
+        segments de jetons contigus
              +  +  +
               + + +
                +++
@@ -68,37 +72,34 @@ class Board:
                +++
               + + +
              +  +  +
-        Renvoit le plus fort accumulateur de jetons se suivant
+        Renvoit la taille du segment le plus long
         """
+        liste = range(-3, 4)
         # directions éligibles / N=north / S=south / W=west / E=east
         directions = {
-            'W_to_E': ((-3, 0), (-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0), (3, 0)),
-            'NW_to_SE': ((-3, -3), (-2, -2), (-1, -1), (0, 0), (1, 1), (2, 2), (3, 3)),
-            'N_to_S': ((0, -3), (0, -2), (0, -1), (0, 0), (0, 1), (0, 2), (0, 3)),
-            'NE_to_SW': ((3, -3), (2, -2), (1, -1), (0, 0), (-1, 1), (-2, 2), (-3, 3)),
+            'W_to_E': ((i, 0) for i in liste),
+            'NW_to_SE': ((i, i) for i in liste),
+            'N_to_S': ((0, i) for i in liste),
+            'NE_to_SW': ((-i, i) for i in liste),
         }
-
         token = self.matrix[x][y]
         accumulateur = 0
-
         for deltas in directions.values():
             stack = maximum = 0
-            for dx, dy in deltas:
-                try:
-                    if self.matrix[x+dx][y+dy] == token:
-                        stack = stack + 1 # on empile les jetons successifs
-                        maximum = max(stack, maximum)
-                    else:
-                        stack = 0 # on vide la pile
-                except IndexError:
+            for i, j in deltas:
+                dx, dy = x+i, y+j
+                if (dx, dy) in self.legal_positions and self.matrix[dx][dy] == token:
+                    stack += 1
+                else:
                     stack = 0
+                maximum = max(stack, maximum) # taille du + long segment trouvé dans cette direction
             accumulateur = max(maximum, accumulateur)
-        return accumulateur
+        return accumulateur # taille du + long segment trouvé dans toutes les directions
 
 board = Board()
 player = HUMAN
-while board.who_has_win() == VOID:
+while board.who_has_won() == VOID:
     if board.drop_token(player, random.randint(1, 7)):
-        player = 1 - player # alterne HUMAN / MACHINE
+        player = 3 - player # alterne HUMAN / MACHINE
     board.display()
-print(f"\n{SPRITE[board.who_has_win()]} a gagné !")
+print(f"\n{SPRITE[board.who_has_won()]} a gagné !")
