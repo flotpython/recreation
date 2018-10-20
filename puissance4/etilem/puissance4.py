@@ -4,102 +4,89 @@
 import random
 
 SPRITE = ' ◉◎'
+VOID = 0
 HUMAN = 1
 MACHINE = 2
-VOID = 0
-WIDTH, HEIGHT = (7, 6)
+WIDTH, HEIGHT = 8, 8
+LENGTH = 5
 END = ''
+
+def switch(player):
+    return 3 - player # alterne HUMAN / MACHINE
 
 class Board:
 
     def __init__(self):
-        """
-        Matrice des jetons
-        """
-        self.legal_positions = []
+        self.grille = [[VOID for y in range(HEIGHT)] for x in range(WIDTH)]
+
+    def cases(self):
         for x in range(WIDTH):
             for y in range(HEIGHT):
-                self.legal_positions.append((x, y))
-        self.matrix = [[VOID for y in range(HEIGHT)] for x in range(WIDTH)]
+                yield x, y
 
+    def directions(self):
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                if dx or dy: # exclut le cas (0, 0) qui a déjà été testé
+                    yield dx, dy
 
-    def drop_token(self, player, col):
-        """
-        Le joueur courant avait-il le droit de jouer dans cette colonne ?
-        """
-        x = col - 1
-        for y in range(HEIGHT):
-            index = HEIGHT-1-y # on commence par le bas du tableau
-            if self.matrix[x][index] == VOID:
-                self.matrix[x][index] = player
+    def is_valid(self, case):
+        return case in self.cases()
+
+    def is_full(self):
+        for x, y in self.cases():
+            if self.grille[x][y] == VOID:
+                return False
+        return True
+
+    def play(self, player, x):
+        for y in reversed(range(HEIGHT)):
+            if self.grille[x][y] == VOID:
+                self.grille[x][y] = player
                 return True
         return False
 
+    def has_won(self, player):
+        for x, y in self.cases(): # pour chaque case de la grille
+            for direction in self.directions(): # dans les 8 directions
+                # recherche d'un segment de longueur LENGTH de jetons appartenant au joueur
+                if self.has_n_in_dir(player, x, y, direction, LENGTH):
+                    return True
+        return False
+
+    def has_n_in_dir(self, player, x, y, direction, n):
+        if n == 0: # profondeur de recherche, si nul, segment de longeur LENGTH trouvé
+            return True
+        if not self.is_valid((x, y)): # case en dehors de la grille
+            return False
+        if self.grille[x][y] != player: # case vide ou occupée par un jeton adverse
+            return False
+        dx, dy = direction
+        return self.has_n_in_dir(player, x+dx, y+dy, direction, n-1)
+
     def display(self):
-        """
-        Affiche le tableau des jetons
-        """
         print()
-        print('|', end=END)
+        print("|", end=END)
         for i in range(WIDTH):
             print(f"c{i+1}|", end=END)
         print()
         for y in range(HEIGHT):
-            print('|', end=END)
+            print("|", end=END)
             for x in range(WIDTH):
-                print(f"{SPRITE[self.matrix[x][y]]} |", end=END)
+                token = self.grille[x][y]
+                print(f"{SPRITE[token]} |", end=END)
             print()
 
-    def who_has_won(self):
-        """
-        Y a-t-il un gagnant ?
-        """
-        for y in range(HEIGHT):
-            for x in range(WIDTH):
-                token = self.matrix[x][y]
-                if token != VOID and self.find_pattern(x, y) >= 4:
-                    return token
-        return VOID
-
-    def find_pattern(self, x, y):
-        """
-        Recherche en étoile pour un jeton de possibles
-        segments de jetons contigus
-             +  +  +
-              + + +
-               +++
-             +++o+++
-               +++
-              + + +
-             +  +  +
-        Renvoit la taille du segment le plus long
-        """
-        liste = range(-3, 4)
-        # directions éligibles / N=north / S=south / W=west / E=east
-        directions = {
-            'W_to_E': ((i, 0) for i in liste),
-            'NW_to_SE': ((i, i) for i in liste),
-            'N_to_S': ((0, i) for i in liste),
-            'NE_to_SW': ((-i, i) for i in liste),
-        }
-        token = self.matrix[x][y]
-        accumulateur = 0
-        for deltas in directions.values():
-            stack = maximum = 0
-            for i, j in deltas:
-                dx, dy = x+i, y+j
-                if (dx, dy) in self.legal_positions and self.matrix[dx][dy] == token:
-                    stack += 1
-                else:
-                    stack = 0
-                maximum = max(stack, maximum) # taille du + long segment trouvé dans cette direction
-            accumulateur = max(maximum, accumulateur)
-        return accumulateur # taille du + long segment trouvé dans toutes les directions
-
 board = Board()
-player = HUMAN
-while board.who_has_won() == VOID:
-    if board.drop_token(player, random.randint(1, 7)):
-        player = 3 - player # alterne HUMAN / MACHINE
-    board.display()
-print(f"\n{SPRITE[board.who_has_won()]} a gagné !")
+c_player = HUMAN
+while True:
+    if board.is_full():
+        print("\nEgalité !")
+        break
+    if board.play(c_player, random.randint(0, WIDTH-1)):
+        board.display()
+        if board.has_won(c_player):
+            print(f"\n{SPRITE[c_player]} a gagné !")
+            break
+        c_player = switch(c_player)
+print(f"\nLongueur du segment recherché : {LENGTH}")
