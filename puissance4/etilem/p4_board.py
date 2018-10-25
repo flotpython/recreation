@@ -5,15 +5,17 @@ module de grille
 """
 
 from p4_config import VOID, WIDTH, HEIGHT
+from p4_search import solved
 
 class Board:
     """
     Grille du jeu
     """
-    def __init__(self, w=WIDTH, h=HEIGHT):
+    def __init__(self, players, w=WIDTH, h=HEIGHT):
         """
-        Créé une grille vide
+        Accueille les joueurs et créé une grille vide
         """
+        self.players = [p for p in players]
         self.width, self.height = w, h
         self.grille = [[VOID for y in range(self.height)] for x in range(self.width)]
 
@@ -40,6 +42,12 @@ class Board:
                 return False
         return True
 
+    def has_won(self, player):
+        """
+        Teste si le joueur a gagné la partie
+        """
+        return solved(self, player)
+
     def update(self, player, column):
         """
         Modifie la grille suivant la colonne jouée par un joueur
@@ -48,6 +56,13 @@ class Board:
         x = column - 1
         for y in reversed(range(self.height)):
             if self.grille[x][y] == VOID:
-                self.grille[x][y] = player
+                self.grille[x][y] = player.code
                 return True
         return False
+
+    def next(self):
+        """
+        Renvoit le joueur suivant
+        """
+        self.players.reverse()
+        return self.players[0]

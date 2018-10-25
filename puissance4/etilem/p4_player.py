@@ -13,4 +13,6 @@ class Player:
 
     def __init__(self, code):
         self.code = code
-        self.sprite = SPRITE[self.code]
+
+    def __str__(self):
+        return SPRITE[self.code]
