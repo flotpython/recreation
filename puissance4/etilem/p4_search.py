@@ -28,13 +28,13 @@ def solved(board, player, length=LENGTH):
 
 def has_n_in_dir(board, player, x, y, direction, n):
     """
-    Teste si n jetons du joueur sont alignés dans une direction donnée
+    Teste si n jetons du joueur sont contigus dans une direction donnée
     """
     if n == 0:
         return True
     if not board.is_valid((x, y)):
         return False
-    if board.grille[x][y] != player:
+    if board.grille[x][y] != player.code:
         return False
     dx, dy = direction
     return has_n_in_dir(board, player, x+dx, y+dy, direction, n-1)

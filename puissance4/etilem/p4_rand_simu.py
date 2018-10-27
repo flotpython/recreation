@@ -9,31 +9,35 @@ from random import randint
 from p4_config import HUMAN, MACHINE, WIDTH, LENGTH
 from p4_board import Board
 from p4_player import Player
-from p4_search import solved
 from p4_hci import display, say
 
-board = Board()
-players = [Player(HUMAN), Player(MACHINE)]
-c_player = players[0]
-
-def switch_player():
+def players():
     """
-    Alterne les 2 joueurs
+    Génère les 2 joueurs
     """
-    players.reverse()
-    return players[0]
+    for player in (HUMAN, MACHINE):
+        yield Player(player)
 
-while True:
-    if board.is_full():
-        display(board)
-        say("Egalité !")
-        break
-    col = randint(1, WIDTH)
-    if board.update(c_player.code, col):
-        if solved(board, c_player.code):
+board = Board(players())
+
+def start(player=board.next()):
+    """
+    Démarre la simulation aléatoire
+    """
+    while True:
+        if board.is_full():
             display(board)
-            say(f"{c_player.sprite}  a joué c{col} et gagne !")
+            say("Egalité !")
             break
-        c_player = switch_player()
+        col = randint(1, WIDTH)
+        if board.update(player, col):
+            if board.has_won(player):
+                display(board)
+                say(f"{player}  a joué c{col} et gagne !")
+                break
+            player = board.next()
 
-say(f"Longueur du segment recherché : {LENGTH}")
+    say(f"Longueur du segment recherché : {LENGTH}")
+
+if __name__ == "__main__":
+    start()
