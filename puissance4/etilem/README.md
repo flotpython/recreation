@@ -4,21 +4,17 @@ Exemple de lancement de `p4_rand_simu.py`  avec grille de largeur 9 et de hauteu
 
 ## Description des modules
 
+### p4_board
+
+module de classe Board, gestion de la grille
+
 ### p4_config
 
 module de configuration, contient des constantes d'initialisation
 
-### p4_hci
+### p4_game
 
-module d'affichage, permet les interactions avec l'utilisateur
-
-### p4_search
-
-module de recherche de grille résolue
-
-### p4_board
-
-module de classe Board, gestion de la grille
+module de classe Game, gestion du jeu
 
 ### p4_player
 
@@ -28,10 +24,15 @@ module de classe Player, gestion du joueur, à spécialiser en joueur humain ou 
 
 module de simulation aléatoire de partie (2 joueurs machine jouant au hasard)
 
-## À venir
+### p4_search
 
-### p4_ai
-module d'IA (Intelligence Artificielle), utilisé par p4_player pour joueur IA
+module de recherche de grille résolue
+
+### p4_simu
+
+module de simulation à la demande
+
+## À venir
 
 ### p4_ai_simu
 module de simulation de partie (2 joueurs IA jouant ensemble)

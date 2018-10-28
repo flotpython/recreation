@@ -1,23 +1,28 @@
 # coding: utf-8
 # pylint: disable=c0103
 """
-module de grille
+module de classe grille
 """
 
-from p4_config import VOID, WIDTH, HEIGHT
-from p4_search import solved
+from p4_config import VOID, SPRITE
 
 class Board:
     """
-    Grille du jeu
+    Grille
     """
-    def __init__(self, players, w=WIDTH, h=HEIGHT):
+    def __init__(self, width, height):
         """
-        Accueille les joueurs et créé une grille vide
+        Créé une grille vide et initialise le compteur de jetons joués
         """
-        self.players = [p for p in players]
-        self.width, self.height = w, h
+        self.width, self.height = width, height
         self.grille = [[VOID for y in range(self.height)] for x in range(self.width)]
+        self.dropped = 0
+
+    def is_full(self):
+        """
+        Teste si la grille est pleine
+        """
+        return self.dropped >= self.width * self.height
 
     def cases(self):
         """
@@ -33,36 +38,38 @@ class Board:
         """
         return case in self.cases()
 
-    def is_full(self):
+    def is_playable(self, case):
         """
-        Teste si la grille est pleine
+        Teste si une case est jouable
         """
-        for x, y in self.cases():
-            if self.grille[x][y] == VOID:
-                return False
-        return True
-
-    def has_won(self, player):
-        """
-        Teste si le joueur a gagné la partie
-        """
-        return solved(self, player)
-
-    def update(self, player, column):
-        """
-        Modifie la grille suivant la colonne jouée par un joueur
-        Renvoit True si le coup est acté, False si la colonne était pleine
-        """
-        x = column - 1
-        for y in reversed(range(self.height)):
-            if self.grille[x][y] == VOID:
-                self.grille[x][y] = player.code
-                return True
+        if self.is_valid(case):
+            x, y = case
+            return self.grille[x][y] == VOID
         return False
 
-    def next(self):
+    def clone(self):
         """
-        Renvoit le joueur suivant
+        Renvoit un clone de la grille
         """
-        self.players.reverse()
-        return self.players[0]
+        snap = Board(self.width, self.height)
+        for x, y in snap.cases():
+            snap.grille[x][y] = self.grille[x][y]
+        snap.dropped = self.dropped
+        return snap
+
+    def __str__(self):
+        """
+        Affiche la grille
+        """
+        out = "\n|"
+        for i in range(self.width):
+            out += f"c{i+1}|"
+        out += "\n"
+        for y in range(self.height):
+            out += "|"
+            for x in range(self.width):
+                token = self.grille[x][y]
+                out += f"{SPRITE[token]} |"
+            out += "\n"
+        out += "\n"
+        return out
