@@ -4,7 +4,7 @@
 module de joueur
 """
 
-from p4_config import SPRITE
+from .config import SPRITE
 
 class Player:
     """

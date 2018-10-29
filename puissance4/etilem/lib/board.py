@@ -4,7 +4,7 @@
 module de classe grille
 """
 
-from p4_config import VOID, SPRITE
+from .config import VOID, SPRITE
 
 class Board:
     """

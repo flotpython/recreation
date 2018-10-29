@@ -4,7 +4,7 @@
 module de classe du jeu
 """
 
-from p4_search import solved
+from .contrib import solved
 
 class Game:
     """

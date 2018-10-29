@@ -7,12 +7,10 @@ simulation aléatoire de partie
 
 from random import randint
 
-from p4_config import HUMAN, MACHINE, WIDTH, HEIGHT, LENGTH
-from p4_board import Board
-from p4_player import Player
-from p4_game import Game
+from lib import Board, Player, Game, config as cf
 
-game = Game(Board(WIDTH, HEIGHT), [Player(t) for t in (HUMAN, MACHINE)], LENGTH)
+length = cf.LENGTH
+game = Game(Board(cf.WIDTH, cf.HEIGHT), [Player(t) for t in (cf.HUMAN, cf.MACHINE)], length)
 
 def start():
     """
@@ -31,7 +29,7 @@ def start():
                 break
             game.next_move()
 
-    print(f"\nLongueur du segment recherché : {LENGTH}")
+    print(f"\nLongueur du segment recherché : {length}")
 
 if __name__ == "__main__":
     start()

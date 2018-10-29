@@ -5,8 +5,8 @@
 Programme principal du jeu Puissance4
 """
 
-from p4_rand_simu import start
+from rand_simu import start
 
-print("!! Pas encore implémenté => lancement de p4_rand_simu.py !!")
+print("!! Pas encore implémenté => lancement de rand_simu.py !!")
 
 start()

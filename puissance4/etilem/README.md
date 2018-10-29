@@ -1,41 +1,41 @@
-Exemple de lancement de `p4_rand_simu.py`  avec grille de largeur 9 et de hauteur 15 :
+Exemple de lancement de `rand_simu.py`  avec grille de largeur 9 et de hauteur 15 :
 
-![Capture d'écran de p4_rand_simu.py](p4_rand_simu-w9-h15-s7_01.jpg)
+![Capture d'écran de rand_simu.py](rand_simu-w9-h15-s7.jpg)
 
-## Description des modules
+## Description du paquet
 
-### p4_board
-
-module de classe Board, gestion de la grille
-
-### p4_config
-
-module de configuration, contient des constantes d'initialisation
-
-### p4_game
-
-module de classe Game, gestion du jeu
-
-### p4_player
-
-module de classe Player, gestion du joueur, à spécialiser en joueur humain ou IA
-
-### p4_rand_simu
-
-module de simulation aléatoire de partie (2 joueurs machine jouant au hasard)
-
-### p4_search
+### lib/contrib/search
 
 module de recherche de grille résolue
 
-### p4_simu
+### lib/board
+
+module de classe Board, gestion de la grille
+
+### lib/config
+
+module de configuration, contient des constantes d'initialisation
+
+### lib/game
+
+module de classe Game, gestion du jeu
+
+### lib/player
+
+module de classe Player, gestion du joueur, à spécialiser en joueur humain ou IA
+
+### lib/simu
 
 module de simulation à la demande
 
+### rand_simu
+
+module de simulation aléatoire de partie (2 joueurs machine jouant au hasard)
+
 ## À venir
 
-### p4_ai_simu
-module de simulation de partie (2 joueurs IA jouant ensemble)
+### ai_simu
+module de simulation de partie (2 joueurs IA jouant l'un contre l'autre)
 
 ### puissance4
 programme de jeu interactif, opposant l'utilisateur à l'IA
