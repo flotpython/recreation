@@ -4,7 +4,7 @@
 module de classe grille
 """
 
-from .config import VOID, SPRITE
+from .sprite import Sprite
 
 class Board:
     """
@@ -15,14 +15,8 @@ class Board:
         Créé une grille vide et initialise le compteur de jetons joués
         """
         self.width, self.height = width, height
-        self.grille = [[VOID for y in range(self.height)] for x in range(self.width)]
+        self.grille = [[Sprite.VOID for y in range(self.height)] for x in range(self.width)]
         self.dropped = 0
-
-    def is_full(self):
-        """
-        Teste si la grille est pleine
-        """
-        return self.dropped >= self.width * self.height
 
     def cases(self):
         """
@@ -31,6 +25,12 @@ class Board:
         for x in range(self.width):
             for y in range(self.height):
                 yield x, y
+
+    def is_full(self):
+        """
+        Teste si la grille est pleine
+        """
+        return self.dropped >= self.width * self.height
 
     def is_valid(self, case):
         """
@@ -44,7 +44,18 @@ class Board:
         """
         if self.is_valid(case):
             x, y = case
-            return self.grille[x][y] == VOID
+            return self.grille[x][y] == Sprite.VOID
+        return False
+
+    def update(self, x, player):
+        """
+        Modifie la grille suivant la coordonnée jouée par le joueur
+        """
+        for y in reversed(range(self.height)):
+            if self.is_playable((x, y)):
+                self.grille[x][y] = player.code
+                self.dropped += 1
+                return True
         return False
 
     def clone(self):
@@ -68,8 +79,8 @@ class Board:
         for y in range(self.height):
             out += "|"
             for x in range(self.width):
-                token = self.grille[x][y]
-                out += f"{SPRITE[token]} |"
+                token = Sprite(self.grille[x][y])
+                out += f"{token} |"
             out += "\n"
         out += "\n"
         return out

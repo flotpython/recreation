@@ -28,6 +28,10 @@ module de classe Player, gestion du joueur, à spécialiser en joueur humain ou 
 
 module de simulation à la demande
 
+### lib/sprite
+
+module de classe Sprite, gestion d'affichage
+
 ### rand_simu
 
 module de simulation aléatoire de partie (2 joueurs machine jouant au hasard)

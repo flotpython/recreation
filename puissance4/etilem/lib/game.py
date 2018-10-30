@@ -4,7 +4,7 @@
 module de classe du jeu
 """
 
-from .contrib import solved
+from . import solved
 
 class Game:
     """
@@ -21,16 +21,11 @@ class Game:
 
     def update(self, column):
         """
-        Modifie la grille suivant la colonne jouée par le joueur courant
+        Ajoute un jeton dans une colonne
         Renvoit True si le coup est acté, False si la colonne était pleine
         """
         x = column - 1
-        for y in reversed(range(self.board.height)):
-            if self.board.is_playable((x, y)):
-                self.board.grille[x][y] = self.player.code
-                self.board.dropped += 1
-                return True
-        return False
+        return self.board.update(x, self.player)
 
     def has_winner(self):
         """
@@ -40,8 +35,7 @@ class Game:
 
     def next_move(self):
         """
-        Définit le joueur suivant
+        Détermine le joueur suivant
         """
-        if self.board.dropped > 0:
-            self.players.reverse()
+        self.players = self.players[::-1]
         self.player = self.players[0]

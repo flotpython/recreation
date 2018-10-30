@@ -1,1 +1,1 @@
-from .search import solved
+# coding: utf-8

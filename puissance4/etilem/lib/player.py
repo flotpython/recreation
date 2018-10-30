@@ -4,7 +4,7 @@
 module de joueur
 """
 
-from .config import SPRITE
+from .sprite import Sprite
 
 class Player:
     """
@@ -15,4 +15,15 @@ class Player:
         self.code = code
 
     def __str__(self):
-        return SPRITE[self.code]
+        return Sprite(self.code).__str__()
+
+class Human(Player):
+    def __init__(self):
+        Player.__init__(self, Sprite.HUMAN)
+
+class Machine(Player):
+    def __init__(self):
+        Player.__init__(self, Sprite.MACHINE)
+
+class IA(Machine):
+    pass
