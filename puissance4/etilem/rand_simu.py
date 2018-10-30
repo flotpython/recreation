@@ -7,10 +7,10 @@ simulation aléatoire de partie
 
 from random import randint
 
-from lib import Board, Human, Machine, Game, config as cf
+from lib import Game, Board, Human, Machine, WIDTH, HEIGHT, LENGTH
 
-length = cf.LENGTH
-game = Game(Board(cf.WIDTH, cf.HEIGHT), (Human(), Machine()), length)
+length = LENGTH
+game = Game(Board(WIDTH, HEIGHT), (Human(), Machine()), length)
 
 def start():
     """

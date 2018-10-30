@@ -4,7 +4,7 @@
 module de classe du jeu
 """
 
-from . import solved
+from .contrib.search import solved
 
 class Game:
     """

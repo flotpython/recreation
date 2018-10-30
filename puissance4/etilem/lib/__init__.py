@@ -1,7 +1,6 @@
 # coding: utf-8
 # pylint: disable=c0111
-from .contrib.search import solved
+from .config import WIDTH, HEIGHT, LENGTH
 from .board import Board
 from .game import Game
-from .sprite import Sprite
 from .player import Human, Machine
