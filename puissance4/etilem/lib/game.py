@@ -4,7 +4,10 @@
 module de classe du jeu
 """
 
+from itertools import cycle
+
 from .contrib.search import solved
+from .sprite import Sprite
 
 class Game:
     """
@@ -12,11 +15,14 @@ class Game:
     """
     def __init__(self, board, players, length):
         """
-        Accueille une grille et les 2 joueurs
+        Accueille une grille et les 2 joueurs et leur attribue une couleur
         """
         self.board = board
-        self.players = players
-        self.player = self.players[0]
+        for player, color in zip((0, *players), Sprite):
+            if player:
+                player.code = color
+        self.players = cycle(players)
+        self.player = next(self.players)
         self.length = length
 
     def update(self, column):
@@ -37,5 +43,4 @@ class Game:
         """
         Détermine le joueur suivant
         """
-        self.players = self.players[::-1]
-        self.player = self.players[0]
+        self.player = next(self.players)

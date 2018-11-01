@@ -1,5 +1,7 @@
+# coding: utf-8
+# pylint: disable=c0103,r0903
 """
-module de sprite
+module de classe sprite
 """
 
 from enum import Enum
@@ -8,9 +10,10 @@ class Sprite(Enum):
     """
     Sprite
     """
+
     VOID = 0
-    HUMAN = 1
-    MACHINE = 2
+    WHITE = 1
+    BLACK = 2
 
     def __init__(self, code):
         self.sprite = ' ◉◎'
