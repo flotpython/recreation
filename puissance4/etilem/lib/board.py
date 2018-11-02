@@ -47,16 +47,23 @@ class Board:
             return self.grille[x][y] == Sprite.VOID
         return False
 
-    def update(self, x, player):
+    def playable_cases(self):
         """
-        Modifie la grille suivant la coordonnée jouée par le joueur
+        Génère les cases candidates pour le prochain coup
         """
-        for y in reversed(range(self.height)):
-            if self.is_playable((x, y)):
-                self.grille[x][y] = player.code
-                self.dropped += 1
-                return True
-        return False
+        for x in range(self.width):
+            for y in reversed(range(self.height)):
+                if self.is_playable((x, y)):
+                    yield x, y
+                    break
+
+    def update(self, case, player):
+        """
+        Modifie la grille suivant la case jouée par le joueur
+        """
+        x, y = case
+        self.grille[x][y] = player.code
+        self.dropped += 1
 
     def clone(self):
         """

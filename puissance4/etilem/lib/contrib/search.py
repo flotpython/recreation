@@ -14,7 +14,7 @@ def directions():
             if dx or dy:
                 yield dx, dy
 
-def solved(board, player, length):
+def has_won(board, player, length):
     """
     Teste si la grille est résolue par un joueur
     """

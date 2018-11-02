@@ -4,6 +4,8 @@
 module de joueur
 """
 
+from random import choice
+
 from .sprite import Sprite
 
 class Player():
@@ -18,13 +20,19 @@ class Player():
         return Sprite(self.code).__str__()
 
 class Human(Player):
+
     def __init__(self):
         Player.__init__(self)
 
-class Machine(Player):
+class Random(Player):
+
     def __init__(self):
         Player.__init__(self)
 
-class IA(Machine):
+    def play(self, board):
+        return choice(list(board.playable_cases()))
+
+class IA(Player):
+
     def __init__(self):
-        Machine.__init__(self)
+        Player.__init__(self)

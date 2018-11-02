@@ -5,12 +5,10 @@
 simulation aléatoire de partie
 """
 
-from random import randint
-
-from lib import Game, Board, Player, WIDTH, HEIGHT, LENGTH
+from lib import Game, Board, Random, WIDTH, HEIGHT, LENGTH
 
 length = LENGTH
-game = Game(Board(WIDTH, HEIGHT), (Player(), Player()), length)
+game = Game(Board(WIDTH, HEIGHT), (Random(), Random()), length)
 
 def start():
     """
@@ -21,13 +19,14 @@ def start():
             print(game.board)
             print("Egalité !")
             break
-        col = randint(1, game.board.width)
-        if game.update(col):
-            if game.has_winner():
-                print(game.board)
-                print(f"{game.player}  a joué c{col} et gagne !")
-                break
-            game.next_move()
+        case = game.player.play(game.board)
+        game.update(case)
+        if game.has_winner():
+            print(game.board)
+            x, _ = case
+            print(f"{game.player}  a joué c{x+1} et gagne !")
+            break
+        game.next_move()
 
     print(f"\nLongueur du segment recherché : {length}")
 
