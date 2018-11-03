@@ -3,4 +3,5 @@
 from .config import WIDTH, HEIGHT, LENGTH
 from .board import Board
 from .game import Game
-from .player import Human, Random, IA
+from .player import Human, Random, AI
+from .inter import Phrases

@@ -20,9 +20,12 @@ module de configuration, contient des constantes d'initialisation
 
 module de classe Game, gestion du jeu
 
+### lib/inter
+module de classe Phrases, gestion des interactions Homme <-> Machine
+
 ### lib/player
 
-module de classe Player, gestion du joueur, à spécialiser en joueur humain ou IA
+module de classe Player, gestion du joueur, spécialisée en Human, Random et AI
 
 ### lib/simu
 
@@ -30,16 +33,16 @@ module de simulation à la demande
 
 ### lib/sprite
 
-module de classe Sprite, gestion d'affichage
+module de classe Sprite, gestion d'affichage d'un joueur
+
+### puissance4
+programme de jeu interactif, opposant l'utilisateur à Random (et plus tard à AI)
 
 ### rand_simu
 
-module de simulation aléatoire de partie (2 joueurs machine jouant au hasard)
+module de simulation aléatoire de partie (2 joueurs Random jouant au hasard)
 
 ## À venir
 
 ### ai_simu
 module de simulation de partie (2 joueurs IA jouant l'un contre l'autre)
-
-### puissance4
-programme de jeu interactif, opposant l'utilisateur à l'IA

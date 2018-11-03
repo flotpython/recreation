@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# pylint: disable=c0103
+# pylint: disable=c0103,r0903
 """
 simulation aléatoire de partie
 """
@@ -8,23 +8,23 @@ simulation aléatoire de partie
 from lib import Game, Board, Random, WIDTH, HEIGHT, LENGTH
 
 length = LENGTH
-game = Game(Board(WIDTH, HEIGHT), (Random(), Random()), length)
+game = Game(Board(WIDTH, HEIGHT), (Random(), Random()), LENGTH, "fr")
 
 def start():
     """
-    Démarre la simulation aléatoire
+    Démarre la simulation interactive
     """
     while True:
+        print(game.board)
         if game.board.is_full():
-            print(game.board)
-            print("Egalité !")
+            print(game.say('deuce'))
             break
-        case = game.player.play(game.board)
+        case = game.player.play(game)
         game.update(case)
         if game.has_winner():
             print(game.board)
             x, _ = case
-            print(f"{game.player}  a joué c{x+1} et gagne !")
+            print(game.say('has_played', game.player, f"c{x+1}"), game.say('has_won'))
             break
         game.next_move()
 

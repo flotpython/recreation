@@ -1,5 +1,5 @@
 # coding: utf-8
-# pylint: disable=c0103,r0913
+# pylint: disable=c0103,r0903
 """
 module de simulation à la demande
 implémente l'algo minimax (théorème de Neumann),
