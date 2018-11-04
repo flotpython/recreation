@@ -6,10 +6,10 @@ module de classe du jeu
 
 from itertools import cycle
 
-from .inter import Phrases
 from .contrib.search import has_won
 from .sprite import Sprite
 from .player import Human
+from .inter import Phrases
 
 class Game:
     """
