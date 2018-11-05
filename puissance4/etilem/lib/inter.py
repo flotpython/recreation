@@ -1,5 +1,4 @@
 # coding: utf-8
-# pylint: disable=c0103,r0903
 """
 module d'interactions homme <-> machine
 """

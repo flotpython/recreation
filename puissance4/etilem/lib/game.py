@@ -1,5 +1,4 @@
 # coding: utf-8
-# pylint: disable=c0103,r0903
 """
 module de classe du jeu
 """
@@ -19,7 +18,8 @@ class Game:
         """
         Accueille une grille et les 2 joueurs et leur attribue une couleur
         """
-        self.say = Phrases(locale)
+        self.locale = locale
+        self.say = Phrases(self.locale)
         self.board = board
         for player, color in zip((0, *players), Sprite):
             if player:
@@ -43,8 +43,11 @@ class Game:
         """
         return has_won(self.board, self.player, self.length)
 
-    def next_move(self):
+    def get_opponent(self):
         """
-        Détermine le joueur suivant
+        Renvoit le joueur s'opposant au joueur courant
         """
-        self.player = next(self.players)
+        opp = next(self.players)
+        if opp == self.player:
+            return next(self.players)
+        return opp

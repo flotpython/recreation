@@ -1,5 +1,4 @@
 # coding: utf-8
-# pylint: disable=c0103,r0903,r0913,c0301
 """
 module de simulation à la demande
 """
@@ -31,4 +30,4 @@ class Simu:
                 x, _ = case
                 print(self.game.say('has_played', self.game.player, f"c{x+1}"), self.game.say('has_won'))
                 break
-            self.game.next_move()
+            self.game.player = self.game.get_opponent()

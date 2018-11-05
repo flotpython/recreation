@@ -5,8 +5,8 @@
 simulation aléatoire de partie
 """
 
-from lib import Random, Simu, LENGTH
+from lib import AI, Simu, LENGTH
 
-Simu(Random(), Random(), "fr", length=LENGTH).start()
+Simu(AI(), AI(), "fr", length=LENGTH).start()
 
 print(f"\nLongueur du segment recherché : {LENGTH}")

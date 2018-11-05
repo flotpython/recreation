@@ -5,6 +5,6 @@
 Programme principal du jeu Puissance4
 """
 
-from lib import Human, Random, Simu
+from lib import Human, AI, Simu
 
-Simu(Human(), Random(), "fr").start()
+Simu(Human(), AI(), "fr").start()

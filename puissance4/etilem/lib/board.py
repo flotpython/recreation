@@ -1,5 +1,4 @@
 # coding: utf-8
-# pylint: disable=c0103,r0903
 """
 module de classe grille
 """
@@ -56,6 +55,14 @@ class Board:
                 if self.is_playable((x, y)):
                     yield x, y
                     break
+
+    def future_playable_cases(self, case, player):
+        """
+        Génère les cases jouables si telle case est jouée par tel joueur
+        """
+        clone = self.clone()
+        clone.update(case, player)
+        return clone.playable_cases()
 
     def update(self, case, player):
         """

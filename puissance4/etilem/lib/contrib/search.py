@@ -1,5 +1,4 @@
 # coding: utf-8
-# pylint: disable=c0103,r0913
 """
 module de recherche de grille résolue
 Auteur principal: Thierry Parmentelat (@parmentelat sur GitHub)
