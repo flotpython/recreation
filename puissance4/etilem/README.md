@@ -35,14 +35,12 @@ module de simulation à la demande
 
 module de classe Sprite, gestion d'affichage d'un joueur
 
+### ai_simu
+module de simulation de partie (2 joueurs IA jouant l'un contre l'autre)
+
 ### puissance4
-programme de jeu interactif, opposant l'utilisateur à Random (et plus tard à AI)
+programme de jeu interactif, opposant l'utilisateur à l'IA
 
 ### rand_simu
 
 module de simulation aléatoire de partie (2 joueurs Random jouant au hasard)
-
-## À venir
-
-### ai_simu
-module de simulation de partie (2 joueurs IA jouant l'un contre l'autre)
