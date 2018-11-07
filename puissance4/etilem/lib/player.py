@@ -30,9 +30,8 @@ class Human(Player):
         """
         Joue une case candidate
         """
-        columns = list((x+1 for x, _ in game.board.playable_cases()))
         col = 0
-        while col not in columns:
+        while col not in (x+1 for x, _ in game.board.playable_cases()):
             try:
                 col = int(input(game.say('choice')))
             except ValueError:
@@ -83,13 +82,15 @@ class AI(Player):
         clone = board.clone()
         clone.update(case, player)
         best = 0
-        for l in map(lambda x: x+1, reversed(range(length))):
+        for l in (x+1 for x in reversed(range(length))):
             if has_won(clone, player, l):
                 best += l
+                break
         for future in clone.playable_cases():
             final = clone.clone()
             final.update(future, opponent)
-            for l in map(lambda x: x+1, reversed(range(length))):
+            for l in (x+1 for x in reversed(range(length))):
                 if has_won(final, opponent, l):
                     best -= l
+                    break
         return best
