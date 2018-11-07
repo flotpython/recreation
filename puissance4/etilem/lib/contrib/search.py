@@ -1,11 +1,8 @@
 # coding: utf-8
-# pylint: disable=c0103,r0913
 """
 module de recherche de grille résolue
 Auteur principal: Thierry Parmentelat (@parmentelat sur GitHub)
 """
-
-from p4_config import LENGTH
 
 def directions():
     """
@@ -16,9 +13,9 @@ def directions():
             if dx or dy:
                 yield dx, dy
 
-def solved(board, player, length=LENGTH):
+def has_won(board, player, length):
     """
-    Teste si la grille est résolue
+    Teste si la grille est résolue par un joueur
     """
     for x, y in board.cases():
         for direction in directions():
