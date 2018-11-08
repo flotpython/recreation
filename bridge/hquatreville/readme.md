@@ -24,3 +24,5 @@ A cette fin, je souhaite créer
 --> une interface Tkinter
 
 L'état d'avancement se trouve dans le fichier TODO
+
+Pour communiquer, le plus simple est de procéder par mail : hquatreville@free.fr
