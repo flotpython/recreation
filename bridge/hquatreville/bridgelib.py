@@ -365,23 +365,7 @@ class Filtre:
         return True
         
             
- 
-filtres = {}   #liste des filtres
 
-''' Juste quelques filtres simples pour le moment à étendre'''
-
-
-def _init_filtres():    
-    filtres["1P"] = Filtre("1P", pointH_min = 10, pique_min =5,
-           points_totaux_min = 13)
-    filtres["1C"] = Filtre("1C", pointH_min = 10, coeur_min =5,
-           points_totaux_min = 13)
-    filtres["1TK"] = Filtre("1TK", pointH_min = 10, coeur_max =4,
-           pique_max = 4, points_totaux_min = 13)
-    filtres["1SA"] = Filtre("1SA", pointH_min = 14, pointH_max=18,
-           trefle_min=2,carreau_min =2, coeur_min =2, pique_min=2)
-    filtres["1SAfaible"] = Filtre("1SAfaible", pointH_min = 11, pointH_max=14,
-           trefle_min=2,carreau_min =2, coeur_min =2, pique_min=2)  
 
     
     
