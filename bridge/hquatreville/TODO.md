@@ -1,7 +1,4 @@
-1. Nettoyer le fichier briodge_debut afin
-a) améliorerv la lisibilité
-b) éliminer les variables globales
-[en cours]
+
 
 2. Créer des fonctionnalité de gestion des filtres : enregistrement dans un fichier texte
 
@@ -9,4 +6,4 @@ b) éliminer les variables globales
 
 a) la création de nouveaux filtres
 b) la sélection de donnes
-c) l'utilisation et l'affichage artiel ou total de donne
+c) l'utilisation et l'affichage partiel ou total de donne
