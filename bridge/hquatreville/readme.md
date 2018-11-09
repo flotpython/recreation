@@ -8,12 +8,12 @@ a) de distribuer aléatoirement des donnes de bridges sélectionnées sur certai
 
 Exemple de requêtes attendues :
 a) Génére 50 donnes où on a au moins 13 points après une ouverture de barrage de C
-b) Génére 50 donnes où nore partenairen ouvre de P et où on subit une intervention à 2K
+b) Génére 50 donnes où notre partenaire ouvre de P et où on subit une intervention à 2K
 etc ...
 
 b) Transmettre ces donnes à deux partenaires
 
-c) Afficher une des quatre main de la donne
+c) Afficher une des quatre mains de la donne
 
 d) Afficher l'intégralité de la donne
 

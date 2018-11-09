@@ -1,6 +1,6 @@
 
 
-2. Créer des fonctionnalité de gestion des filtres : enregistrement dans un fichier texte
+2. Créer des fonctionnalités de gestion des filtres : enregistrement dans un fichier texte
 
 3. Créer une interface (Tkinter ?) permettant
 
