@@ -4,7 +4,7 @@
 Created on Mon Oct 22 14:34:46 2018
 Fourni les cmlasses suivantes :
     Longueur
-        -> affichage d'une longueur dans une couleur  donné
+        -> affichage d'une longueur dans une couleur donnée
         -> attribution d'une qualité (un honneur = 10)
            et d'une valeur en pointsH
     Main
@@ -23,85 +23,101 @@ Fourni les cmlasses suivantes :
 
 @author: hubert
 """
-from random import randint,shuffle
-
-
-
+from random import randint, shuffle
 
 
 class Longueur:
-    ''' Une longueur dans une couleur particulière'''
-    def __init__(self,cartes):
-        self.cartes=set(cartes)
+    '''Une longueur dans une couleur particulière'''
+
+    def __init__(self, cartes):
+        self.cartes = set(cartes)
+
     def __repr__(self):
-        valeur=['2','3','4','5','6','7','8','9','10','V','D','R','A']
-        l=list(self.cartes)
-        l.sort(reverse=True)
-        chaine=''
-        for x in l:
-            chaine += ' '+valeur[x]
-        return chaine   
+        valeur = ['2', '3', '4', '5', '6', '7',
+                  '8', '9', '10', 'V', 'D', 'R', 'A']
+        return " ".join(valeur[x] for x in sorted(self.cartes, reverse=True))
+
     def __len__(self):
         return len(self.cartes)
+
     def qualite(self):
-        honneur = [0,0,0,0,0,0,0,1,2,5,10,10,10]
-        res=0
+        honneur = [0, 0, 0, 0, 0, 0, 0, 1, 2, 5, 10, 10, 10]
+        res = 0
         for x in self.cartes:
             res += honneur[x]
-        return res    
-    def pointH (self):
-        pointH  = [0,0,0,0,0,0,0,0,0,1,2,3,4]
-        res=0
-        for x in self.cartes:
-            res += pointH[x]
-        return res    
-        
-        
-        
+        return res
+
+    def pointH(self):
+        pointH = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4]
+        return sum((pointH[x] for x in self.cartes), 0)
+
+
+from enum import IntEnum
+
+class Couleur(IntEnum):
+    TREFLE = 0
+    CARREAU = 1
+    COEUR = 2
+    PIQUE = 3
+
+    def glyph(self):
+        glyphs = {Couleur.TREFLE: '\u2663',
+                  Couleur.CARREAU: '\x1b[31;1m\u2666\x1b[39;0m',
+                  Couleur.COEUR: '\x1b[31;1m\u2665\x1b[39;0m',
+                  Couleur.PIQUE: '\u2660'}
+        return glyphs[self]
+
 
 class Main:
-    
-    ''' Une Main de bridge avec les quatre couleur'''
-    def __init__(self,trefle,carreau,coeur,pique):
-        self.trefle=Longueur(trefle)
-        self.carreau=Longueur(carreau)
-        self.coeur=Longueur(coeur)
-        self.pique=Longueur(pique)
-        self.total=[self.trefle,self.carreau,self.coeur,self.pique]
-        
-    def affiche(self,decalage=0, autre_main=None):
-        code_pique,code_coeur,code_carreau,code_trefle=3,2,1,0
-        couleur={code_trefle:'\u2663',
-                 code_carreau:'\x1b[31;1m\u2666\x1b[39;1m',                 
-                 code_coeur:'\x1b[31;1m\u2665\x1b[39;1m',
-                 code_pique:'\u2660'}
-        couleurs=[code_pique,code_coeur,code_carreau,code_trefle]
-        
+
+    '''Une Main de bridge avec les quatre couleurs'''
+
+    def __init__(self, trefle, carreau, coeur, pique):
+        self.couleurs = [
+            Longueur(trefle),
+            Longueur(carreau),
+            Longueur(coeur),
+            Longueur(pique)]
+        self.trefle, self.carreau, self.coeur, self.pique = self.couleurs
+
+    def __getitem__(self, couleur):
+        """
+        self[0] ou self[Couleur.TREFLE] retourne self.trefle
+        """
+        assert couleur in Couleur
+        return self.couleurs[couleur]
+
+    def affiche(self, decalage=0, autre_main=None):
+
         if autre_main:
-            for c in couleurs:
-                print(couleur[c],self.total[c],\
-                      ' '*(26-len(str(self.total[c]))),\
-                      couleur[c],autre_main.total[c])
-        else:    
-            for c in couleurs:
-                print(' '*decalage,couleur[c],self.total[c])
-    def codes(self):
-        ''' Renvoie la liste des cartes de la main codées entre 0 et 51
-            Usage interne uniquement''' 
-        res=[]
-        for i in range(4):
-            for j in self.total[i].cartes:
-                res.append(i*13+j)
-        #print(res)        
-        return res  
+            for couleur in Couleur:
+                print(couleur.glyph(), self[couleur],
+                      ' '*(26-len(str(self[couleur]))),
+                      couleur.glyph(), autre_main.couleurs[couleur])
+        else:
+            for couleur in Couleur:
+                print(' '*decalage, couleur.glyph(), self[couleur])
+
+    def _codes(self):
+        '''
+        Renvoie la liste des cartes de la main codées entre 0 et 51
+        Usage interne uniquement
+        '''
+        res = []
+        for couleur in Couleur:
+            for carte in self[couleur].cartes:
+                res.append(couleur*13 + carte)
+        # print(res)
+        return res
+
     def vertues(self):
-        pointD  = [3,2,1,0,0,1,2,3,4,5,6,7,8,9]
-        ''' évalue la main selon les critères habituels des bridgeurs :
+        pointD = [3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        '''# XXX:  évalue la main selon les critères habituels des bridgeurs :
             0 : valeur de la main en points H
             1,2,3,4 : longueurs des 4 couleurs
             5,6,7,8 : qualité de ces couleurs
             9 : évaluation conventionnelle de la distibution D '''
-        res=[]
+        res = []
         points = self.trefle.pointH()
         points += self.carreau.pointH()
         points += self.coeur.pointH()
@@ -115,33 +131,30 @@ class Main:
         res.append(self.carreau.qualite())
         res.append(self.coeur.qualite())
         res.append(self.pique.qualite())
-        distribution =  pointD[len(self.trefle)]
+        distribution = pointD[len(self.trefle)]
         distribution += pointD[len(self.carreau)]
         distribution += pointD[len(self.coeur)]
         distribution += pointD[len(self.pique)]
         res.append(distribution)
         return res
-        
-    
-        
-        
-            
+
+
 def decode_main(liste):
     ''' Creation d'une main à partir d'une liste de cartes codées de 0 à 51'''
-    listes =[[] for i in range(4)]
+    listes = [[] for i in range(4)]
     for carte in liste:
-        listes[carte//13].append(carte%13)
-    return Main(*listes)    
-    
-    
-            
-    
+        listes[carte//13].append(carte % 13)
+    return Main(*listes)
+
+
 class Donne:
-    donneurs = ['Nord','Sud','Est','Ouest']
-    vulnerabilite = ['Personne','NS','EO','Tous']
-    def __init__(self, sud = None, nord = None, est = None, ouest = None, \
-                       donneur = 'Nord', vul = 'Personne', identifiant= None):
-        ''' On peut créer une donne de trois façons. En entrant les quatre mains
+    donneurs = ['Nord', 'Sud', 'Est', 'Ouest']
+    vulnerabilite = ['Personne', 'NS', 'EO', 'Tous']
+
+    def __init__(self, sud=None, nord=None, est=None, ouest=None,
+                 donneur='Nord', vul='Personne', identifiant=None):
+        '''
+        On peut créer une donne de trois façons. En entrant les quatre mains
         et optionnellement la vulnérabilité et le donneur, ou bien
         en la générant aléatoirement, ou encore en entrant un identifiant unique
         associée à chaque donne possible. Les syntaxes possibles sont
@@ -152,146 +165,140 @@ class Donne:
         Donne() pour distribuer une main aléatoirement ou
         Donne(identifiant = un nombre) pour retrouver une donne dont on a c
         onservé l'identifiant'''
-        if sud :
-            self.sud     = Main(*sud)
-            self.nord    = Main(*nord)
-            self.est     = Main(*est)
-            self.ouest   = Main(*ouest)
+        if sud:
+            self.sud = Main(*sud)
+            self.nord = Main(*nord)
+            self.est = Main(*est)
+            self.ouest = Main(*ouest)
             self.donneur = donneur
-            self.vul     = vul
+            self.vul = vul
             self._code()
-        elif identifiant: # Reconstitue la main à partir d'un identifiant unique
-            self._reconstitution(identifiant)    
-        else  :  
+        elif identifiant:  # Reconstitue la main à partir d'un identifiant unique
+            self._reconstitution(identifiant)
+        else:
             # On distribue les cartes
-            #print("distribution")
+            # print("distribution")
             melange = list(range(52))
             shuffle(melange)
-            self.attributions=list(range(52))
+            self.attributions = list(range(52))
             for i in range(52):
-                self.attributions[melange[i]]=i//13
-            self._decode()   
-            i = randint(0,3)
-            self.donneur=Donne.donneurs[i]
-            i = randint(0,3)
-            self.vul=Donne.vulnerabilite[i]
-            
+                self.attributions[melange[i]] = i//13
+            self._decode()
+            i = randint(0, 3)
+            self.donneur = Donne.donneurs[i]
+            i = randint(0, 3)
+            self.vul = Donne.vulnerabilite[i]
 
-            
     def _decode(self):
         ''' Reconstitue les quatre mains en fonction des attributions des cartes '''
-        #print("decodage")
-        liste_des_mains=[[] for i in range(4)]
+        # print("decodage")
+        liste_des_mains = [[] for i in range(4)]
         for n in range(52):
             liste_des_mains[self.attributions[n]].append(n)
-        self.nord=decode_main(liste_des_mains[0])
-        self.sud=decode_main(liste_des_mains[2])
-        self.est=decode_main(liste_des_mains[1])
-        self.ouest =decode_main(liste_des_mains[3])
+        self.nord = decode_main(liste_des_mains[0])
+        self.sud = decode_main(liste_des_mains[2])
+        self.est = decode_main(liste_des_mains[1])
+        self.ouest = decode_main(liste_des_mains[3])
 
-            
-        
     def _code(self):
         ''' Attribue à chaque carte la main dans laquelle elle a été distribuée'''
-        self.attributions=list(range(52))
-        for x in self.nord.codes():
-            #print(x,0)
-            self.attributions[x]=0
-        for x in self.sud.codes():
-            #print(x,2)
-            self.attributions[x]=2
-        for x in self.est.codes():
-            #print(x,1)
-            self.attributions[x]=1    
-        for x in self.ouest.codes():
-            #print(x,3)
-            self.attributions[x]=3    
-        
+        self.attributions = list(range(52))
+        for x in self.nord._codes():
+            # print(x,0)
+            self.attributions[x] = 0
+        for x in self.sud._codes():
+            # print(x,2)
+            self.attributions[x] = 2
+        for x in self.est._codes():
+            # print(x,1)
+            self.attributions[x] = 1
+        for x in self.ouest._codes():
+            # print(x,3)
+            self.attributions[x] = 3
+
     def identifiant(self):
-        ''' Calcul de l'identifiant unique de la donne. Le résultat est 
-        transformé en chaîne de caractères 
+        ''' Calcul de l'identifiant unique de la donne. Le résultat est
+        transformé en chaîne de caractères
         pour transmission par des fichiers textes'''
         def code_vul(vul):
-            for i in range(4):
-                if Donne.vulnerabilite[i].lower()==self.vul.lower():
-                    return i
-            raise    NameError('problème codage vulnérabilité')
+            for couleur in Couleur:
+                if Donne.vulnerabilite[couleur].lower() == self.vul.lower():
+                    return couleur
+            raise NameError('problème codage vulnérabilité')
+
         def code_donneur(don):
-            for i in range(4):
-                if Donne.donneurs[i].lower()==self.donneur.lower():
-                    return i
-            raise    NameError('Problème codage donneur')    
-            
+            for couleur in Couleur:
+                if Donne.donneurs[couleur].lower() == self.donneur.lower():
+                    return couleur
+            raise NameError('Problème codage donneur')
+
         mon_id = 0
-        att=list(self.attributions)
+        att = list(self.attributions)
         att.append(code_donneur(self.donneur))
         att.append(code_vul(self.vul))
         for i in range(54):
-            mon_id *=4
-            mon_id += att[i]  
-        return hex(mon_id)    
-    
-    def _reconstitution(self,identifiant):
+            mon_id *= 4
+            mon_id += att[i]
+        return hex(mon_id)
+
+    def _reconstitution(self, identifiant):
         ''' Decodage de l'identifiant unique'''
-        mon_id = int(identifiant,0)
-        self.identifiant=identifiant
-        self.vul = Donne.vulnerabilite[mon_id%4]
+        mon_id = int(identifiant, 0)
+        self.identifiant = identifiant
+        self.vul = Donne.vulnerabilite[mon_id % 4]
         mon_id //= 4
-        self.donneur = Donne.donneurs[mon_id%4]
+        self.donneur = Donne.donneurs[mon_id % 4]
         mon_id //= 4
-        self.attributions=[0]*52
+        self.attributions = [0]*52
         for i in range(52):
-            self.attributions[i]=(mon_id%4)
+            self.attributions[i] = (mon_id % 4)
             mon_id //= 4
-        #self.attributions[0]=(mon_id%4)    
+        # self.attributions[0]=(mon_id%4)
         self.attributions.reverse()
         self._verification()
         self._decode()
-        
+
     def _verification(self):
         ''' vérification de l'intégrité d'une donne '''
-        compteur=[0,0,0,0]
+        compteur = [0, 0, 0, 0]
         for i in range(52):
-            compteur[self.attributions[i]] +=1
+            compteur[self.attributions[i]] += 1
         for i in range(4):
-            if compteur[i] != 13 :
+            if compteur[i] != 13:
                 raise NameError('Une des mains ne compporte pas 13 cartes')
-        
-    
-        
-        
-        
+
     def affiche(self):
         print(' Donneur : '+self.donneur+'   Vulnérabilité : '+self.vul)
         print('                Nord')
         self.nord.affiche(15)
         print('Ouest                         Est')
-        self.ouest.affiche(10,self.est)
+        self.ouest.affiche(10, self.est)
         print('                Sud')
         self.sud.affiche(15)
 
-        
+
 class Filtre:
-    ''' Filtres correspondant à des enchères classiques. Les filtres sont 
+    ''' Filtres correspondant à des enchères classiques. Les filtres sont
     volontairement plus vastes que les critères habituels des bridgeurs
     de façon à correspondre à des styles différents'''
-    def __init__(self,name,
-                 pointH_min = 0,
-                 pointH_max = 40,
-                 trefle_min = 0,
-                 trefle_max = 13,
-                 carreau_min = 0,
-                 carreau_max = 13,
-                 coeur_min = 0,
-                 coeur_max= 13,
-                 pique_min = 0,
-                 pique_max = 13,
-                 trefle_qualite = 0,
-                 carreau_qualite = 0,
-                 coeur_qualite = 0,
-                 pique_qualite = 0,
-                 points_totaux_min = 0,
-                 points_totaux_max = 99):
+
+    def __init__(self, name,
+                 pointH_min=0,
+                 pointH_max=40,
+                 trefle_min=0,
+                 trefle_max=13,
+                 carreau_min=0,
+                 carreau_max=13,
+                 coeur_min=0,
+                 coeur_max=13,
+                 pique_min=0,
+                 pique_max=13,
+                 trefle_qualite=0,
+                 carreau_qualite=0,
+                 coeur_qualite=0,
+                 pique_qualite=0,
+                 points_totaux_min=0,
+                 points_totaux_max=99):
         self.name = name
         self.pointH_min = pointH_min
         self.pointH_max = pointH_max
@@ -308,69 +315,58 @@ class Filtre:
         self.coeur_qualite = coeur_qualite
         self.pique_qualite = pique_qualite
         self.points_totaux_min = points_totaux_min
-        self.points_totaux_max = points_totaux_max 
-        
-    def filtre(self,main):    
-        ''' Renvoie True si la main considérée correspond au filtre désirée, 
+        self.points_totaux_max = points_totaux_max
+
+    def filtre(self, main):
+        ''' Renvoie True si la main considérée correspond au filtre désirée,
         c'est à dire est proche d'une enchère cklassique'''
         valeurs = main.vertues()
-        if self.pointH_min > valeurs[0] :
-            #print(1)
+        if self.pointH_min > valeurs[0]:
+            # print(1)
             return False
-        if self.pointH_max < valeurs[0] :
-            #print(2)
+        if self.pointH_max < valeurs[0]:
+            # print(2)
             return False
-        if self.trefle_min > valeurs[1] :
-            #print(3)
+        if self.trefle_min > valeurs[1]:
+            # print(3)
             return False
-        if self.trefle_max < valeurs[1] :
-            #print(4)
+        if self.trefle_max < valeurs[1]:
+            # print(4)
             return False
-        if self.carreau_min > valeurs[2] :
-            #print(5)
+        if self.carreau_min > valeurs[2]:
+            # print(5)
             return False
-        if self.carreau_max < valeurs[2] :
-            #print(6)
+        if self.carreau_max < valeurs[2]:
+            # print(6)
             return False
-        if self.coeur_min > valeurs[3] :
-            #print(7)
+        if self.coeur_min > valeurs[3]:
+            # print(7)
             return False
-        if self.coeur_max < valeurs[3] :
-            #print(8)
+        if self.coeur_max < valeurs[3]:
+            # print(8)
             return False
-        if self.pique_min > valeurs[4] :
-            #print(9)
+        if self.pique_min > valeurs[4]:
+            # print(9)
             return False
-        if self.pique_max < valeurs[4] :
-            #print(10)
+        if self.pique_max < valeurs[4]:
+            # print(10)
             return False
-        if self.trefle_qualite > valeurs[5] :
-            #print(11)
+        if self.trefle_qualite > valeurs[5]:
+            # print(11)
             return False
-        if self.carreau_qualite > valeurs[6] :
-            #print(12)
+        if self.carreau_qualite > valeurs[6]:
+            # print(12)
             return False
-        if self.coeur_qualite > valeurs[7] :
-            #print(13)
+        if self.coeur_qualite > valeurs[7]:
+            # print(13)
             return False
-        if self.pique_qualite > valeurs[8] :
-            #print(14)
+        if self.pique_qualite > valeurs[8]:
+            # print(14)
             return False
-        if self.points_totaux_min > valeurs[0]+valeurs[9] :
-            #print(15)
+        if self.points_totaux_min > valeurs[0]+valeurs[9]:
+            # print(15)
             return False
-        if self.points_totaux_max < valeurs[0]+valeurs[9] :
-            #print(16)
+        if self.points_totaux_max < valeurs[0]+valeurs[9]:
+            # print(16)
             return False
         return True
-        
-            
-
-
-    
-    
-
-
-
-    
-    
