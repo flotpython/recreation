@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Oct 22 14:34:46 2018
-Fourni les cmlasses suivantes :
+Fourni les classes suivantes :
     Longueur
         -> affichage d'une longueur dans une couleur donnée
         -> attribution d'une qualité (un honneur = 10)
-           et d'une valeur en pointsH
+           et d'une valeur en points H
     Main
-        -> Une Main de bridge avec mles 4 couleurs
+        -> Une Main de bridge avec les 4 couleurs
         -> Affichage de cette main au standard d'un diagramme de bridge
         -> Méthode vertues renvoie un tableau de statistiques sur la Main
     Donne
-        -> Les qautre main + le donneur + la vulnérabilité
+        -> Les quatre mains + le donneur + la vulnérabilité
         -> Affichage du diagramme
         -> Distribution
         -> Codage et décodage pour transmission
@@ -61,11 +61,28 @@ class Couleur(IntEnum):
     PIQUE = 3
 
     def glyph(self):
+        ''' glyphes en couleur en mode console'''
         glyphs = {Couleur.TREFLE: '\u2663',
                   Couleur.CARREAU: '\x1b[31;1m\u2666\x1b[39;0m',
                   Couleur.COEUR: '\x1b[31;1m\u2665\x1b[39;0m',
                   Couleur.PIQUE: '\u2660'}
         return glyphs[self]
+    
+    def nbglyph(self):
+        ''' glyphes en noir et blanc'''
+        nbglyphs = {Couleur.TREFLE: '\u2663',
+                  Couleur.CARREAU: '\u2666',
+                  Couleur.COEUR: '\u2665',
+                  Couleur.PIQUE: '\u2660'}
+        return nbglyphs[self]
+    
+    def teinte(self):
+        ''' couleur du foreground pour tk'''
+        teintes = {Couleur.TREFLE: 'black',
+                  Couleur.CARREAU: 'red',
+                  Couleur.COEUR: 'red',
+                  Couleur.PIQUE: 'black'}
+        return teintes[self]
 
 
 class Main:
@@ -97,6 +114,10 @@ class Main:
         else:
             for couleur in Couleur:
                 print(' '*decalage, couleur.glyph(), self[couleur])
+                
+    def __repr__(self):
+        return '\n'.join(couleur.nbglyph()+' '+str(self[couleur]) \
+                         for couleur in Couleur)
 
     def _codes(self):
         '''
@@ -156,15 +177,21 @@ class Donne:
         '''
         On peut créer une donne de trois façons. En entrant les quatre mains
         et optionnellement la vulnérabilité et le donneur, ou bien
-        en la générant aléatoirement, ou encore en entrant un identifiant unique
-        associée à chaque donne possible. Les syntaxes possibles sont
-        Donne(nord=((2,5,6,10),(2,11),(0,12),(3,5,6,8,10)), sud = cartes de sud,
-        est = ..., ouest = ... ) facultativement
+        en la générant aléatoirement, ou encore en entrant un identifiant 
+        unique associée à chaque donne possible. 
+        Les syntaxes possibles sont
+        
+        1) Donne(nord=((2,5,6,10),(2,11),(0,12),(3,5,6,8,10)), 
+        sud = cartes de sud, est = ..., ouest = ... ) 
+        facultativement
         Donne(nord=..., sud = ..., est = ..., ouest = ..., donneur = , vul = )
         si on veut indiquer le donneur et la vulnérabilité
-        Donne() pour distribuer une main aléatoirement ou
-        Donne(identifiant = un nombre) pour retrouver une donne dont on a c
-        onservé l'identifiant'''
+        
+        2) Donne() pour distribuer une main aléatoirement ou
+        
+        3) Donne(identifiant = un nombre) pour retrouver une donne dont on a 
+        conservé l'identifiant'''
+        
         if sud:
             self.sud = Main(*sud)
             self.nord = Main(*nord)
@@ -173,7 +200,7 @@ class Donne:
             self.donneur = donneur
             self.vul = vul
             self._code()
-        elif identifiant:  # Reconstitue la main à partir d'un identifiant unique
+        elif identifiant:  # Reconstitue la main à partir d'un identifiant un
             self._reconstitution(identifiant)
         else:
             # On distribue les cartes
@@ -224,7 +251,7 @@ class Donne:
             for couleur in Couleur:
                 if Donne.vulnerabilite[couleur].lower() == self.vul.lower():
                     return couleur
-            raise NameError('problème codage vulnérabilité')
+            raise NameError('Problème codage vulnérabilité')
 
         def code_donneur(don):
             for couleur in Couleur:
@@ -319,7 +346,7 @@ class Filtre:
 
     def filtre(self, main):
         ''' Renvoie True si la main considérée correspond au filtre désirée,
-        c'est à dire est proche d'une enchère cklassique'''
+        c'est à dire est proche d'une enchère classique'''
         valeurs = main.vertues()
         if self.pointH_min > valeurs[0]:
             # print(1)

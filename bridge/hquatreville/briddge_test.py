@@ -102,3 +102,5 @@ while not (filtres["1SA"].filtre(donne.sud) or compteur > 200):
     compteur += 1
     print("essai", compteur)
 donne.affiche()       
+print(donne.sud)
+print(donne.est)
