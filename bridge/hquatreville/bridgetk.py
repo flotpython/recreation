@@ -142,7 +142,7 @@ fenetre.rowconfigure(0,minsize=60)
 fenetre.rowconfigure(1,minsize=60)
 fenetre.rowconfigure(2,minsize=60)
 
-message1 = tk.Label(fenetre, text='Bienvenu')
+message1 = tk.Label(fenetre, text='Bienvenue')
 message1.grid(row=3, column=1)
 main_de_nord = tk.Frame(fenetre)
 main_de_nord.grid(row=0, column=1,sticky="w")

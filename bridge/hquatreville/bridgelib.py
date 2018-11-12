@@ -159,7 +159,6 @@ class Main:
         res.append(distribution)
         return res
 
-
 def decode_main(liste):
     ''' Creation d'une main à partir d'une liste de cartes codées de 0 à 51'''
     listes = [[] for i in range(4)]
@@ -167,10 +166,15 @@ def decode_main(liste):
         listes[carte//13].append(carte % 13)
     return Main(*listes)
 
+class Position(IntEnum):
+    NORD = 0
+    SUD = 1
+    EST = 2
+    OUEST = 3
 
 class Donne:
     donneurs = ['Nord', 'Sud', 'Est', 'Ouest']
-    vulnerabilite = ['Personne', 'NS', 'EO', 'Tous']
+    vulnerabilite = ['Personne', 'NS', 'EO', 'Tous']    
 
     def __init__(self, sud=None, nord=None, est=None, ouest=None,
                  donneur='Nord', vul='Personne', identifiant=None):
@@ -215,6 +219,13 @@ class Donne:
             self.donneur = Donne.donneurs[i]
             i = randint(0, 3)
             self.vul = Donne.vulnerabilite[i]
+            
+    def __getitem__(self, position):
+        """
+        self[0] ou self[Position.NORD] retourne self.nord
+        """
+        assert position in Position
+        return [self.nord,self.sud,self.est,self.ouest][position]        
 
     def _decode(self):
         ''' Reconstitue les quatre mains en fonction des attributions des cartes '''
@@ -228,7 +239,7 @@ class Donne:
         self.ouest = decode_main(liste_des_mains[3])
 
     def _code(self):
-        ''' Attribue à chaque carte la main dans laquelle elle a été distribuée'''
+        ''' Attribue à chaque carte la main dans laquelle elle , width=6a été distribuée'''
         self.attributions = list(range(52))
         for x in self.nord._codes():
             # print(x,0)
