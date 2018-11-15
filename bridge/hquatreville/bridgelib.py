@@ -115,9 +115,6 @@ class Main:
             for couleur in Couleur:
                 print(' '*decalage, couleur.glyph(), self[couleur])
                 
-    def __repr__(self):
-        return '\n'.join(couleur.nbglyph()+' '+str(self[couleur]) \
-                         for couleur in Couleur)
 
     def _codes(self):
         '''
@@ -171,13 +168,39 @@ class Position(IntEnum):
     SUD = 1
     EST = 2
     OUEST = 3
+    
+    def name(self):
+        names = ['Nord', 'Sud', 'Est', 'Ouest']
+        return names[self]
+    
+class Vulnerabilite(IntEnum):
+    PERSONNE = 0
+    NS       = 1
+    EO       = 2
+    TOUS     = 3
+    
+    def name(self):
+        vulnerabilites = ['Personne', 'NS', 'EO', 'Tous'] 
+        return vulnerabilites[self]
+            
+def couleurDePosition(vulnerabilite, position):
+    ''' Définie la couleur de la position en fonction de la vulnerabilité 
+    Traditionnellement  Rouge = vulnérable
+                        Vert  = non vulnérable '''
+    V = "spring green"     
+    R = "tomato"               
+    couleurs = [[V,V,V,V],
+                [R,R,V,V],
+                [V,V,R,R],
+                [R,R,R,R]]
+    return couleurs[vulnerabilite][position]
+    
 
 class Donne:
-    donneurs = ['Nord', 'Sud', 'Est', 'Ouest']
-    vulnerabilite = ['Personne', 'NS', 'EO', 'Tous']    
+       
 
     def __init__(self, sud=None, nord=None, est=None, ouest=None,
-                 donneur='Nord', vul='Personne', identifiant=None):
+                 donneur=0, vul=0, identifiant=None):
         '''
         On peut créer une donne de trois façons. En entrant les quatre mains
         et optionnellement la vulnérabilité et le donneur, ou bien
@@ -201,8 +224,8 @@ class Donne:
             self.nord = Main(*nord)
             self.est = Main(*est)
             self.ouest = Main(*ouest)
-            self.donneur = donneur
-            self.vul = vul
+            self.donneur = Position(donneur)
+            self.vul = Vulnerabilite(vul)
             self._code()
         elif identifiant:  # Reconstitue la main à partir d'un identifiant un
             self._reconstitution(identifiant)
@@ -215,10 +238,8 @@ class Donne:
             for i in range(52):
                 self.attributions[melange[i]] = i//13
             self._decode()
-            i = randint(0, 3)
-            self.donneur = Donne.donneurs[i]
-            i = randint(0, 3)
-            self.vul = Donne.vulnerabilite[i]
+            self.donneur = Position(randint(0, 3))
+            self.vul = Vulnerabilite(randint(0, 3))
             
     def __getitem__(self, position):
         """
@@ -258,22 +279,11 @@ class Donne:
         ''' Calcul de l'identifiant unique de la donne. Le résultat est
         transformé en chaîne de caractères
         pour transmission par des fichiers textes'''
-        def code_vul(vul):
-            for couleur in Couleur:
-                if Donne.vulnerabilite[couleur].lower() == self.vul.lower():
-                    return couleur
-            raise NameError('Problème codage vulnérabilité')
-
-        def code_donneur(don):
-            for couleur in Couleur:
-                if Donne.donneurs[couleur].lower() == self.donneur.lower():
-                    return couleur
-            raise NameError('Problème codage donneur')
 
         mon_id = 0
         att = list(self.attributions)
-        att.append(code_donneur(self.donneur))
-        att.append(code_vul(self.vul))
+        att.append(self.donneur)
+        att.append(self.vul)
         for i in range(54):
             mon_id *= 4
             mon_id += att[i]
@@ -283,9 +293,9 @@ class Donne:
         ''' Decodage de l'identifiant unique'''
         mon_id = int(identifiant, 0)
         self.identifiant = identifiant
-        self.vul = Donne.vulnerabilite[mon_id % 4]
+        self.vul = Vulnerabilite(mon_id % 4)
         mon_id //= 4
-        self.donneur = Donne.donneurs[mon_id % 4]
+        self.donneur = Position(mon_id % 4)
         mon_id //= 4
         self.attributions = [0]*52
         for i in range(52):
@@ -306,7 +316,7 @@ class Donne:
                 raise NameError('Une des mains ne compporte pas 13 cartes')
 
     def affiche(self):
-        print(' Donneur : '+self.donneur+'   Vulnérabilité : '+self.vul)
+        print(f' Donneur : {self.donneur.name()}   Vulnérabilité : {self.vul.name()}')
         print('                Nord')
         self.nord.affiche(15)
         print('Ouest                         Est')
@@ -408,3 +418,5 @@ class Filtre:
             # print(16)
             return False
         return True
+    
+

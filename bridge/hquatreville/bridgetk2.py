@@ -5,8 +5,9 @@ Created on Sat Nov 10 18:39:51 2018
 
 @author: hubert
 """
-from bridgelib import Main, Donne, Couleur, Position
+from bridgelib import Main, Donne, Couleur, Position, couleurDePosition
 import tkinter as tk
+import tkinter.font as tkf
 
 ####        I/O          ####
 ####        TODO         ####
@@ -32,12 +33,12 @@ class Main_active():
         self.visible = True
         for couleur in Couleur :
             symbole1 = tk.Label(self.frame, 
-                               text=couleur.nbglyph(), 
-                               fg=couleur.teinte())
-            symbole1.grid(column=0, row=3-couleur)
-            texte = tk.Label(self.frame, text=str(self.main[couleur]))
-            texte.grid(column=1, row=3-couleur, sticky="w")
-        
+                               text = couleur.nbglyph(), 
+                               fg = couleur.teinte())
+            symbole1.grid(column = 0, row = 3-couleur)
+            texte = tk.Label(self.frame, text = str(self.main[couleur]))
+            texte.grid(column = 1, row = 3-couleur, sticky = "w")
+         
     def efface(self)  :
         self.visible = False
         clear(self.frame)
@@ -70,19 +71,40 @@ class Donne_active:
             
         self.frame   = frame
         self.visible = visible
-        print(self.visible)
         self.vul     = donne.vul
         self.donneur = donne.donneur
         self.mains = []
         for position in Position :
             cadre = tk.Frame(frame)
             cadre.grid (row    = Donne_active.geometrie[position][0],
-                        column = Donne_active.geometrie[position][1],
-                        sticky =" w")
-            self.mains.append (Main_active(donne[position],cadre))
-        frame.columnconfigure(0,minsize=130)
-        frame.columnconfigure(1,minsize=130)
-        frame.columnconfigure(2,minsize=130)    
+                        column = Donne_active.geometrie[position][1])
+            self.mains.append (Main_active(donne[position], cadre))
+        frame.columnconfigure(0, minsize=130)
+        frame.columnconfigure(1, minsize=130)
+        frame.columnconfigure(2, minsize=130)   
+        
+    def affiche_info(self):
+        fenetre_info = tk.Frame(self.frame, 
+                                relief = "groove",
+                                borderwidth = 3)
+        fenetre_info.grid(row = 1, column = 1)
+        for position in Position :
+            label = tk.Label(fenetre_info,
+                             text = position.name()[0],
+                             bg = couleurDePosition(self.vul, position),
+                             relief = "raised", borderwidth = 2)
+            label.grid (row    = Donne_active.geometrie[position][0],
+                        column = Donne_active.geometrie[position][1])
+            if position == self.donneur :
+                f = tkf.Font(label,label.cget("font"))
+                f. configure (weight = "bold")
+                f.configure ( underline = True)
+                f. configure (size = 14)
+                label.configure(font = f)
+            else :    
+                f = tkf.Font(label,label.cget("font"))
+                f. configure (size = 14)
+                label.configure(font = f)             
                         
         
     def affiche(self):
@@ -90,6 +112,7 @@ class Donne_active:
             self.mains [position].efface()
             if self.visible[position] :
                 self.mains [position].affiche()
+        self.affiche_info()       
                                        
     def rend_visible(self,position):
         print('rv')
@@ -100,7 +123,6 @@ class Donne_active:
         self.visible[position] = False  
         
     def commute(self,position,mise_a_jour = True):
-        print('com',position)
         self.visible[position] = not(self.visible[position])
         if mise_a_jour:
             self.mains [position].efface()
@@ -109,15 +131,15 @@ class Donne_active:
             
         
     def distribue(self, mise_a_jour = True):
-        print('ditrib')
         donne = Donne()
+        self.vul, self.donneur = donne.vul, donne.donneur
         for position in Position :
             self.mains[position].main = donne[position]
         if mise_a_jour :
-            self.affiche()        
+            self.affiche()   
+
             
     def etat(self):
-        print(self.visible)
         return self.visible
         
         
@@ -187,8 +209,9 @@ def c_ouest():
 def c_distribue():
     global compteur
     active.distribue()
-    barre_de_message(f"Donne {compteur}", messager)
     compteur += 1
+    barre_de_message(f"Donne {compteur}", messager)
+    
 
 liste_menu = [['Nord', c_nord],
               ['Sud', c_sud],
