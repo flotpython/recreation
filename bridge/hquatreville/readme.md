@@ -1,28 +1,40 @@
 Bienvenue dans mon répertoire bridge
 
-Toutes les bonnes volonté sont bienvenues
+Le projet est en cours
 
-L'objectif ici est de créer un utilitaire permettant
+Tout se passe bien et le projet ira vraissemblablement à son terme d'ici quelques semaines
 
-a) de distribuer aléatoirement des donnes de bridges sélectionnées sur certains critères
+Pour le moment les fichiers fonctionnent ainsi
 
-Exemple de requêtes attendues :
-a) Génére 50 donnes où on a au moins 13 points après une ouverture de barrage de C
-b) Génére 50 donnes où nore partenairen ouvre de P et où on subit une intervention à 2K
-etc ...
+--> bridgelib.py
 
-b) Transmettre ces donnes à deux partenaires
+Le fichier principal gérant les objets du projet
 
-c) Afficher une des quatre main de la donne
+--> bridge_test.py
 
-d) Afficher l'intégralité de la donne
+Fichier test vérifiant le bon fonctionnement de bridgelib
 
-A cette fin, je souhaite créer
+--> bridgetk2.py
 
---> une librairie d'objets Main, Donne, Filtre
+Une interface tk utilisant certaines fonctionnalité de bridgelib donnat un avant gout du résultat final
 
---> une interface Tkinter
+--> bridgeIO.py [I]
 
-L'état d'avancement se trouve dans le fichier TODO
+Une interface tk gérant les entrées/sorties
 
-Pour communiquer, le plus simple est de procéder par mail : hquatreville@free.fr
+--> bridgefiltre.py [II]
+
+Une interface tk gérant les filtres
+
+--> bridgeenchere.py [III]                            <TO DO>
+
+Une interface tk gérant les filtres
+
+A terme, la fusion de (I) (II) et (III) formeront le projet final
+
+
+Contact : hquatreville@gfree.fr
+
+
+
+

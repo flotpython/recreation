@@ -6,7 +6,7 @@ Created on Tue Nov 13 21:36:24 2018
 @author: hubert
 """
 
-from bridgelib import Donne, Filtre
+from bridgelib import Donne
 import pickle
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
@@ -42,15 +42,7 @@ def readfiltres():
 def writefiltre(filtres) :
     filename='data/filtres.fil'
     with open(filename,"wb") as fichier :
-        pickle.dump(filtres,fichier) 
-        
-    def validate(event):
-        text = var.get()
-        print("interne",text)
-        wentree.destroy()  
-    wentree = tk.Entry(textvariable = var)
-    wentree.grid()
-    wentree.bind('<Return>', validate)  
+        pickle.dump(filtres,fichier)
     
     
    
@@ -62,12 +54,12 @@ root.title('IOtest')
 
 
 menu   = tk.Frame(root)
-menu.grid(row=0, column=0,sticky='n')
-root.columnconfigure(0,weight=1)        
+menu.grid(row=0, column=0, sticky='n')
+root.columnconfigure(0, weight=1)        
 
-fenetre = tk.Frame(root, width = 200, height = 150)
+fenetre = tk.Frame(root, width = 200, height = 50)
 fenetre.grid(row=0, column=1)
-root.columnconfigure(1,weight=3)
+root.columnconfigure(1, weight=3)
 
 messager = tk.Frame(root)
 messager.grid(row=1, columnspan=2) 
@@ -131,7 +123,7 @@ liste_menu = [['Donner', c_donner],
 
 
 barre_de_menu(liste_menu, menu)      
-barre_de_message("Test IO",messager)  
+barre_de_message("Test IO", messager)  
 ########################################################
 
 
