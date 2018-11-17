@@ -27,11 +27,15 @@ Lundi 11 novembre
 -> Gros nettoyage de fichier bridgetk, le nouveau bridgtk2 accompli les mêmes fonctionnalités
 avec amélioration de la lisibilité et facilité d'extension
 
-Jeudi 14 novembre
+Jeudi 15 novembre
 
 -> Gestion des entrées/sorties moins pénible qu'attendue. Il est dorénavant certain que le projet ira à son terme
 
-Vendredi 15 novembre
+Vendredi 16 novembre
 
 -> Mise à jour du fichier readme.md
 -> lancement du projet filtre qui risque d'être un peu chronophage
+
+Samedi 17 novembre
+
+-> Bridefiltre.py : Interface tk gérant les filtres opérationnelle

@@ -346,7 +346,7 @@ class Filtre:
                  coeur_qualite=0,
                  pique_qualite=0,
                  points_totaux_min=0,
-                 points_totaux_max=99):
+                 points_totaux_max=60):
         self.name = name
         self.pointH_min = pointH_min
         self.pointH_max = pointH_max
