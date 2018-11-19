@@ -7,7 +7,7 @@ Created on Fri Nov 16 17:57:57 2018
 """
 
 import tkinter as tk
-from bridgelib import Filtre, Filtres
+from bridgelib import Filtre
 import pickle
 from tkinter.messagebox import askyesno
 
@@ -142,7 +142,8 @@ def c_regler_filtre(index_filtre = None):
     var_HLD_min, var_HLD_max = scale_couple(fenetre, 'Points HLD', 1, 60)
     pique_min, pique_max = scale_couple(fenetre, 'Nombre de piques', 2, 13)
     coeur_min, coeur_max = scale_couple(fenetre, 'Nombre de coeurs', 3, 13)
-    carreau_min, carreau_max = scale_couple(fenetre, 'Nombre de carreaux', 4, 13)
+    carreau_min, carreau_max = scale_couple(fenetre, 
+                                            'Nombre de carreaux', 4, 13)
     trefle_min, trefle_max = scale_couple(fenetre, 'Nombre de trèfles', 5, 13)
     name = tk.StringVar()
     tk.Label(fenetre, text='Nom du filtre').grid(row=10, column=0)
