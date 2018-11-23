@@ -30,8 +30,11 @@ donnelib.py
 sequencelib.py
 
 -> d'un répertoire data contenant au moins 3 fichiers :
+
 une image valide : gambling.jpg
+
 un fichier filtres.fil valide
+
 un fichier sequence.fil valide
 
 On y stocke les packs de donnes .pak
