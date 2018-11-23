@@ -39,3 +39,11 @@ Vendredi 16 novembre
 Samedi 17 novembre
 
 -> Bridefiltre.py : Interface tk gérant les filtres opérationnelle
+
+
+Vendredi 23 novembre
+
+Lancement de la version Beta
+
+Programme principal :
+bridgeutil

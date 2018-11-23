@@ -25,6 +25,7 @@ Fourni les classes suivantes :
 """
 from random import randint, shuffle
 
+DEBUG = False
 
 class Longueur:
     '''Une longueur dans une couleur particulière'''
@@ -173,6 +174,13 @@ class Position(IntEnum):
         names = ['Nord', 'Sud', 'Est', 'Ouest']
         return names[self]
     
+    def visibilite(self) :
+        ''' Liste rendant visible une position donnée '''
+        return [pos == self for pos in Position]
+    def visibilite_ligne(self):
+        ''' Liste rendant visible la ligne de la position donnée '''
+        return [pos//2 == self//2 for pos in Position]
+     
 class Vulnerabilite(IntEnum):
     PERSONNE = 0
     NS       = 1
@@ -419,12 +427,15 @@ class Filtre:
             return False
         return True
     
-class Filtres:
-    ''' Groupe de filtres pour une Donne '''
+class Sequence:
+    ''' 
+    Séquence de filtres pour une Donne. 
+    Correspond à une séquence d'enchères 
+    '''
     def __init__(self):
         self.positif = [[] for positionn in Position]
         self.negatif = [[] for positionn in Position]
-        self.name    = 'My name is nobody'
+        self.name    = ''
         
     def set_filtre(self, position, filtre, normal = True):
         if normal :
@@ -437,17 +448,23 @@ class Filtres:
         
             
     def filtre(self, donne) :
-        ''' AAppliacation des filtres à une donne, 
-        Renvoie True si la donne satisfait le groupe de filtres '''
+        ''' Appliacation des filtres à une donne, 
+        Renvoie True si la donne satisfait tous les filtres
+        de la séquence '''
         
         for position in Position:
-            for filtre in self.positif[position]:
-                if not filtre.filtre(donne[position]):
+            for fil in self.positif[position] :
+                if not fil.filtre(donne[position]) :
+                    if DEBUG :
+                        print("filtre avorté : ", 
+                              fil.name, ' ', position.name())
                     return False
         for position in Position:
-            for filtre in self.positif[position]:
-                if filtre.filtre(donne[position]):
+            for fil in self.negatif[position]:
+                if fil.filtre(donne[position]):
+                    if DEBUG :
+                        print("antifiltre : ", fil.name, ' ', position.name())
                     return False 
         return True       
     
-
+#Filtres = Sequence

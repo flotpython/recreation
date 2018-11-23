@@ -1,36 +1,40 @@
 Bienvenue dans mon répertoire bridge
 
-Le projet est en cours
+gambling.jpg
 
-Tout se passe bien et le projet ira vraissemblablement à son terme d'ici quelques semaines
+Photo obtenue sur www.pexels.come, totalement libre
 
-Pour le moment les fichiers fonctionnent ainsi
+VERSION BETA lancée
 
---> bridgelib.py
+Le programme s'appelle bridgeutil.py
 
-Le fichier principal gérant les objets du projet
+Sa fonctionnlité consiste à 
 
---> bridge_test.py
+Distribuer des donnes aléatoirement filtrés selon des critères d'enchères
 
-Fichier test vérifiant le bon fonctionnement de bridgelib
+Sauvegarder ces donnes pour transmission à un partenaire sous forme de fichier .pak
 
---> bridgetk2.py
+Enchérir ces donnes avec son partenaire, chacun ne voyant que sa main
 
-Une interface tk utilisant certaines fonctionnalité de bridgelib donnat un avant gout du résultat final
+Afficher les deux mains puis les quatre mains à l'issue des enchères pour discussion
 
---> bridgeIO.py [I]
+Le mode d'emploi sera disponible prochainement
 
-Une interface tk gérant les entrées/sorties
+Pour fonctionner, il a besoin 
 
---> bridgefiltre.py [II]
+-> de ses 5 fichiers lib
+bridgelib.py
+tklib.py
+IOlib.py
+donnelib.py
+sequencelib.py
 
-Une interface tk gérant les filtres
+-> d'un répertoire data contenant au moins 3 fichiers :
+une image valide : gambling.jpg
+un fichier filtres.fil valide
+un fichier sequence.fil valide
 
---> bridgeenchere.py [III]                            <TO DO>
-
-Une interface tk gérant les filtres
-
-A terme, la fusion de (I) (II) et (III) formeront le projet final
+On y stocke les packs de donnes .pak
 
 
 Contact : hquatreville@gfree.fr
