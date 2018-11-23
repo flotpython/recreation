@@ -2,7 +2,7 @@ Bienvenue dans mon répertoire bridge
 
 gambling.jpg
 
-Photo obtenue sur www.pexels.come, totalement libre
+Photo obtenue sur www.pexels.com, totalement libre
 
 VERSION BETA lancée
 
