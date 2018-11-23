@@ -8,9 +8,9 @@ VERSION BETA lancée
 
 Le programme s'appelle bridgeutil.py
 
-Sa fonctionnlité consiste à 
+Sa fonctionnalité consiste à 
 
-Distribuer des donnes aléatoirement filtrés selon des critères d'enchères
+Distribuer des donnes aléatoirement filtrées selon des critères d'enchères
 
 Sauvegarder ces donnes pour transmission à un partenaire sous forme de fichier .pak
 
