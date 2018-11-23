@@ -40,7 +40,7 @@ un fichier sequence.fil valide
 On y stocke les packs de donnes .pak
 
 
-Contact : hquatreville@gfree.fr
+Contact : hquatreville@free.fr
 
 
 
