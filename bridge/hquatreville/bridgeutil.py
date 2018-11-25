@@ -100,7 +100,7 @@ lm_principale = [["Gérer les donnes", c_gestion_donne],
 
 def menu_principal() :
     load = Image.open("data/gambling.jpg")
-    resolution = (250,200)
+    resolution = (375,300)
     img = ImageTk.PhotoImage(load.resize(resolution), master=fenetre)
     panel = tk.Label(fenetre, image=img)
     panel.grid()
@@ -434,6 +434,19 @@ def c_donne_suivante() :
         donne_active.visible = position_active.visibilite()
         donne_active.reconfigure(donne)
         barre_de_message(f'Enchérir la donne n°{index_pack}', messager)
+        
+def c_donne_precedente() :
+    global index_pack
+    if index_pack < 2 :
+        mess = 'Début de paquet'
+        barre_de_message(mess, messager)       
+    else :    
+        donne_active = widgets_actifs["donne_active"]
+        donne = Donne (identifiant=pack_actif[index_pack-2])
+        index_pack -= 1
+        donne_active.visible = position_active.visibilite()
+        donne_active.reconfigure(donne)
+        barre_de_message(f'Enchérir la donne n°{index_pack}', messager)        
 
 def c_archiver_donne() :
     mess = 'Fonctionnalité non disponible dans cette version'
@@ -443,6 +456,7 @@ lm_enchere = [['Choisir Position', c_choisir_position],
               ['Afficher Ligne', c_afficher_ligne],
               ['Afficher donne', c_afficher_donne],
               ['Donne suivante', c_donne_suivante],
+              ['Donne précédente', c_donne_precedente],
               ['Archiver', c_archiver_donne],
               ["Gérer les donnes", c_gestion_donne],
               ['Menu principal', c_retour],

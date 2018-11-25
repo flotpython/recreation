@@ -17,15 +17,18 @@ Fourni les classes suivantes :
         -> Distribution
         -> Codage et décodage pour transmission
     Filtre
-        -> filtre d'une main selon ses vertues
-        -> méthode filtre renvoyant un booléen
+        -> Filtre d'une main selon ses vertues
+        -> Méthode filtre renvoyant un booléen
+    Sequence
+        -> Groupe de filtres s'appliquant à une donne 
+        -> Méthode filtre renvoyant un booléen
 
 
 @author: hubert
 """
 from random import randint, shuffle
 
-DEBUG = False
+DEBUG = True
 
 class Longueur:
     '''Une longueur dans une couleur particulière'''
@@ -450,21 +453,22 @@ class Sequence:
     def filtre(self, donne) :
         ''' Appliacation des filtres à une donne, 
         Renvoie True si la donne satisfait tous les filtres
-        de la séquence '''
+        de la séquence 
+        Les filtres sont liées entre eux par le connecteur logique OU :
+            Il suffit que l'ub d'entre eux soit satisfait
+        Les filtres sont liées entre eux par le connecteur logique ET :
+            Il faut qu'aucun d'entre eux ne soit satisfait
+        '''
         
         for position in Position:
             for fil in self.positif[position] :
-                if not fil.filtre(donne[position]) :
-                    if DEBUG :
-                        print("filtre avorté : ", 
-                              fil.name, ' ', position.name())
-                    return False
-        for position in Position:
-            for fil in self.negatif[position]:
-                if fil.filtre(donne[position]):
-                    if DEBUG :
-                        print("antifiltre : ", fil.name, ' ', position.name())
-                    return False 
-        return True       
+                if fil.filtre(donne[position]) :
+                    for position in Position:
+                        for fil in self.negatif[position]:
+                            if fil.filtre(donne[position]):
+                                return False 
+                    return True
+        return False
+    
     
 #Filtres = Sequence
