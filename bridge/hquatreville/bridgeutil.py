@@ -575,6 +575,7 @@ def _supprimer_sequence(sequence) :
 def c_nouvelle_sequence() :
     ''' Crée une nouvelle séquence de filtres'''
     def postaction() :
+        global sequence_active
         ''' Actions à effectuer en sortie '''
         names = [seq.name for seq in liste_des_sequences]
         name = saisie.get()
@@ -583,6 +584,7 @@ def c_nouvelle_sequence() :
             barre_de_message(mess, messager)
         else :
             sequence.name = name
+            sequence_active = sequence
             barre_de_menu(lm_sequence, menu)
             liste_des_sequences.append(sequence)
             liste_des_sequences.sort(key= lambda seq:seq.name)
