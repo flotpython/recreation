@@ -95,6 +95,7 @@ lm_principale = [["Gérer les donnes", c_gestion_donne],
                  ["Gérer les filtres", c_gestion_filtre],
                  ["Gérer les séquences", c_sequence],
                  ["Enchérir", c_enchérir],
+                 [],
                  ["Quitter", c_quit]
                 ]
 
@@ -113,7 +114,7 @@ def menu_principal() :
 #                  MENU DONNES
 ################################################################
 def c_distribuer_donnes() :
-    def validate() :
+    def validate(event=None) :
         global pack_actif, index_pack
         try :
             saisie = int(saisir.get())
@@ -122,11 +123,13 @@ def c_distribuer_donnes() :
             barre_de_message(mess,messager)
             return None
         if saisie in range(1,1000):
+            mess = 'Cela prend parfois quelques instants'
+            barre_de_message(mess, messager)
             compteur = 0
             overflow = 0
             pack_actif =[]
             index_pack = 0
-            while compteur < saisie and overflow < 10_000 :
+            while compteur <= saisie and overflow < 100_000 :
                 donne = Donne()
                 overflow += 1
                 if (not sequence_active) or sequence_active.filtre(donne) :
@@ -155,6 +158,7 @@ def c_distribuer_donnes() :
     w1.grid(row=0, column=0)
     saisir = tk.Entry(fenetre)
     saisir.grid(row=0, column=1)
+    saisir.bind("<Return>", validate)
     if sequence_active :
         mess = "Séquence de filtres activés : " + sequence_active.name
     else :
@@ -162,13 +166,14 @@ def c_distribuer_donnes() :
     w3 = tk.Label(fenetre, text=mess)
     w3.grid(row=1, columnspan=2)
     barre_de_validation(menu, validate, cancel)
+    barre_de_message(mess, messager)
 
 def c_sauvegarder_donnes() :
     if DEBUG :
         print("sauver")
     var = tk.StringVar(fenetre)
 
-    def validate(event):
+    def validate(event=None) :
         text = var.get()
         try:
             filename = "data/" + text + ".pak"
@@ -177,13 +182,21 @@ def c_sauvegarder_donnes() :
             wlabel.destroy()
             wentree.destroy()
             barre_de_message(f"Fichier {filename[5:]} savegardé", messager)
+            barre_de_menu(lm_donne, menu)
         except IOError:
             barre_de_message("Problème d'entrée/sortie", messager)
+            
+    def escape(event=None) : 
+        clear(fenetre)
+        barre_de_menu(lm_donne, menu)
+        
+    clear(fenetre)    
     wlabel = tk.Label(fenetre, text="Nom du fichier")
     wlabel.grid()
     wentree = tk.Entry(fenetre, textvariable=var)
     wentree.grid()
     wentree.bind('<Return>', validate)
+    barre_de_validation(menu, validate, escape)
 
 def c_charger_donnes() :
     if DEBUG :
@@ -193,14 +206,19 @@ def c_charger_donnes() :
     donnename.set(askopenfilename(filetypes=[DONNETYPE], initialdir='data/'))
     filename = donnename.get()
     if DEBUG :
-        print(filename)
-    with open(filename, "rb") as fichier:
-        pack_actif = pickle.load(fichier)
-        index_pack = 0
-        if DEBUG :
-            print(pack_actif)  
-        mess = f'Donne du fichier {filename} chargées'
+        print("file : ", filename)
+    if filename :    
+        with open(filename, "rb") as fichier:
+            pack_actif = pickle.load(fichier)
+            index_pack = 0
+            if DEBUG :
+                print(pack_actif)  
+            mess = f'Donne du fichier {filename} chargées'
+            barre_de_message(mess,messager)
+    else :
+        mess = "Pas de fichier sélectionné"
         barre_de_message(mess,messager)
+        
 
 def c_charger_archives() :
     mess = 'Option indisponible dans cette version'
@@ -210,8 +228,10 @@ lm_donne = [['Distribuer', c_distribuer_donnes],
             ['Sauvegarder', c_sauvegarder_donnes],
             ['Charger', c_charger_donnes],
             ['Archives', c_charger_archives],
+            [],
             ["Gérer les séquences", c_sequence],
             ["Enchérir", c_enchérir],
+            [],
             ['Menu principal', c_retour],
             ["Quitter", c_quit]
            ]
@@ -358,6 +378,7 @@ def c_afficher_filtres():
 lm_filtre = [[' Nouveau filtre', c_regler_filtre],
              ['Modifier filtre',c_modifier_filtre],
              ["Gérer les séquences", c_sequence],
+             [],
              ['Menu principal', c_retour],
              ["Quitter", c_quit]
              ]
@@ -367,12 +388,18 @@ lm_filtre = [[' Nouveau filtre', c_regler_filtre],
 
 
 def initialise_encheres() :
+    global donne_actuelle
     clear(fenetre)  
     fenetre_donne = tk.Frame(fenetre, height = 100)
     fenetre_donne.grid(row=1, columnspan=4)   
     visible = position_active.visibilite()
     if DEBUG :
         print(visible)
+    if pack_actif :
+        donne_actuelle = Donne(identifiant=pack_actif[0])
+    else :
+        mess = "Aucune donne n'a été chargée"
+        barre_de_message(mess, messager)
     donne_active = Donne_active(donne_actuelle, fenetre_donne, visible)
     donne_active.affiche()
     widgets_actifs["donne_active"] = donne_active
@@ -401,7 +428,7 @@ def initialise_encheres() :
     widgets_actifs['BDPDE'] = boutons_de_position_des_encheres 
     if DEBUG :
         print(widgets_actifs)
-    mess = 'Donne aléatoire lors de la configuration'    
+    mess = 'Choisir son orientation'    
     barre_de_message(mess, messager)    
 
 def c_choisir_position() :
@@ -424,13 +451,13 @@ def c_afficher_donne() :
 
 def c_donne_suivante() :
     global index_pack
-    if index_pack == len(pack_actif) :
+    if index_pack == len(pack_actif) - 1 :
         mess = 'Dernière donne atteinte'
         barre_de_message(mess, messager)       
     else :    
-        donne_active = widgets_actifs["donne_active"]
-        donne = Donne (identifiant=pack_actif[index_pack])
+        donne_active = widgets_actifs["donne_active"]        
         index_pack += 1
+        donne = Donne (identifiant=pack_actif[index_pack])
         donne_active.visible = position_active.visibilite()
         donne_active.reconfigure(donne)
         barre_de_message(f'Enchérir la donne n°{index_pack}', messager)
@@ -442,8 +469,8 @@ def c_donne_precedente() :
         barre_de_message(mess, messager)       
     else :    
         donne_active = widgets_actifs["donne_active"]
-        donne = Donne (identifiant=pack_actif[index_pack-2])
         index_pack -= 1
+        donne = Donne (identifiant=pack_actif[index_pack])
         donne_active.visible = position_active.visibilite()
         donne_active.reconfigure(donne)
         barre_de_message(f'Enchérir la donne n°{index_pack}', messager)        
@@ -458,7 +485,9 @@ lm_enchere = [['Choisir Position', c_choisir_position],
               ['Donne suivante', c_donne_suivante],
               ['Donne précédente', c_donne_precedente],
               ['Archiver', c_archiver_donne],
+              [],
               ["Gérer les donnes", c_gestion_donne],
+              [],
               ['Menu principal', c_retour],
                ["Quitter", c_quit]
               ]
@@ -516,12 +545,6 @@ def _selectionne_sequence(postaction) :
         menu_deroulant.insert(tk.END, nom)  
     #mini = tk.Frame(fenetre).grid(row=2, column=0)   
     barre_de_validation(menu, validate, escape)
-    '''
-    but1 = tk.Button(fenetre, text='Valider', command=validate)
-    but1.grid(row=2, column=0)
-    but2 = tk.Button(fenetre, text='Annuler', command=escape, anchor='w')
-    but2.grid(row=2, column=1)  
-    '''
 
 def c_modifier_sequence() :
     ''' Modification de la séquence active '''
@@ -643,8 +666,10 @@ lm_sequence = [['Choisir séquence', c_choisir_sequence],
                ['Modifier séquence', c_modifier_sequence],
                ['Nouvelle séquence', c_nouvelle_sequence],
                ['Supprimer séquence', c_supprimer_sequence],
+               [],
                ["Gérer les filtres", c_gestion_filtre],
                ["Gérer les donnes", c_gestion_donne],
+               [],
                ['Menu principal', c_retour],
                ["Quitter", c_quit]
                ] 

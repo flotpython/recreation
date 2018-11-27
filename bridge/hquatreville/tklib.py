@@ -21,11 +21,15 @@ def barre_de_menu(liste, menu) :
     [nom du bouton, commande à exécuter]'''
     clear(menu)
     for commande in liste:
-        bouton = tk.Button(menu,
-                           text=commande[0],
-                           command=commande[1],
-                           width=20)
-        bouton.grid(sticky="ew")
+        if commande :
+            bouton = tk.Button(menu,
+                               text=commande[0],
+                               command=commande[1],
+                               width=20)
+            bouton.grid(sticky="ew")
+        else :
+            label = tk.Label(menu)
+            label.grid(sticky="ew")
 
 
 def barre_de_message(message, messager) :

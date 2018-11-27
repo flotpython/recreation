@@ -461,14 +461,20 @@ class Sequence:
         '''
         
         for position in Position:
-            for fil in self.positif[position] :
-                if fil.filtre(donne[position]) :
-                    for position in Position:
-                        for fil in self.negatif[position]:
-                            if fil.filtre(donne[position]):
-                                return False 
-                    return True
-        return False
+            for fil in self.negatif[position]:
+                if fil.filtre(donne[position]):
+                    return False 
+                
+        for position in Position:
+            if self.positif[position] :
+                position_valide = False
+                for fil in self.positif[position] :
+                    if fil.filtre(donne[position]) :
+                        position_valide = True
+                if not position_valide :   
+                    return False            
+        return True
+
     
     
 #Filtres = Sequence
