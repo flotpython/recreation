@@ -1,6 +1,6 @@
 28/11/2018 23:30<br>
-J'ai vu de gros changement dans l'ergonomie , on sait ou on est c'est bien mieux<br>
-Maintenant en ce qui concerne le comportement , j'ai voulu tester mes filtres favoris, 6Ca N et 6Co S et la distribution ne fonctionne pas . Au début je ne l'avais pas vu et j'ai donc pu sauvegarder un fichier de donnes qui n'avait en fait que votre donne de démarrage et quand j'ai voulu relancer la distribution des cartes , j'ai vu qu'il était marqué que les filtres étaient incompatibles<br>
+J'ai vu de gros changements dans l'ergonomie , on sait où on est, c'est bien mieux<br>
+Maintenant en ce qui concerne le comportement, j'ai voulu tester mes filtres favoris, 6Ca N et 6Co S et la distribution ne fonctionne pas . Au début je ne l'avais pas vu et j'ai donc pu sauvegarder un fichier de donnes qui n'avait en fait que votre donne de démarrage et quand j'ai voulu relancer la distribution des cartes, j'ai vu qu'il était marqué que les filtres étaient incompatibles<br>
 Je pensais qu'il était surtout difficile de trouver une donne aléatoire respectant mes critères car outre les longueurs j'ai demandé 16 points pour N et 16 points pour S . Mais pour autant la sauvegarde de la main ne m'avait pas été interdite.
 J'ai donc recommencé avec seulement 6 points en Sud et il m'est encore annoncé que les filtres sont incompatibles, là c'est plus douteux en terme de difficulté à trouver des donnes compatibles 
 
