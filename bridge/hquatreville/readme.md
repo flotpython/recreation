@@ -24,8 +24,8 @@ Pour fonctionner, il a besoin
   * `tklib.py`
   * `IOlib.py`
   * `donnelib.py`
-  * `sequencelib.py
-  * `tkcolors.py
+  * `sequencelib.py`
+  * `tkcolors.py`
 
 * d'un répertoire data contenant au moins 3 fichiers :
   * une image valide : `gambling.jpg`
