@@ -6,7 +6,25 @@ Created on Tue Nov 20 09:38:57 2018
 @author: hubert
 """
 import tkinter as tk
+import tkcolors as tc
 
+############################################################################
+###                     Gestion des couleurs
+############################################################################
+            
+def couleurDePosition(vulnerabilite, position):
+    ''' Définie la couleur de la position en fonction de la vulnerabilité 
+    Traditionnellement  Rouge = vulnérable
+                        Vert  = non vulnérable '''
+           
+    couleurs = [[tc.VERT,tc.VERT,tc.VERT,tc.VERT],
+                [tc.ROUGE,tc.ROUGE,tc.VERT,tc.VERT],
+                [tc.VERT,tc.VERT,tc.ROUGE,tc.ROUGE],
+                [tc.ROUGE,tc.ROUGE,tc.ROUGE,tc.ROUGE]]
+    return couleurs[vulnerabilite][position]
+
+
+###########################################################################
 
 def clear(frame) :
     ''' Efface la fenêtre '''
@@ -25,8 +43,10 @@ def barre_de_menu(liste, menu) :
             bouton = tk.Button(menu,
                                text=commande[0],
                                command=commande[1],
-                               width=20)
-            bouton.grid(sticky="ew")
+                               width=20,
+                               bg = tc.THEME1
+                               )
+            bouton.grid(sticky="ew")            
         else :
             label = tk.Label(menu)
             label.grid(sticky="ew")
@@ -36,6 +56,7 @@ def barre_de_message(message, messager) :
     ''' Affiche un message dans la barre d'état : messager '''
     clear(messager)
     mess = tk.Label(messager, text=message)
+    mess.configure(bg = tc.THEME5)
     mess.grid()
    
     
@@ -48,8 +69,15 @@ def barre_de_validation(menu, validate, cancel=None) :
     if not cancel :
         cancel = nope
     clear(menu)
-    tk.Button(menu, text='Valider', command=validate, width=20).grid()
-    tk.Button(menu, text='Annuler', command=cancel, width=20).grid()     
+    tk.Button(menu, text='Valider', 
+              command=validate, 
+              width=20,
+              bg = tc.THEME1).grid()
+    tk.Button(menu, 
+              text='Annuler', 
+              command=cancel, 
+              width=20,
+              bg = tc.THEME1).grid()     
     
 def scale_couple(fenetre, name, ligne, maxi=13):
     ''' 
@@ -88,4 +116,6 @@ def desactiver(menu) :
     
 def activer(menu) :    
     for w in menu.winfo_children() :
-        w.configure(state='normal')       
+        w.configure(state='normal')     
+        
+      

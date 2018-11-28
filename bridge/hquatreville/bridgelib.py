@@ -193,18 +193,7 @@ class Vulnerabilite(IntEnum):
     def name(self):
         vulnerabilites = ['Personne', 'NS', 'EO', 'Tous'] 
         return vulnerabilites[self]
-            
-def couleurDePosition(vulnerabilite, position):
-    ''' Définie la couleur de la position en fonction de la vulnerabilité 
-    Traditionnellement  Rouge = vulnérable
-                        Vert  = non vulnérable '''
-    V = "spring green"     
-    R = "tomato"               
-    couleurs = [[V,V,V,V],
-                [R,R,V,V],
-                [V,V,R,R],
-                [R,R,R,R]]
-    return couleurs[vulnerabilite][position]
+
     
 
 class Donne:

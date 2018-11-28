@@ -1,28 +1,4 @@
-26/11 23:00  JPBAUJOT<br>
-En fait, ce qui m'a sans doute perturbé sur les donnes qui respectent sur les filtres <br>
-C'est que la première donne ne respecte pas le filtre (je reconnais que c'est marqué en bas , mais je n'avais pas remarqué)<br>
 
-===> J'ai modifié ce comportement, globalement idiot, surtout en phase de test
-
-avec 1 seul fitre en Nord , j'ai obtenu le résultat <br>
-en demandant 6 carreaux en Nord et 6 coeurs en sud , je n'obtiens pas ces résultats dans les donnes <br>
-
-===> C'est un disfonctionnement majeur
-La méthode filtre de l'objet Sequence était fausse, je l'ai corrigé (non sans mal car c'est une imbrication de ET et de OU)
-
-De plus, pas besoin d'un utilitaire de profilage pour comprendre que cette méthode est la seule source de ralentissement du programme et nécessite une optimisation 
-en vitesse.
-
-Des idées ?
-
-Details :
-Pour les menus, eventuellement séparer d'une touche vide les sous menus des retours aux menus <br>
-
-===> C'est fait !
-
-Pour la sauvegarde d'une donne , il n'y a pas de touche valider , eventuellement un commentaire pour dire de faire enter
-
-===> C'est fait !
 
 27/11/2018 23:30 <br> 
 SVP mettre un message dans issue qui devrait normalement m'envoyer un mail qd vous voulez me dire qque chose (question ou nouveau code à tester)<br>
@@ -33,6 +9,15 @@ Je vois que vous posez une question sur le pb des performances du code qd vous t
 - si le filtre demande x points sur un joueur, c'est moins net mais vous pouvez sans doute orienter dans le choix des cartes qui peuvent donner les points attendus après le bilan des filtres de couleurs.  
 - donc en gros il me semble que si vos préchoix respectent les critères, vous seriez moins en difficulté.
 
-J'ai vu que vous avez pris en compte mes remarques, mais je n'ai pas encore testé 
+
+la piste me semble correcte.
+
+Du point de vue informatique, il s'agit d'implémenter une méthode distribue à l'objet Sequence qui crée une donne. 
+Et c'est cette méthode qu'il faudra optimiser.
+
+D'un point de vue algorithmique, le problème est sérieux, il faut commencer par analyser les filtres pour les regrouper par couleurs.
+Et ensuite, il faut faire super-gaffe de ne pas bieaiser les probabilités.
+
+Super intéressant, mais pas urgent. Améliorer l'ergonomie générale pour éviter que les partenaires ne ralent ... Ensuite utiliser un truc du genre cx-freeze (je ne sais pas ce qui est le mieux mais c'est celui que google cite le plus...) pour les non utilisateurs de python.
 
 

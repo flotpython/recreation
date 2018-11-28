@@ -52,10 +52,10 @@ Cette bibliothèque défini deux classes.
 @author: hubert
 """
 
-from bridgelib import Donne, Couleur, Position, couleurDePosition
+from bridgelib import Donne, Couleur, Position
 import tkinter as tk
 import tkinter.font as tkf
-from tklib import clear
+from tklib import clear, couleurDePosition
 
 DEBUG = False
 

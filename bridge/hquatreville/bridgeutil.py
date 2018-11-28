@@ -12,6 +12,7 @@ from tkinter.filedialog import askopenfilename
 from PIL import Image, ImageTk
 import pickle
 
+import tkcolors
 from tklib import clear, barre_de_message, barre_de_menu, barre_de_validation
 from tklib import scale_couple
 from bridgelib import Sequence, Donne, Position, Filtre
@@ -34,7 +35,7 @@ sequence_active = None
 donne_actuelle = Donne()
 # La donne en cours d'affichage
 
-pack_actif = []
+pack_actif = [donne_actuelle.identifiant()]
 # Le pack de donne en cours d'utilisation
 index_pack = 0
 # Index référençant la donne du pack en cours d'utilisation
@@ -52,31 +53,79 @@ widgets_actifs ={}
 # Sauvegarde de quelques boutons afin de maintenir la communication entre
 # ceux-ci.
 
-
+expert = True
 
 ################################################################
 
 def c_retour():
     ''' Retour au menu principal '''
     clear(fenetre)
+    if expert :
+        menu_principal()
+    else :      
+        proto_menu()
+        
+def c_quit():
+    root.quit()
+    root.destroy()        
+    
+################################################################
+#                       PROTO MENU     
+################################################################    
+   
+def c_menu_rapide() :
+    global expert
+    expert = False
+    c_charger_donnes()
+    clear(menu)
+    barre_de_message("Menu des enchères", messager)
+    barre_de_menu(lm_enchere_rapide, menu)
+    initialise_encheres()
+
+def c_menu_expert() :
+    global expert
+    expert = True
+    clear(fenetre)
     menu_principal()
+    
+lm_proto_menu = [["Menu rapide", c_menu_rapide],
+                 ["Menu expert", c_menu_expert],
+                 [],
+                 ["Quitter", c_quit]
+                 ]
+
+def image():
+    clear(fenetre)
+    load = Image.open("data/gambling.jpg")
+    resolution = (375,300)
+    img = ImageTk.PhotoImage(load.resize(resolution), master=fenetre)
+    panel = tk.Label(fenetre, image=img)
+    panel.grid()
+    panel.image = img    
+    
+def proto_menu() :
+    image()
+    barre_de_menu(lm_proto_menu, menu)
+    barre_de_message("Menu principal", messager)  
     
 ################################################################
 #                  MENU    PRINCIPAL  
 ################################################################
 def c_gestion_donne():
     clear(menu)
+    image()
     barre_de_message("Menu des donnes", messager)
     barre_de_menu(lm_donne, menu)
 
 def c_sequence():
     clear(menu)
+    image()
     barre_de_message("Menu des séquences", messager)
     barre_de_menu(lm_sequence, menu)
     
 def c_gestion_filtre():
     clear(menu)
-    clear(fenetre)
+    image()
     barre_de_message("Menu des filtres", messager)
     barre_de_menu(lm_filtre, menu)
 
@@ -85,11 +134,6 @@ def c_enchérir():
     barre_de_message("Menu des enchères", messager)
     barre_de_menu(lm_enchere, menu)
     initialise_encheres()
-
-def c_quit():
-    root.quit()
-    root.destroy()
-
 
 lm_principale = [["Gérer les donnes", c_gestion_donne],
                  ["Gérer les filtres", c_gestion_filtre],
@@ -100,15 +144,9 @@ lm_principale = [["Gérer les donnes", c_gestion_donne],
                 ]
 
 def menu_principal() :
-    load = Image.open("data/gambling.jpg")
-    resolution = (375,300)
-    img = ImageTk.PhotoImage(load.resize(resolution), master=fenetre)
-    panel = tk.Label(fenetre, image=img)
-    panel.grid()
-    panel.image = img
+    image()
     barre_de_menu(lm_principale, menu)
     barre_de_message("Menu principal", messager)    
-
 
 ################################################################
 #                  MENU DONNES
@@ -125,6 +163,7 @@ def c_distribuer_donnes() :
         if saisie in range(1,1000):
             mess = 'Cela prend parfois quelques instants'
             barre_de_message(mess, messager)
+            messager.update()
             compteur = 0
             overflow = 0
             pack_actif =[]
@@ -264,9 +303,10 @@ def c_regler_filtre(index_filtre = None):
                 del liste_des_filtres[index_filtre]
             liste_des_filtres.sort(key= lambda filtre:filtre.name)   
             writefiltres(liste_des_filtres)
-            clear(fenetre)
             barre_de_menu(lm_filtre,menu)
-                
+            mess = "Filtre enregistré"
+            barre_de_message(mess,messager)
+            clear(fenetre)    
             
     def annuler():
         clear(fenetre)
@@ -283,8 +323,10 @@ def c_regler_filtre(index_filtre = None):
             liste_des_filtres.sort(key= lambda filtre:filtre.name)
             clear(fenetre)
             barre_de_menu(lm_filtre,menu)
+            mess = 'Le filtre a été supprimé'
+            barre_de_message(mess, messager)
         
-    
+    clear(fenetre)
     var_pointH_min, var_pointH_max = scale_couple(fenetre, 'Points H', 0, 40)
     var_HLD_min, var_HLD_max = scale_couple(fenetre, 'Points HLD', 1, 60)
     pique_min, pique_max = scale_couple(fenetre, 'Nombre de piques', 2)
@@ -350,7 +392,7 @@ def c_modifier_filtre():
     
     if DEBUG :    
         print('modifier filtre')
-    clear(menu)
+    clear(fenetre)
     defilement = tk.Scrollbar(fenetre, orient='vertical')                           
     defilement.grid(row=1, column=1, sticky='ns')
     lab = tk.Label(fenetre, text = 'Choisir le filtre à modifier')
@@ -364,19 +406,12 @@ def c_modifier_filtre():
     menu_deroulant.grid(row=1, column=0)
     for nom in noms_de_filtres :
         menu_deroulant.insert(tk.END, nom)
-    lm_modifier_filtre = [['Choisir', validate],
-                          ['Annuler', annuler]
-                         ]     
-    barre_de_menu(lm_modifier_filtre, menu)    
+    barre_de_validation(menu, validate, annuler)    
     
 
-
-def c_afficher_filtres():
-    for f in liste_des_filtres:
-        print(f.name) 
-
 lm_filtre = [[' Nouveau filtre', c_regler_filtre],
-             ['Modifier filtre',c_modifier_filtre],
+             ['Modifier filtre', c_modifier_filtre],
+             [],
              ["Gérer les séquences", c_sequence],
              [],
              ['Menu principal', c_retour],
@@ -451,7 +486,7 @@ def c_afficher_donne() :
 
 def c_donne_suivante() :
     global index_pack
-    if index_pack == len(pack_actif) - 1 :
+    if index_pack == len(pack_actif)-1  :
         mess = 'Dernière donne atteinte'
         barre_de_message(mess, messager)       
     else :    
@@ -478,7 +513,7 @@ def c_donne_precedente() :
 def c_archiver_donne() :
     mess = 'Fonctionnalité non disponible dans cette version'
     barre_de_message(mess, messager)
-    
+   
 lm_enchere = [['Choisir Position', c_choisir_position],
               ['Afficher Ligne', c_afficher_ligne],
               ['Afficher donne', c_afficher_donne],
@@ -491,6 +526,15 @@ lm_enchere = [['Choisir Position', c_choisir_position],
               ['Menu principal', c_retour],
                ["Quitter", c_quit]
               ]
+lm_enchere_rapide = [['Choisir Position', c_choisir_position],
+                     ['Afficher Ligne', c_afficher_ligne],
+                     ['Afficher donne', c_afficher_donne],
+                     ['Donne suivante', c_donne_suivante],
+                     ['Donne précédente', c_donne_precedente],
+                     [],
+                     ['Menu principal', c_retour]
+                    ]            
+
 ################################################################
 #                  MENU SEQUENCES
 ################################################################
@@ -615,7 +659,8 @@ def c_nouvelle_sequence() :
             clear(fenetre)
             
     def annul():
-        barre_de_menu(lm_sequence, menu)   
+        barre_de_menu(lm_sequence, menu) 
+        clear(fenetre)
         
     clear(fenetre)    
     sequence = Sequence()
@@ -687,11 +732,10 @@ if DEBUG :
 
 root=tk.Tk()
 root.title('Utilitaire pour bridgeur')
+tkcolors.palette(root)
 
 menu   = tk.Frame(root)
 menu.grid(row=0, column=0,sticky='n')
-#menu.configure(width=180, height = 200)
-#menu.grid_propagate(0)
 root.columnconfigure(0,weight=1)        
 
 fenetre = tk.Frame(root)
@@ -705,6 +749,7 @@ mess.grid(sticky='ew')
 
 if DEBUG :
     print('boucle')
-menu_principal()
+#menu_principal()
+proto_menu()
 root.protocol("WM_DELETE_WINDOW", c_quit)
 root.mainloop()

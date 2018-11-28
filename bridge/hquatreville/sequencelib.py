@@ -11,6 +11,7 @@ from bridgelib import Position
 #from tkinter.messagebox import askyesno
 from tklib import clear, barre_de_message
 from IOlib import readfiltres
+import tkcolors as tc
 
 DEBUG = False
 
@@ -38,9 +39,9 @@ def regler_sequence(sequence, fenetre, messager):
         b_negatif.configure(state="normal")
         for pos in Position:
             if pos == position :
-                boutons[pos].configure(relief = 'sunken') 
+                boutons[pos].configure(relief='sunken', bg=tc.THEME5) 
             else :    
-                boutons[pos].configure(relief = 'raised')
+                boutons[pos].configure(relief='raised', bg=tc.THEME4)
         
     def callback(position):
         ''' Artefact pour que la position soit choisie au moment
