@@ -175,9 +175,11 @@ def c_distribuer_donnes() :
                     compteur += 1
                     pack_actif.append(donne.identifiant())
             if compteur == 0 :
-                mess = 'Filtres incompatibles'              
-            elif compteur < 0 :
-                mess = 'Donnes rares.' + str(compteur) + 'donnes distribuées'
+                mess = 'Filtres incompatibles'
+                donne = Donne()
+                pack_actif.append(donne.identifiant())
+            elif compteur > 0 :
+                mess = 'Donnes rares. Uniquement ' + str(compteur) + ' donnes distribuées'
             else :
                 mess = 'Donnes distribuées'     
             barre_de_message(mess, messager)   
@@ -212,24 +214,36 @@ def c_sauvegarder_donnes() :
         print("sauver")
     var = tk.StringVar(fenetre)
 
-    def validate(event=None) :
+    def validate(event=None) :            
         text = var.get()
-        try:
-            filename = "data/" + text + ".pak"
-            with open(filename, "wb") as fichier:
-                pickle.dump(pack_actif, fichier)
-            wlabel.destroy()
-            wentree.destroy()
-            barre_de_message(f"Fichier {filename[5:]} savegardé", messager)
-            barre_de_menu(lm_donne, menu)
-        except IOError:
-            barre_de_message("Problème d'entrée/sortie", messager)
+        if text :
+            try:
+                filename = "data/" + text + ".pak"
+                with open(filename, "wb") as fichier:
+                    pickle.dump(pack_actif, fichier)
+                wlabel.destroy()
+                wentree.destroy()
+                barre_de_message(f"Fichier {filename[5:]} sauvegardé", messager)
+                barre_de_menu(lm_donne, menu)
+            except IOError:
+                barre_de_message("Problème d'entrée/sortie", messager)
             
     def escape(event=None) : 
         clear(fenetre)
         barre_de_menu(lm_donne, menu)
-        
-    clear(fenetre)    
+       
+    clear(fenetre)
+    if len(pack_actif) < 5 :
+        mess = 'Attention, votre pack de donne est presque vide !'
+        texte = f'nombre de sonnes à sauvegarder : {len(pack_actif)}'
+        alerte1 = tk.Label(fenetre, text = texte)
+        alerte1.grid()
+        alerte2 = tk.Label(fenetre, text = 'Avez-vous bien distribué ?')
+        alerte2.grid() 
+        tk.Label(fenetre, text='').grid()
+    else :
+        mess = 'Sauvegarde des donnes'
+    barre_de_message(mess, messager)    
     wlabel = tk.Label(fenetre, text="Nom du fichier")
     wlabel.grid()
     wentree = tk.Entry(fenetre, textvariable=var)
