@@ -52,12 +52,13 @@ Cette bibliothèque défini deux classes.
 @author: hubert
 """
 
-from bridgelib import Donne, Couleur, Position, couleurDePosition
+from bridgelib import Donne, Couleur, Position
 import tkinter as tk
 import tkinter.font as tkf
-from tklib import clear
+from tklib import clear, couleurDePosition
 
 DEBUG = False
+
 
 class Main_active():
     '''  Classe permettant d'afficher une Mais de bridge dans un frame tk.
@@ -148,13 +149,13 @@ class Donne_active:
         Récupère un tableau de 4 booléens donnant l'état de visibilité des
         quatre positions 
         '''
-        
+
     geometrie = {Position.NORD: [0, 1],
                  Position.SUD: [2, 1],
                  Position.EST: [1, 2],
                  Position.OUEST: [1, 0]}
 
-    def __init__(self, donne, frame, visible=[True for pos in Position]) :
+    def __init__(self, donne, frame, visible=[True for pos in Position]):
         ''' donne = la donne à afficher
             frame = le cadre dans lequel on affiche la donne
             visible = un tableau de 4 booléens indiquant les mains à afficher
@@ -211,7 +212,7 @@ class Donne_active:
         '''
          Affiche les mains dont l'attibut de visibilité est True
          '''
-        if DEBUG :
+        if DEBUG:
             print("Affiche Donne_active ")
         for position in Position:
             self.mains[position].efface()
@@ -219,7 +220,7 @@ class Donne_active:
                 self.mains[position].affiche()
         self.affiche_info()
 
-    def rend_visible(self, position) :
+    def rend_visible(self, position):
         '''
         Rend visible la main de la position indiquée
         (Ne gère pas son affichage immédiat, utiliser affiche())
@@ -227,7 +228,7 @@ class Donne_active:
         print('rv')
         self.visible[position] = True
 
-    def rend_invisible(self, position) :
+    def rend_invisible(self, position):
         '''
         Rend invisible la main de la position indiquée
         (Ne gère pas son effacement immédiat, utiliser affiche())
@@ -248,7 +249,7 @@ class Donne_active:
             if self.visible[position]:
                 self.mains[position].affiche()
 
-    def distribue(self, mise_a_jour=True) :
+    def distribue(self, mise_a_jour=True):
         '''
         distribue(), distribue(True) ou distribue(False)
         Modifie la donne en la distribuant aléatoirement et l'affiche
@@ -260,8 +261,8 @@ class Donne_active:
             self.mains[position].main = donne[position]
         if mise_a_jour:
             self.affiche()
-    
-    def reconfigure(self, donne, mise_a_jour=True) :
+
+    def reconfigure(self, donne, mise_a_jour=True):
         '''
         reconfigure(donne), reconfigure(donne,True) ou 
         reconfigure(donne, False)
@@ -272,7 +273,7 @@ class Donne_active:
         for position in Position:
             self.mains[position].main = donne[position]
         if mise_a_jour:
-            self.affiche()        
+            self.affiche()
 
     def etat(self):
         '''
@@ -280,6 +281,3 @@ class Donne_active:
         quatre positions 
         '''
         return self.visible
-
-
-

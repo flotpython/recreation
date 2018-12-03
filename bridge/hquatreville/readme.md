@@ -19,12 +19,13 @@ Le mode d'emploi sera disponible prochainement
 
 Pour fonctionner, il a besoin
 
-* de ces 5 fichiers lib
+* de ces 6 fichiers lib
   * `bridgelib.py`
   * `tklib.py`
   * `IOlib.py`
   * `donnelib.py`
   * `sequencelib.py`
+  * `tkcolors.py`
 
 * d'un répertoire data contenant au moins 3 fichiers :
   * une image valide : `gambling.jpg`
