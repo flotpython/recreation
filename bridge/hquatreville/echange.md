@@ -1,3 +1,20 @@
+
+Lundi 3 décembre
+
+La version 1.0 me semble fonctionner avec
+
+Ajout d'un menu normal pour gérer les séquences préprogrammées
+
+Refonte de la méthode de distribution des donnes beaucoup plus rapide
+
+Ajout d'une petite base d'exemples de filtres et de séquences
+
+Le projet arrive à son terme
+
+
+
+
+
 29/11/2018
 J'ai reproduit ces comportements :
 
