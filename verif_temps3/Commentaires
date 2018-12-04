@@ -36,7 +36,7 @@ Many samples are analyzed on one of them.
 Each day: people prepare samples in holders, then we check them and put them
 inside the diffractometer. We program them on the driving software and analyses
 are done during the night (thanks to the autochanger, a robot that puts samples
-in position under the X-ray beam).
+in position under the X-ray beam). 
 
 We use different small "house" programs to check the existence of files,
 send results files by email, print results (with a network printer),
