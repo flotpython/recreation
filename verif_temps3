@@ -1,0 +1,8 @@
+Tout est documenté en anglais excepté ce que je veux faire afficher en français à l'utilisateur.
+
+Mais pour résumer en français, je reviens vers vous pour vous demander de critiquer mon code - constructivement bien sûr ;-)
+J'y ai passé des dizaines d'heures, il était déjà fonctionnel avant de commencer le MOOC, mais je l'ai bien amélioré depuis, 
+malheureusement sans savoir encore comment implémenter des classes dans mon contexte.
+
+Pour sauter tous mes commentaires et notamment ceux qui ont trait au contexte (où je travaille, pourquoi j'ai créé 
+ce programme...) vous pouvez directement aller à la ligne 94 de mon programme ("# Different imports:")
