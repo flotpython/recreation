@@ -1,3 +1,1 @@
-# À remplir
-
-Je crée ce fichier car jpbaudot semble avoir des soucis à créer un répertoire depuis github.
+# Init of different python solvers, by classes or recursivity , using for some a file already proposed by shoarau; thanks to him
