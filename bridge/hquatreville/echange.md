@@ -1,3 +1,10 @@
+Jeudi 6 /12/ 2018
+J'ai testé les différents modes sans rencontrer de vrais pbs.<br>
+J'ai juste eu un petit doute dans le menu distribuer qd je demande x donnes , je m'attendais à les sauvegarder aussitot , mais il me semble que j'ai du ressortir pour les sauvegarder, mais c'est peut etre le fonctionnement attendu.
+Ensuite comme on en demande toujours plus , mais vous verrez avec vos partenaires ,qd on est dans le menu encherir , un rappel des sequences testées ou du nom de fichier.pak qui doit etre explicite serait peut etre utile pour ne pas memoriser tout, est ce que des affichages des points H/HL  de chacun seraient aussi utiles pour ne pas recompter à chaque fois ?
+
+Je n'ai pas regardé le code , mais en tous cas avec mes donnes tests à 16 points et demande de 5 donnes , le temps est très raisonnable et sans incidents.
+Bravo ,  bonne continuation
 
 Lundi 3 décembre
 
