@@ -1,3 +1,9 @@
+Jeudi 6 décembre :
+
+J'ai mis en pause toute amélioration. Pour le moment ça marche, c'est bien. On peut toujours améliorer mais c'est une quête sans fin. Entre le début et la fin du projet, j'ai fait pas mal de progrès et si je devais recommencer maintenant, je ferais un code plus rationnel.
+J'ai passé pas mal d'heures pour installer cx_freeze sur un ordinateur windows et je suis très déçu. Rien n'est compatible avec rien et ça bugue dans tous les coins. Bref ça ne marche pas.
+
+
 Jeudi 6 /12/ 2018
 J'ai testé les différents modes sans rencontrer de vrais pbs.<br>
 J'ai juste eu un petit doute dans le menu distribuer qd je demande x donnes , je m'attendais à les sauvegarder aussitot , mais il me semble que j'ai du ressortir pour les sauvegarder, mais c'est peut etre le fonctionnement attendu.
