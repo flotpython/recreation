@@ -1,3 +1,8 @@
+Vendredi 07/12/2018 JiPiBi<br>
+N'ayant pas d'experience dans la fourniture de code sur des systemes où python ne sont pas implantés, je ne sais pas vous apporter de suggestions à part peut etre celle de demander leur avis aux createurs du MOOC sur le forum.
+J'ai juste vu rapidement une page sur cx_freeze le site apprendre-python.com  qui peut vous interesser si vous ne l'avez pas déjà lue
+
+
 Jeudi 6 décembre :
 
 J'ai mis en pause toute amélioration. Pour le moment ça marche, c'est bien. On peut toujours améliorer mais c'est une quête sans fin. Entre le début et la fin du projet, j'ai fait pas mal de progrès et si je devais recommencer maintenant, je ferais un code plus rationnel.
