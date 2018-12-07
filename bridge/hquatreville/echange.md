@@ -2,6 +2,15 @@ Vendredi 07/12/2018 JiPiBi<br>
 N'ayant pas d'experience dans la fourniture de code sur des systemes où python ne sont pas implantés, je ne sais pas vous apporter de suggestions à part peut etre celle de demander leur avis aux createurs du MOOC sur le forum.
 J'ai juste vu rapidement une page sur cx_freeze le site apprendre-python.com  qui peut vous interesser si vous ne l'avez pas déjà lue
 
+Mouais, après 3 jours de galères et pas mal de googlisation de messages d'erreur, j'ai
+
+--> Un cx_freeze compatible python 3.6 fonctionnel sous windows
+--> Un fichier setup.py qui permet de gérer les divers problèmes rencontrés.
+
+Globalement, c'est pas cool et je retourne vite dans le monde Ubuntu qui gloabalement est quand même mieux foutu !
+
+Donc à première vue, ça marche. 
+
 
 Jeudi 6 décembre :
 
