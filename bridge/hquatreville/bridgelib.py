@@ -642,7 +642,7 @@ class Quatuor:
              print("Préparez le paracétamol")                                
         repartition = [[[] for col in Couleur] for pos in Position]
         # Les mains à remplir        
-        reservations = [fil.min for fil in self.filtres] 
+        reservations = [list(fil.min) for fil in self.filtres] 
         # Les places résercées par couleur
         facultatif  = [[fil.max[col]-fil.min[col] for fil in self.filtres] \
                         for col in Couleur]
