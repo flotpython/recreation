@@ -1,5 +1,4 @@
---> Ajouter quelques filtres et séquences
---> Refaire le mode d'emploi
+--> Mieux gérer les filtres
 --> lancer un cx_freeze
 
 

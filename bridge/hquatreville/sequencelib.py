@@ -103,8 +103,8 @@ def regler_sequence(sequence, fenetre, messager):
                 tlb = tk.Label(fenetre, 
                                text='Attention ! Filtres négatifs actifs')
                 tlb.grid()
-            '''
-            mess = "Validité des filtres négatifs non implémentée"
+            '''    
+            mess="Validité des filtres négatifs non implémentée"
             barre_de_message(mess, messager)
 
         clear(f_negatif)
@@ -170,7 +170,7 @@ def regler_sequence(sequence, fenetre, messager):
     b_positif.grid(row=2, columnspan=2, sticky='ew')
     f_positif = tk.Frame(fenetre, height=HAUTEUR, width=LARGEUR)
     f_positif.grid(row=3, columnspan=2)
-    # f_positif.grid_propagate(0)
+    #f_positif.grid_propagate(0)
 
 #   fenêtre de sélection d'anti-filtres à droite
     b_negatif = tk.Button(fenetre, text=f"Filtres interdit",
@@ -178,19 +178,19 @@ def regler_sequence(sequence, fenetre, messager):
     b_negatif.grid(row=2, column=2, columnspan=2, sticky='ew')
     f_negatif = tk.Frame(fenetre, height=HAUTEUR, width=LARGEUR)
     f_negatif.grid(row=3, column=2, columnspan=2)
-    # f_negatif.grid_propagate(0)
+    #f_negatif.grid_propagate(0)
 
 #   Nommer la séquence
     saisie = tk.StringVar(fenetre, value=sequence.name)
     tk.Label(fenetre, text='Nom : ').grid(row=4, column=0)
     e = tk.Entry(fenetre, textvariable=saisie)
     e.grid(row=4, column=1, columnspan=3, sticky='ew')
-
+    
     if DEBUG:
         def test():
             print('quatuors', sequence.explode())
             sequence.distribue()
         verification = tk.Button(fenetre, text=" TEST ", command=test)
-        verification.grid(row=6)
+        verification.grid(row=6)     
     return saisie
     # récupération du nom de la séquence de filtres

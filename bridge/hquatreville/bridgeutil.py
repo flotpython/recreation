@@ -11,11 +11,13 @@ from tkinter.messagebox import askyesno
 from tkinter.filedialog import askopenfilename
 from PIL import Image, ImageTk
 import pickle
+from random import randint
 
 import tkcolors
 from tklib import clear, barre_de_message, barre_de_menu, barre_de_validation
 from tklib import scale_couple
-from bridgelib import Sequence, Donne, Position, Filtre, InvalidSequence
+from bridgelib import Sequence, Donne, Position, Filtre
+from bridgelib import InvalidSequence, Vulnerabilite
 from sequencelib import regler_sequence
 from IOlib import readfiltres, readsequences, writesequences, writefiltres
 from donnelib import Donne_active
@@ -57,7 +59,6 @@ expert = True
 
 ################################################################
 
-
 def c_retour():
     ''' Retour au menu principal '''
     clear(fenetre)
@@ -65,7 +66,6 @@ def c_retour():
         menu_principal()
     else:
         proto_menu()
-
 
 def c_quit():
     root.quit()
@@ -75,7 +75,6 @@ def c_quit():
 #                       PROTO MENU
 ################################################################
 
-
 def c_menu_rapide():
     global expert
     expert = False
@@ -84,7 +83,6 @@ def c_menu_rapide():
     barre_de_message("Menu des enchères", messager)
     barre_de_menu(lm_enchere_rapide, menu)
     initialise_encheres()
-
 
 def c_menu_normal():
     global expert
@@ -104,7 +102,6 @@ def c_menu_normal():
         tk.Label(fenetre, text="Attention !").grid()
         tk.Label(fenetre, text="Aucune séquence sauvegardées !").grid()
         tk.Label(fenetre, text="Veuillez en créer une nouvelle !").grid()
-
 
 def c_menu_expert():
     global expert
@@ -202,33 +199,25 @@ def c_distribuer_donnes():
             barre_de_message(mess, messager)
             messager.update()
             index_pack = 0
-            '''
-            pack_actif = []
-            compteur = 0            
-            overflow = 0
-            while compteur <= saisie and overflow < 100_000:
-                donne = Donne()
-                overflow += 1
-                if (not sequence_active) or sequence_active.filtre(donne):
-                    compteur += 1
-                    pack_actif.append(donne.identifiant())
-            if compteur == 0:
-                mess = 'Filtres incompatibles'
-                donne = Donne()
-                pack_actif.append(donne.identifiant())
-            elif compteur > 0:
-                mess = 'Donnes rares. Uniquement ' + \
-                    str(compteur) + ' donnes distribuées'
-            else:
-                mess = 'Donnes distribuées'
-            '''
             if not sequence_active:
                 pack_actif = [Donne() for i in range(saisie)]
             else:
-                try:
-                    pack_actif = [sequence_active.distribue().identifiant()
-                                  for i in range(saisie)]
-                except InvalidSequence:
+                try :
+                    pack_actif = []
+                    for i in range(saisie):
+                        donne = sequence_active.distribue()
+                        donneur = vardonneur.get()
+                        if donneur == 4 :
+                            donne.donneur = randint(0,3)
+                        else :    
+                            donne.donneur = Position(donneur)
+                        vul = varvul.get()
+                        if vul == 4 :
+                            donne.vul = randint(0,3)
+                        else:    
+                            donne.vul = Vulnerabilite(vul)
+                        pack_actif.append(donne.identifiant())                              
+                except InvalidSequence :
                     mess = "Séquence invalide "
                     barre_de_message(mess, messager)
                     clear(menu)
@@ -237,10 +226,10 @@ def c_distribuer_donnes():
                     return None
             mess = 'Donnes distribuées'
             barre_de_message(mess, messager)
-            if expert:
+            if expert :
                 barre_de_menu(lm_donne, menu)
                 clear(fenetre)
-            else:
+            else :
                 c_sauvegarder_donnes()
         else:
             mess = 'Entrez un entier compris entre 1 et 1000'
@@ -252,18 +241,61 @@ def c_distribuer_donnes():
         clear(fenetre)
 
     clear(fenetre)
-    w1 = tk.Label(fenetre, text="Combien voulez-vous de donnes : ")
+    w1 = tk.Label(fenetre, text="Combien voulez-vous de donnes ? : ")
     w1.grid(row=0, column=0)
     saisir = tk.Entry(fenetre)
-    saisir.grid(row=0, column=1)
+    saisir.grid(row=0, column=1, columnspan=4)
     saisir.bind("<Return>", validate)
     if sequence_active:
         mess = "Séquence de filtres activés : " + sequence_active.name
     else:
         mess = 'Pas de filtre actif, donnes aléatoires '
     w3 = tk.Label(fenetre, text=mess)
-    w3.grid(row=1, columnspan=2)
+    w3.grid(row=1, column=0)    
+    vardonneur = tk.IntVar(fenetre)    
+    varvul     = tk.IntVar(fenetre)    
+    tk.Label(fenetre, text="Donneur").grid(row=2, column=0)
+    for pos in Position:        
+        b = tk.Radiobutton(fenetre, 
+                           variable=vardonneur, 
+                           text = pos.name(),
+                           value = int(pos),
+                           width=8,
+                           anchor="w"
+                           )
+        b.grid(row=2, column = pos+1)        
+        if pos ==0 :
+            b.select()
+    b = tk.Radiobutton(fenetre, 
+                       variable=vardonneur, 
+                       text = "aléatoire",
+                       value = 4,
+                       width=8,
+                       anchor="w"
+                       )
+    b.grid(row=2, column = 5)        
+    tk.Label(fenetre, text="Vulnérabilité").grid(row=3, column=0)
+    for vul in Vulnerabilite:        
+        b = tk.Radiobutton(fenetre, 
+                           variable=varvul, 
+                           text = vul.name(),
+                           value = int(vul),
+                           width=8,
+                           anchor="w"
+                           )
+        b.grid(row=3, column = vul+1) 
+        if vul ==0 :
+            b.select()
+    b = tk.Radiobutton(fenetre, 
+                       variable=varvul, 
+                       text = "aléatoire",
+                       value = 4,
+                       width=8,
+                       anchor="w"
+                       )
+    b.grid(row=3, column = 5)         
     barre_de_validation(menu, validate, cancel)
+    mess = " Distribution des donnes "
     barre_de_message(mess, messager)
 
 
@@ -283,16 +315,21 @@ def c_sauvegarder_donnes():
                 wentree.destroy()
                 mess = f"Fichier {filename[5:]} sauvegardé"
                 barre_de_message(mess, messager)
-                if expert:
+                if expert :
                     barre_de_menu(lm_donne, menu)
-                else:
+                else :
                     c_enchérir()
             except IOError:
                 barre_de_message("Problème d'entrée/sortie", messager)
 
     def escape(event=None):
-        clear(fenetre)
-        barre_de_menu(lm_donne, menu)
+        if expert:
+            clear(fenetre)
+            barre_de_menu(lm_donne, menu)
+        else:
+            clear(fenetre)
+            barre_de_menu(lm_proto_menu, menu)
+            
 
     clear(fenetre)
     if len(pack_actif) < 5:
@@ -319,7 +356,8 @@ def c_charger_donnes():
         print("charger")
     global pack_actif, index_pack
     donnename = tk.StringVar(fenetre)
-    donnename.set(askopenfilename(filetypes=[DONNETYPE], initialdir='data/'))
+    donnename.set(askopenfilename(filetypes=[DONNETYPE], 
+                                  initialdir='data/'))
     filename = donnename.get()
     if DEBUG:
         print("file : ", filename)
@@ -360,7 +398,6 @@ lm_donne = [['Distribuer', c_distribuer_donnes],
 def c_regler_filtre(index_filtre=None):
     clear(menu)
     barre_de_message('Réglage du filtre', messager)
-
     def init_vars(selection):
         var_pointH_min.set(selection.pointH_min)
         var_pointH_max.set(selection.pointH_max)
@@ -394,12 +431,12 @@ def c_regler_filtre(index_filtre=None):
                             points_totaux_min=var_HLD_min.get(),
                             points_totaux_max=var_HLD_max.get())
             mess = filtre.controle_couleurs()
-            if mess:
+            if mess :
                 barre_de_message(mess, messager)
                 init_vars(filtre)
                 return None
             mess = filtre.controle_HLD()
-            if mess:
+            if mess :
                 barre_de_message(mess, messager)
                 init_vars(filtre)
                 return None
@@ -449,7 +486,7 @@ def c_regler_filtre(index_filtre=None):
         lm_regler_filtre = [['Sauvegarder', conclure],
                             ['Supprimer', supprimer],
                             ['Annuler', annuler]
-                            ]
+                            ]   
     else:
         var_pointH_max.set(40)
         var_HLD_max.set(58)
@@ -672,8 +709,12 @@ def _selectionne_sequence(postaction):
         postaction()
 
     def escape(event=None):
-        barre_de_menu(lm_sequence, menu)
-        clear(fenetre)
+        if expert :
+            barre_de_menu(lm_sequence, menu)
+            clear(fenetre)
+        else :
+            barre_de_menu(lm_proto_menu, menu)
+            clear(fenetre)
 
     if DEBUG:
         print('chosir sequence')
@@ -724,7 +765,7 @@ def _modification():
         if sequence_active.is_invalide():
             mess = 'Filtres incompatibles'
             barre_de_message(mess, messager)
-        else:
+        else :    
             sequence_active.name = name
             barre_de_menu(lm_sequence, menu)
             liste_des_sequences.sort(key=lambda seq: seq.name)

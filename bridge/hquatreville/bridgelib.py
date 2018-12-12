@@ -26,9 +26,9 @@ Fourni les classes suivantes :
 
 @author: hubert
 """
-from random import randint, shuffle
+from random import randint, shuffle, random
 from itertools import product
-from numpy.random import choice
+#from np.random import choice
 
 DEBUG = False
 
@@ -115,7 +115,7 @@ class Main:
     def affiche(self, decalage=0, autre_main=None):
 
         if autre_main:
-            for couleur in Couleur:
+            for couleur in Couleur:  
                 print(couleur.glyph(), self[couleur],
                       ' '*(26-len(str(self[couleur]))),
                       couleur.glyph(), autre_main.couleurs[couleur])
@@ -356,7 +356,7 @@ class Filtre:
         self.pointH_min = pointH_min
         self.pointH_max = pointH_max
         self.trefle_min = trefle_min
-        self.trefle_max = trefle_max
+        self.trefle_max = trefle_max       
         self.carreau_min = carreau_min
         self.carreau_max = carreau_max
         self.coeur_min = coeur_min
@@ -369,22 +369,24 @@ class Filtre:
         self.pique_qualite = pique_qualite
         self.points_totaux_min = points_totaux_min
         self.points_totaux_max = points_totaux_max
-
+        
     def __getattr__(self, nom):
-        if nom == "min":
+        if nom == "min" :
             return [self.trefle_min,
-                    self.carreau_min,
-                    self.coeur_min,
-                    self.pique_min]
-        if nom == "max":
+                   self.carreau_min,
+                   self.coeur_min,
+                   self.pique_min]
+        if nom == "max" :
             return [self.trefle_max,
-                    self.carreau_max,
-                    self.coeur_max,
-                    self.pique_max]
-        raise AttributeError()              # workaround for pickle
+                   self.carreau_max,
+                   self.coeur_max,
+                   self.pique_max]
+        raise AttributeError()              # workaround for pickle 
 
+        
+               
     def __repr__(self):
-        return self.name
+        return self.name    
 
     def filtre(self, main):
         ''' Renvoie True si la main considérée correspond au filtre désirée,
@@ -439,79 +441,77 @@ class Filtre:
             # print(16)
             return False
         return True
-
+    
     def controle_couleurs(self):
         ''' Ajuste le filtre pour que les critères de distribution
         soient cohérents. En cas de problème, renvoie une chaîne de caractère
         indiquant la nature du problème'''
         if self.trefle_min + self.carreau_min + \
-           self.coeur_min + self.pique_min > 13:
+           self.coeur_min + self.pique_min > 13 :
             return "Trop de cartes par couleur"
-        else:
-            trefle_test = 13
+        else :
+            trefle_test  = 13
             carreau_test = 13
-            coeur_test = 13
-            pique_test = 13
-
-            trefle_test -= self.pique_min
-            carreau_test -= self.pique_min
-            coeur_test -= self.pique_min
-
-            trefle_test -= self.coeur_min
+            coeur_test   = 13
+            pique_test   = 13
+            
+            trefle_test  -= self.pique_min
+            carreau_test -= self.pique_min 
+            coeur_test   -= self.pique_min
+            
+            trefle_test  -= self.coeur_min 
             carreau_test -= self.coeur_min
-            pique_test -= self.coeur_min
-
-            trefle_test -= self.carreau_min
-            coeur_test -= self.carreau_min
-            pique_test -= self.carreau_min
-
-            carreau_test -= self.trefle_min
-            coeur_test -= self.trefle_min
-            pique_test -= self.trefle_min
-
-            self.trefle_max = min(self.trefle_max, trefle_test, 11)
-            self.carreau_max = min(self.carreau_max, carreau_test, 11)
-            self.coeur_max = min(self.coeur_max, coeur_test, 11)
+            pique_test   -= self.coeur_min
+            
+            trefle_test  -= self.carreau_min
+            coeur_test   -= self.carreau_min
+            pique_test   -= self.carreau_min
+            
+            carreau_test -= self.trefle_min 
+            coeur_test   -= self.trefle_min 
+            pique_test   -= self.trefle_min 
+            
+            self.trefle_max = min(self.trefle_max, trefle_test, 11) 
+            self.carreau_max = min(self.carreau_max, carreau_test, 11) 
+            self.coeur_max = min(self.coeur_max, coeur_test, 11) 
             self.pique_max = min(self.pique_max, pique_test, 11)
             # On interdit qu'une main puisse avoir plus de 11 cartes de la
             # même couleur car cela n'est JAMAIS arrivé.
-
+                            
         if self.trefle_max + self.carreau_max + \
-                self.coeur_max + self.pique_max < 13:
+             self.coeur_max + self.pique_max < 13 :
             return "Pas assez de cartes par couleur"
 
     def controle_HLD(self):
         ''' Ajuste le filtre pour que les critères de points
         soient cohérents. En cas de problème, renvoie une chaîne de caractère
         indiquant la nature du problème'''
-        def inf(courte, longue):
+        def inf(courte,longue):
             ''' Valeur minimum de la distribution 
             courte : nombre minimum de carte
             longue : nombre macximum de cartes'''
             return max(0, courte-4, 3-longue)
-
-        def sup(courte, longue):
+        def sup(courte,longue):
             return max(longue-4, 3-courte)
         paires = ([self.trefle_min, self.trefle_max],
                   [self.carreau_min, self.carreau_max],
                   [self.coeur_min, self.coeur_max],
                   [self.pique_min, self.pique_max]
-                  )
-        inf_LD = sum(inf(*arg) for arg in paires)
-        max_LD = sum(sup(*arg) for arg in paires)
+                 )
+        inf_LD = sum (inf(*arg) for arg in paires)
+        max_LD = sum (sup(*arg) for arg in paires)
         self.points_totaux_min = max(self.points_totaux_min,
                                      self.pointH_min + inf_LD)
         self.pointH_max = min(self.points_totaux_max - inf_LD,
                               self.pointH_max)
-        if self.points_totaux_min > self.points_totaux_max:
+        if self.points_totaux_min > self.points_totaux_max :
             return "Incohérence entre Points H et points HLD"
-        if self.pointH_min > self.pointH_max:
+        if self.pointH_min > self.pointH_max :
             return "Incohérence entre Points H et points HLD"
         self.pointH_min = max(self.pointH_min,
                               self.points_totaux_min - max_LD)
         self.points_totaux_max = min(self.points_totaux_max,
                                      self.pointH_max + max_LD)
-
 
 class NulFiltre(Filtre):
     ''' Un Filtre qui laisse tout passer '''
@@ -523,52 +523,49 @@ class NulFiltre(Filtre):
     def filtre(self, main):
         return True
 
-
 class ErreurDeContrainte(Exception):
     ''' Difficulté de gestion des maximums par Couleur '''
     pass
 
-
 class Quatuor:
     ''' Un filtre par position '''
-
     def __init__(self, filtres):
         self.filtres = filtres
-
+        
     def __repr__(self):
         return repr(self.filtres)
-
+        
     def is_valide(self):
         ''' 
         Contrôle de compatibilité entre les 4 filtres du quatuor.
         Optimisation de quelques paramètres dans le cas où les
         contrôles sont validés
         '''
-
-        def controle(self, variablemin, variablemax, total):
+        def  controle(self, variablemin,variablemax, total):
             somme = sum(getattr(fil, variablemin) for fil in self.filtres)
-            if somme > total:
+            if  somme > total:
                 return True
-            for fil in self.filtres:
-                setattr(fil,
-                        variablemax,
-                        min(getattr(fil, variablemax),
+            for fil in self.filtres :
+                setattr(fil, 
+                        variablemax, 
+                        min(getattr(fil, variablemax), 
                             total - somme + getattr(fil, variablemin)
                             )
                         )
-
+          
+       
             somme = sum(getattr(fil, variablemax) for fil in self.filtres)
-            if somme < total:
+            if  somme < total:
                 return True
-            for fil in self.filtres:
-                setattr(fil,
-                        variablemin,
-                        max(getattr(fil, variablemin),
+            for fil in self.filtres :
+                setattr(fil, 
+                        variablemin, 
+                        max(getattr(fil, variablemin), 
                             total - somme + getattr(fil, variablemax)
                             )
-                        )
-
-        if controle(self, 'pointH_min', "pointH_max", 40):
+                        )              
+                                      
+        if controle(self, 'pointH_min', "pointH_max", 40):       
             return False
         if controle(self, 'trefle_min', "trefle_max", 13):
             return False
@@ -578,14 +575,14 @@ class Quatuor:
             return False
         if controle(self, 'pique_min', "pique_max", 13):
             return False
-
+  
         return True
-
+        
     def distribue(self):
         ''' 
         Distribution d'une donne en fonction des filttres du Quatuor 
         '''
-        def ventile(a, liste, correctif):
+        def ventile(a, liste, correctif) :
             '''
             a : nombre de position à ventiler
             liste = [x, y, z, t]
@@ -596,52 +593,74 @@ class Quatuor:
             Le correctif permet d'éviter que le résultat soit trop biaisé
             mais ne garanti pas une équité théorique correcte.
             '''
-            if DEBUG:
+            if DEBUG :
                 print('ventile')
-                print(a, liste)
+                print(a, liste)              
             ventilation = [0, 0, 0, 0]
-            for i in range(a):
-                x, y, z, t = liste
-                a, b, c, d = correctif
-                probas = [x * (13 - a)/(1+a),
-                          y * (13 - b)/(1+b),
-                          z * (13 - c)/(1+c),
-                          t * (13 - d)/(1+d)
-                          ]
-                if sum(probas) == 0:
+            for i in range(a) :
+                x,y,z,t = liste
+                a,b,c,d = correctif
+                probas = [ x * (13 - a)/(1+a) ,
+                           y * (13 - b)/(1+b) ,
+                           z * (13 - c)/(1+c) ,
+                           t * (13 - d)/(1+d) 
+                          ] 
+                total = sum(probas)
+                if total == 0 :
+                    if DEBUG:
+                        print('ErreurDeContrainte')
                     raise ErreurDeContrainte
-                probas = [t / sum(probas) for t in probas]
-                pos = choice(4, p=probas)
+                choice = random()*total
+                pos = 0
+                cumul = probas[0]
+                while choice > cumul :
+                    pos +=1
+                    cumul += probas[pos]
+                if pos == 4 :    # Théoriquement impossible, provision pour                     
+                   pos = 3       # erreurs d'arrondi   
+                   if DEBUG:
+                       print("erreur d'arrondi")
                 ventilation[pos] += 1
-                correctif[pos] += 1
-                liste[pos] -= 1
-            if DEBUG:
+                correctif[pos] +=1
+                liste[pos] -=1
+            if DEBUG :
                 print("ventilation", ventilation)
-            return(ventilation)
-
-        if DEBUG:
-            print("Préparez le paracétamol")
+            return(ventilation)    
+            
+        def controlemin(col, pos) :
+            vacances = 13
+            for c in Couleur:
+                if c != col:
+                    vacances -= reservations[pos][c]
+                    vacances -= facultatif[c][pos]
+            delta = vacances - reservations[pos][col]
+            if delta > 0:
+                reservations[pos][col] += delta
+                facultatif[col][pos]   -= delta 
+            
+        if DEBUG :
+             print("Préparez le paracétamol")                                
         repartition = [[[] for col in Couleur] for pos in Position]
-        # Les mains à remplir
-        reservations = [fil.min for fil in self.filtres]
+        # Les mains à remplir        
+        reservations = [fil.min for fil in self.filtres] 
         # Les places résercées par couleur
-        facultatif = [[fil.max[col]-fil.min[col] for fil in self.filtres]
-                      for col in Couleur]
-        # Les places libres par couleur
+        facultatif  = [[fil.max[col]-fil.min[col] for fil in self.filtres] \
+                        for col in Couleur]
+        # Les places libres par couleur 
         free = [13 - sum(fil.min) for fil in self.filtres]
-        # Les places restantes par position
-
-        for col in Couleur:
+        # Les places restantes par position 
+       
+        for col in Couleur :
             # On commencve par remplir les places réservées
-            if DEBUG:
+            if DEBUG :
                 print('repartition', repartition)
                 print('reservation', reservations)
-                print('facultatif', [[facultatif[p][c]
-                                      for p in Couleur] for c in Position])
+                print('facultatif', [[facultatif[p][c] for p in Couleur] for c in Position])
                 print('free', free)
             cartes = list(range(13))
             shuffle(cartes)
-            for pos in Position:
+            for pos in Position :
+                controlemin(col,pos)
                 for i in range(reservations[pos][col]):
                     repartition[pos][col].append(cartes.pop())
             # On ventile les places restantes
@@ -650,21 +669,24 @@ class Quatuor:
             correctif = [reservations[pos][col] for pos in Position]
             liste = list(facultatif[col])
             ventilation = ventile(reste, liste, correctif)
-            for pos in Position:
+            for pos in Position :
                 for i in range(ventilation[pos]):
-                    repartition[pos][col].append(cartes.pop())
-                free[pos] -= ventilation[pos]
-            for c in range(col+1, 4):
+                    repartition[pos][col].append(cartes.pop()) 
+                free[pos] -= ventilation[pos]    
+            facultatif[col] = ventilation
+            for c in range(col+1,4):
                 for pos in Position:
-                    facultatif[c][pos] = min(facultatif[c][pos], free[pos])
+                    facultatif[c][pos] = min(facultatif[c][pos],free[pos])
+                    
 
-        donne = Donne(nord=repartition[0],
-                      sud=repartition[1],
-                      est=repartition[2],
-                      ouest=repartition[3]
+
+        donne = Donne(nord  = repartition[0],
+                      sud   = repartition[1],
+                      est   = repartition[2], 
+                      ouest = repartition[3]
                       )
-        return donne
-
+        return donne  
+         
     def affiche(self):
         attributs = ["pointH_min",
                      "pointH_max",
@@ -678,27 +700,25 @@ class Quatuor:
                      "pique_max"
                      ]
         for position in Position:
-            print('position : ', position.name())
-            for att in attributs:
+            print('position : ', position.name()) 
+            for att in attributs :
                 print(att, ' : ', getattr(self.filtres[position], att))
-
 
 class InvalidSequence(Exception):
     ''' Séquence invalide '''
     pass
-
 
 class Sequence:
     ''' 
     Séquence de filtres pour une Donne. 
     Correspond à une séquence d'enchères 
     '''
-
+    contrainteError = 0
     def __init__(self):
         self.positif = [[] for positionn in Position]
         self.negatif = [[] for positionn in Position]
         self.name = ''
-
+        
     def __repr__(self):
         return self.name
 
@@ -710,7 +730,7 @@ class Sequence:
 
     def set_name(self, name):
         self.name = name
-
+        
     def explode(self):
         ''' Transforme la séquence en liste de Quatuor'''
         def nullify(liste_de_filtres):
@@ -719,33 +739,35 @@ class Sequence:
             else:
                 null = NulFiltre()
                 return [null]
-        goodlistes = map(nullify, self.positif)
+        goodlistes = map(nullify,self.positif)
         quatuors = [Quatuor(x) for x in product(*goodlistes)]
         return [x for x in quatuors if x.is_valide()]
-
+    
     def is_invalide(self):
         return not (self.explode())
-
-    def distribue(self):
+    
+    def distribue(self) :
         quatuors = self.explode()
-        if quatuors:
+        if quatuors :
             choix = randint(1, len(quatuors))
             test = False
             compteur = 0
             overflow = 50_000
-            while not test:
+            while not test :
                 compteur += 1
-                if compteur > overflow:
+                if compteur > overflow :
                     raise InvalidSequence
-                try:
+                try :    
                     tentative = quatuors[choix-1].distribue()
                     test = self.filtre(tentative)
-                except ErreurDeContrainte:
-                    pass
-
+                except ErreurDeContrainte :
+                    if DEBUG:
+                        Sequence.contrainteError += 1
+                        print(Sequence.contrainteError)
+                
             return tentative
-        else:
-            raise InvalidSequence
+        else :
+            raise InvalidSequence 
 
     def filtre(self, donne):
         ''' Appliacation des filtres à une donne, 
