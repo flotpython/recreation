@@ -1,32 +1,45 @@
 Tout est documenté en anglais excepté ce que je veux faire afficher en français à l'utilisateur.
 
 Mais pour résumer en français, je reviens vers vous pour vous demander de critiquer mon code - constructivement bien sûr ;-)
-J'y ai passé des dizaines d'heures, il était déjà fonctionnel avant de commencer le MOOC, mais je l'ai bien amélioré depuis, 
-malheureusement (ou pas) sans savoir encore comment implémenter des classes dans mon contexte.
+J'y ai apporté des modifications suite aux remarques/conseils qui m'ont été apportés dans l'issue "verif_temp3".
+Encore merci à ceux qui m'ont donné leur avis et merci d'avance pour les prochains commentaires ! 
 
-Pour sauter tous mes commentaires et notamment ceux qui ont trait au contexte (où je travaille, pourquoi j'ai créé 
-ce programme...) vous pouvez directement aller à la ligne 94 de mon programme ("# Different imports:")
+Si vous ne voyez rien à modifier, j'enlèverai juste le bout de code qui calcule la durée d'exécution du programme et 
+je considèrerai ce programme comme terminé. "Chouette, je vais pouvoir m'atteler au suivant !" :-)
 Yoann Aizac alias 'yaizac'
 
 
 # verif_temps3
 NOTE: this following text is a copy of the beginning of my program 
-which is called "verif_temps3_for_mooc.py". 
+which is called "verif_temps3_for_mooc_v2.py". 
 I explain you the context and I tried to summarize what each function does.
-The program really starts at line 94 with "# Different imports:"
 
 
-# Preamble:
+# Preamble (updated):
 """
-This is a cleaned version of my program to show you my code because I'm sure
-it can be improved (maybe with classes?).
-I already removed many 'global' variables and I reduced pieces of this code.
-I modified this code by learning from the excellent MOOC on Python :-)
+This is an update of my program "verif_temps3_for_mooc.py".
 
-Please don't hesitate to criticize/review this code and ask for everything
-you find weird !
+I changed different things you told me in the issue related to 'verif_temp3':
+- I put paths in variables just after the different imports,
+- I tried to remove all global variables, there's still one in function n°2
+'input_file_xjob' used to start counting duration of this program,
+but I'll probably delete it in my final version.
+- I removed the method 'exit()' in function 'input_file_xjob'
+- I changed the code to display things with the method center()
+- I used the method 'intersection()' in function n°5 'verif_characters'
+to find unwanted characters in both sets
+- I removed function 'verif_trigrammes' to avoid using a global variable and
+I put the code in function n°6 'verif_numerotation'.
+- I also removed last big function because I found the method 'timedelta'
+(I use it on 2 lines in function n°10) and I could reduce function
+'total_duration_time' by removing all conditions on months.
+- I tried to put some 'return' in my functions, but as they contain functions
+if I put a 'return' somewhere, the function ends... and I want it to launch
+next function (with parameters).
+
+Thank you for your comments and I would appreciate if you could criticize /
+review my code again ! :-)
 """
-
 
 # To explain you the context:
 """
@@ -36,7 +49,7 @@ Many samples are analyzed on one of them.
 Each day: people prepare samples in holders, then we check them and put them
 inside the diffractometer. We program them on the driving software and analyses
 are done during the night (thanks to the autochanger, a robot that puts samples
-in position under the X-ray beam). 
+in position under the X-ray beam).
 
 We use different small "house" programs to check the existence of files,
 send results files by email, print results (with a network printer),
@@ -50,7 +63,6 @@ and an email address (with the same string after the '@').
 It works but it can be improved too, I will modify it later.
 """
 
-
 # About this program:
 """
 Now I'm doing a house program to check that sample numbers have not been
@@ -61,10 +73,9 @@ characters, each sample number must respect a format, the existence of 'bsml'
 files which are created by our driving software, and at the end we want to know
 when all analyses are finished. We also want to know when there is an error.
 
-This program contains 12 functions and only the 2 first are launched at the end
-because other functions are launched from the second one.
-I don't know if it's the best solution in terms of bit-efficiency, but in the
-first version of this program I launched all functions at the end.
+This program contains 10 functions and only the 2 first are launched at the end
+because other functions are launched from the second one. By this way, I avoid
+using global variables.
 
 Each function is documented (I hope enough) but I need to add that 'xjob' file
 is an XML file containing all information typed in the driving software among:
@@ -78,31 +89,29 @@ software on our computer is to replace 'bsml' extension by 'zip'. We can find
 XML files inside the 'zip' where we get the duration of each 'bsml' file.
 """
 
-
-# 12 functions:
+# 10 functions (updated):
 """
-- First function only displays last modification of this file
+- First function only displays last modification of this file (if it exists)
+otherwise a try/except catches the exception 'FileNotFoundError'
 - In second one we ask user to type 'xjob' filename without its extension and
 we start counting duration of the program
 - Then third function checks the existence of this 'xjob' filename
 - 4th function opens this file and cleans lines
-- Functions 5, 6 and 7 check unwanted characters, sample numbers formats and
+- Functions 5 and 6 check unwanted characters, sample numbers formats and
 trigrams
-- Functions 8 and 9 check the existence of these numbers in our database and
+- Functions 7 and 8 check the existence of these numbers in our database and
 'bsml' experiment files
-- Function 10 fix an error when 'bsml' filename has a space, copy 'bsml' files
+- Function 9 fix an error when 'bsml' filename has a space, copy 'bsml' files
 in a folder and convert them into 'zip' files. There are 2 conditions because
 if the folder is empty (at the beginning) it doesn't work.
-- Function 11 calculates durations of each program, adds them with constants
+- Function 10 calculates durations of each 'bsml', adds them with constants
 to current date and time to determine the estimated end date & time
-of all analyses.
-- Function 12 is used to display the result of last function under format:
-"Fin des analyses prévue le: dd/mm/yyyy, vers HH:MM:SS"
-with minutes and seconds on 2 digits, because I had only 1 digit
-when minutes or seconds were lower than 10. I don't mind for hours.
-I know this can be improved with hour formats but I don't know exactly how.
-- At the end: programs counts and displays its duration (between 1.5 and
-2 seconds) on my computer
+of all analyses. Then it displays results under format:
+"Fin des analyses prévue le: dd/mm/yyyy à HH:MM:SS"
 
-I will add a display of my program when it's well-executed (with errors).
+- At the end: programs counts and displays its duration (few seconds),
+depending on the number of programmed analyses.
+
+I won't add the display of my program when it's well-executed (with errors),
+because the display has not changed significantly.
 """
