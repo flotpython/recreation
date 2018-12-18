@@ -1,0 +1,34 @@
+Tout est documenté en anglais excepté ce que je veux faire afficher en français à l'utilisateur. 
+
+Mais pour résumer en français, je reviens vers vous pour vous demander de critiquer mon code - constructivement bien sûr ;-)
+J'y ai apporté des modifications suite aux remarques/conseils qui m'ont été apportés dans l'issue "verif_temp3".
+Encore merci à ceux qui m'ont donné leur avis et merci d'avance pour les prochains commentaires ! 
+
+Si vous ne voyez rien à modifier, j'enlèverai juste le bout de code qui calcule la durée d'exécution du programme et 
+je considèrerai ce programme comme terminé. "Chouette, je vais pouvoir m'atteler au suivant !" :-)
+Yoann Aizac alias 'yaizac'
+
+
+# Preamble (updated):
+"""
+You'll find the context and other pieces of information in README. 
+
+This is an update of my program "verif_temps3_for_mooc_v2.py", which is called now:
+"verif_temps3_for_pc_yoann_0function.py"
+
+# Changes:
+I changed some things you told me in the issue related to 'verif_temp3':
+- I removed all functions (and global variables)
+- I left comments under code blocks (number of 10)
+- I put regular expressions in code block n°6
+- I put a "while True" loop in code block n°2 to avoid repeating the code from
+code block n°2 to n°10.
+
+Thank you for your comments and I would appreciate if you could criticize /
+review my code again ! :-)
+
+
+
+I don't add the display of my program when it's well-executed (with errors),
+because the display has not changed significantly.
+"""
