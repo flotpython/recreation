@@ -49,6 +49,9 @@ class Game(tk.Frame):
 
     def score(self):
         return self.jeu.score()
+       
+    def gagnant(self):
+        return oth.NOIR if self.score()[0]>self.score()[1] else oth.VIDE if self.score()[0]==self.score()[1] else oth.BLANC
 
     def drawtable(self, table):
         """ 
@@ -59,12 +62,11 @@ class Game(tk.Frame):
             for k in range(len(oth.COLONNES)):
                 rec = self.C.create_rectangle((l+1)*zoom, (k+1)*zoom, (l+2)*zoom, (k+2)*zoom, tag='case')
                 cir = self.C.create_oval((l+1)*zoom, (k+1)*zoom, (l+2)*zoom, (k+2)*zoom, fill=couleurs[table[l][k]])
-        self.label_score.destroy()
-        gagnant = oth.NOIR if self.score()[0]>=self.score()[1] else oth.BLANC
-        self.label_score = tk.Label(self.master,
+        self.label_score_score.destroy()
+        self.label_score_score = tk.Label(self.master,
                                     text=f'{couleurs[oth.NOIR]}={self.score()[0]}|{couleurs[oth.BLANC]}={self.score()[1]}',
-                                    bg=couleurs[gagnant])
-        self.label_score.grid(row=sizeV+6, column=1)
+                                    bg=couleurs[self.gagnant()])
+        self.label_score_score.grid(row=sizeV+5, column=2, sticky=tk.W)
 
     def create_widgets(self):
         ### Définition des widgets
@@ -78,23 +80,22 @@ class Game(tk.Frame):
                                               bg=couleurs[self.joueur])
         self.bouton_nouveau = tk.Button(self.master, text='Changez votre couleur', command=self.nouveau_jeu)
         self.bouton_help = tk.Button(self.master, text='Help', command=self.help)
-        gagnant = oth.NOIR if self.score()[0]>=self.score()[1] else oth.BLANC
-        self.label_score = tk.Label(self.master, text='SCORE')
+        self.label_score = tk.Label(self.master, text='SCORE: ')
         self.label_score_score = tk.Label(self.master,
                                      text=f'{couleurs[oth.NOIR]}={self.score()[0]}|{couleurs[oth.BLANC]}={self.score()[1]}',
-                                     bg=couleurs[gagnant])                     
+                                     bg=couleurs[self.gagnant()])                     
         self.bouton_AI = tk.Button(self.master, text='AI', command=self.next)
 
         ### Placement des widgets
         self.C.grid(row=1, column=1, rowspan=sizeV+2, columnspan=sizeH+2, padx=5, pady=5)
         self.bouton_AI.grid(row = 1, column=sizeH+3)
         self.label_couleur_info.grid(row=sizeV+4, column=1, sticky=tk.E)
-        self.label_couleur_couleur.grid(row=sizeV+4, column=2, stick=tk.E)
+        self.label_couleur_couleur.grid(row=sizeV+4, column=2, stick=tk.W)
         self.label_score.grid(row=sizeV+5, column=1, sticky=tk.E)
-        self.label_score_score.grid(row=sizeV+5, column=2)
-        self.bouton_nouveau.grid(row=sizeV-1, column=sizeH+3)
-        self.bouton_help.grid(row=sizeV, column=sizeH+3)
-        self.bouton_quit.grid(row=sizeV+1, column=sizeH+3)
+        self.label_score_score.grid(row=sizeV+5, column=2, sticky=tk.W)
+        self.bouton_nouveau.grid(row=sizeV+3, column=sizeH+3)
+        self.bouton_help.grid(row=sizeV+4, column=sizeH+3)
+        self.bouton_quit.grid(row=sizeV+6, column=sizeH+3, padx=5)
 
         ## Le Canvas
         x, y = 3*zoom/2, zoom/2
