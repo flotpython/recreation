@@ -60,7 +60,7 @@ class Othello:
         """ renvoie les couleurs des cases adjacentes """
         couleurs = []
         for (a,b) in DIRECTIONS:
-            if a==b:
+            if a==b or a==-b:
                 pass
             else:
                 if 0<= ligne+a < SIZE and 0<= colonne+b < len(COLONNES):
@@ -142,8 +142,6 @@ class Othello:
             retourne les pions à retourner
             efface les autres cases jouables
         """
-        totN=0
-        totB=0
         self.jeu[ligne][colonne]=self.joueur
         for (l, c) in casesARetourner:
             self.jeu[l][c] = -self.jeu[l][c]
@@ -152,21 +150,27 @@ class Othello:
                 if self.jeu[l][c] not in (VIDE, NOIR, BLANC):
                     self.jeu[l][c]=VIDE
         self.next()
-        
+    
+    def toString(self, case):
+        c = COLONNES[case[0]]
+        l = LIGNES[case[1]]
+        return ''.join((c,l))
 
     def playAI(self):
         """ Détermine la case que jouera l'AI """
         case = self.meilleurCoup(self.joueur)
         pos = self.isJouable(case[0], case[1], self.joueur)
         self.jouer(case[0], case[1], pos)
+        return self.toString(case)
 
     def playJoueur(self, ligne, colonne):
         """ Verifie la jouablilité de la case """
         pos = self.isJouable(ligne, colonne, self.joueur)
         if pos:
             self.jouer(ligne, colonne, pos)
+            return self.toString((ligne, colonne))
         else:
-            pass
+            return False
                     
         
 
