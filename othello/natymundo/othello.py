@@ -5,7 +5,7 @@ NOIR = 1
 BLANC = -1
 JOUABLE = 'x'
 SIZE = 8
-COLONNES = [a for a in 'ABCDEFGH']
+COLONNES = 'ABCDEFGH'
 LIGNES = [str(i+1) for i in range(SIZE)]
 DIRECTIONS = {(a, b) for a in (-1,0,1) for b in (-1,0,1)}
 
@@ -42,7 +42,7 @@ class Othello:
         """
             retourne une copie du plateau de jeu
             avec le nb de jetons qui seront retournés en jouant sur la case en question
-            ('x' si ce nombre vaut 1)
+            ('x' si ce nombre vaut 1 pour ne pas le confondre avec NOIR)
         """
         jouable = []
         for l in range(SIZE):
