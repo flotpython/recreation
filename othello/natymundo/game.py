@@ -50,7 +50,8 @@ class Game(tk.Frame):
             self.drawtable(self.jeu.jeu)
             self.set_label_case(case)
         else:
-            self.message_box('C\'est à vous de jouer...')
+            # évitez les backslashes quand c'est possible
+            self.message_box("C'est à vous de jouer...")
 
     def message_box(self, message):
         """
@@ -107,7 +108,7 @@ class Game(tk.Frame):
         self.label_score_score.grid(row=4, column=1, columnspan=2)
 
     def drawtable(self, table):
-        """ 
+        """
             Dessine la table de jeu dans le canvas,
             et met à jour le score
         """

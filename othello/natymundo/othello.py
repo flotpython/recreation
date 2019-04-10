@@ -16,6 +16,8 @@ class Othello:
     """
 
     def __init__(self):
+        # évidemment la première remarque est qu'un tableau numpy
+        # serait bien plus efficace pour modéliser le jeu
         self.jeu = []
         for l in range(SIZE):
             self.jeu.append([])
@@ -26,6 +28,8 @@ class Othello:
 
     def __str__(self):
         txt = ' ' + ' '.join(COLONNES) + '\n'
+        # pourquoi pas plus simplement
+        # for l, ligne in zip(LIGNES, self.jeu):
         for l in range(SIZE):
             txt += LIGNES[l] + '|'
             for k in self.jeu[l]:
@@ -37,6 +41,7 @@ class Othello:
     def next(self):
         self.joueur = -self.joueur
 
+    # je vous conseille de choisir des noms + parlants que 'adv'
     def adv(self, couleur):
         return -couleur
 
@@ -47,6 +52,10 @@ class Othello:
             avec le nb de jetons qui seront retournés en jouant sur la case en question
             ('x' si ce nombre vaut 1 pour ne pas le confondre avec NOIR)
         """
+        # remarquez bien qu'à chaque appel de casesJouables
+        # on réalloue un tableau de jeu complet, ça peut être une cause
+        # de lenteur; avez-vous envisagé que ça puisse être à l'appelant
+        # de passer un jeu en paramètre pour optimiser ces allocations ?
         jouable = []
         for l in range(SIZE):
             jouable.append([])
