@@ -7,20 +7,22 @@ JOUABLE = 'x'
 SIZE = 8
 COLONNES = 'ABCDEFGH'
 LIGNES = [str(i+1) for i in range(SIZE)]
-DIRECTIONS = {(a, b) for a in (-1,0,1) for b in (-1,0,1)}
+DIRECTIONS = {(a, b) for a in (-1, 0, 1) for b in (-1, 0, 1)}
+
 
 class Othello:
     """
         Le jeu du même nom
     """
+
     def __init__(self):
-         self.jeu = []
-         for l in range(SIZE):
-             self.jeu.append([])
-             self.jeu[l]=[VIDE]*len(COLONNES)
-         self.jeu[3][4], self.jeu[4][3] = NOIR, NOIR
-         self.jeu[3][3], self.jeu[4][4] = BLANC, BLANC
-         self.joueur = NOIR
+        self.jeu = []
+        for l in range(SIZE):
+            self.jeu.append([])
+            self.jeu[l] = [VIDE]*len(COLONNES)
+        self.jeu[3][4], self.jeu[4][3] = NOIR, NOIR
+        self.jeu[3][3], self.jeu[4][4] = BLANC, BLANC
+        self.joueur = NOIR
 
     def __str__(self):
         txt = ' ' + ' '.join(COLONNES) + '\n'
@@ -28,7 +30,7 @@ class Othello:
             txt += LIGNES[l] + '|'
             for k in self.jeu[l]:
                 txt += ' ' + str(k)
-            txt += ' |'+ LIGNES[l] + '\n'
+            txt += ' |' + LIGNES[l] + '\n'
         txt += ' ' + ' '.join(COLONNES)
         return txt
 
@@ -38,7 +40,8 @@ class Othello:
     def adv(self, couleur):
         return -couleur
 
-    def casesJouables(self, couleur):  #ATTENTION: il est obligatoire de retourner au moins un pion adverse à chaque tour!
+    # ATTENTION: il est obligatoire de retourner au moins un pion adverse à chaque tour!
+    def casesJouables(self, couleur):
         """
             retourne une copie du plateau de jeu
             avec le nb de jetons qui seront retournés en jouant sur la case en question
@@ -51,19 +54,19 @@ class Othello:
                 jouable[l].append(self.jeu[l][c])
                 pos = self.isJouable(l, c, couleur)
                 if pos:
-                    jouable[l][c]=len(pos)
-                    if jouable[l][c]==1:
-                        jouable[l][c]='x'
+                    jouable[l][c] = len(pos)
+                    if jouable[l][c] == 1:
+                        jouable[l][c] = 'x'
         return jouable
 
     def casesAdjacentes(self, ligne, colonne, couleur):
         """ renvoie les couleurs des cases adjacentes """
         couleurs = []
-        for (a,b) in DIRECTIONS:
-            if a==b or a==-b:
+        for (a, b) in DIRECTIONS:
+            if a == b or a == -b:
                 pass
             else:
-                if 0<= ligne+a < SIZE and 0<= colonne+b < len(COLONNES):
+                if 0 <= ligne+a < SIZE and 0 <= colonne+b < len(COLONNES):
                     couleurs.append(self.jeu[ligne+a][colonne+b])
         return couleurs
 
@@ -71,7 +74,7 @@ class Othello:
         """ renvoie un tableau des jetons à retourner """
         t = []
         for (a, b) in DIRECTIONS:
-            if a==b==0:
+            if a == b == 0:
                 pass
             else:
                 A = a
@@ -79,24 +82,24 @@ class Othello:
                 tmp = []
                 while 0 <= ligne+A < SIZE and 0 <= colonne+B < SIZE:
                     if self.jeu[ligne+A][colonne+B] == VIDE:
-                        A=SIZE
-                        B=SIZE
+                        A = SIZE
+                        B = SIZE
                         pass
                     elif self.jeu[ligne+A][colonne+B] == couleur:
-                        if (A,B) in DIRECTIONS: #1er passage
-                            A=SIZE
-                            B=SIZE
+                        if (A, B) in DIRECTIONS:  # 1er passage
+                            A = SIZE
+                            B = SIZE
                             pass
                         else:
-                            for (l,c) in tmp:
-                                t.append((l,c))
+                            for (l, c) in tmp:
+                                t.append((l, c))
                             break
                     else:
                         tmp.append((ligne+A, colonne+B))
                         A += a
                         B += b
         return t
-    
+
     def isJouable(self, ligne, colonne, couleur):
         """
             renvoie un tableau des cases qui seront retournées ou VIDE si le tableau est vide
@@ -118,12 +121,12 @@ class Othello:
                 n = possibilities[l][c]
                 if not n in (VIDE, NOIR, BLANC):
                     if n == 'x':
-                        n=1
+                        n = 1
                     if n > maxSize:
-                        meilleureCase = (l,c)
+                        meilleureCase = (l, c)
                         maxSize = n
         return meilleureCase
-        
+
     def score(self):
         """ renvoie le score (NOIR, BLANC) """
         totN = 0
@@ -142,19 +145,19 @@ class Othello:
             retourne les pions à retourner
             efface les autres cases jouables
         """
-        self.jeu[ligne][colonne]=self.joueur
+        self.jeu[ligne][colonne] = self.joueur
         for (l, c) in casesARetourner:
             self.jeu[l][c] = -self.jeu[l][c]
         for l in range(SIZE):
             for c in range(len(COLONNES)):
                 if self.jeu[l][c] not in (VIDE, NOIR, BLANC):
-                    self.jeu[l][c]=VIDE
+                    self.jeu[l][c] = VIDE
         self.next()
-    
+
     def toString(self, case):
         c = COLONNES[case[0]]
         l = LIGNES[case[1]]
-        return ''.join((c,l))
+        return ''.join((c, l))
 
     def playAI(self):
         """ Détermine la case que jouera l'AI """
@@ -171,6 +174,3 @@ class Othello:
             return self.toString((ligne, colonne))
         else:
             return False
-                    
-        
-
