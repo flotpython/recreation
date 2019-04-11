@@ -1,5 +1,8 @@
 # Othello
 
+import numpy as np
+
+
 VIDE = 0
 NOIR = 1
 BLANC = -1
@@ -18,31 +21,18 @@ class Othello:
     def __init__(self):
         # évidemment la première remarque est qu'un tableau numpy
         # serait bien plus efficace pour modéliser le jeu
-        self.jeu = []
-        for l in range(SIZE):
-            self.jeu.append([])
-            self.jeu[l] = [VIDE]*len(COLONNES)
+        self.jeu = np.zeros((SIZE, len(COLONNES)), dtype=np.int8)
         self.jeu[3][4], self.jeu[4][3] = NOIR, NOIR
         self.jeu[3][3], self.jeu[4][4] = BLANC, BLANC
         self.joueur = NOIR
 
     def __str__(self):
-        txt = ' ' + ' '.join(COLONNES) + '\n'
-        # pourquoi pas plus simplement
-        # for l, ligne in zip(LIGNES, self.jeu):
-        for l in range(SIZE):
-            txt += LIGNES[l] + '|'
-            for k in self.jeu[l]:
-                txt += ' ' + str(k)
-            txt += ' |' + LIGNES[l] + '\n'
-        txt += ' ' + ' '.join(COLONNES)
-        return txt
+        return '\n'.join(' '.join(str(i) for i in ligne) for ligne in self.jeu)
 
     def next(self):
         self.joueur = -self.joueur
 
-    # je vous conseille de choisir des noms + parlants que 'adv'
-    def adv(self, couleur):
+    def adversaire(self, couleur):
         return -couleur
 
     # ATTENTION: il est obligatoire de retourner au moins un pion adverse à chaque tour!
@@ -115,7 +105,7 @@ class Othello:
         """
         pos = VIDE
         if self.jeu[ligne][colonne] not in (NOIR, BLANC):
-            if self.adv(couleur) in self.casesAdjacentes(ligne, colonne, couleur):
+            if self.adversaire(couleur) in self.casesAdjacentes(ligne, colonne, couleur):
                 pos = self.retournera(ligne, colonne, couleur)
                 if not pos:
                     pos = VIDE
@@ -183,3 +173,8 @@ class Othello:
             return self.toString((ligne, colonne))
         else:
             return False
+    
+# oth = Othello()
+# with open('test.txt', 'w') as f:
+    # f.write(str(oth))
+    
