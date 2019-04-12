@@ -18,22 +18,76 @@ class Othello:
         Le jeu du même nom
     """
 
-    def __init__(self):
-        # évidemment la première remarque est qu'un tableau numpy
-        # serait bien plus efficace pour modéliser le jeu
-        self.jeu = np.zeros((SIZE, len(COLONNES)), dtype=np.int8)
-        self.jeu[3][4], self.jeu[4][3] = NOIR, NOIR
-        self.jeu[3][3], self.jeu[4][4] = BLANC, BLANC
+    def __init__(self, jeu=None):
+        if jeu:
+            self.jeu = jeu
+        else:
+            self.jeu = np.zeros((SIZE, len(COLONNES)), dtype=np.int8)
+            self.jeu[3][4], self.jeu[4][3] = NOIR, NOIR
+            self.jeu[3][3], self.jeu[4][4] = BLANC, BLANC
         self.joueur = NOIR
+        self.dico_de_dir = dict({(a,b):[] for (a, b) in DIRECTIONS})
+        del self.dico_de_dir[(0,0)]
+        self.dico_de_cases = dict({(l,c):[] for l in range(SIZE) for c in range(len(COLONNES))})
+        self.mise_a_jour()
 
     def __str__(self):
-        return '\n'.join(' '.join(str(i) for i in ligne) for ligne in self.jeu)
+        return '\n'.join(';'.join(str(i) for i in ligne) for ligne in self.jeu)
+
+    def write(self, file):
+        with open(file, 'w', encoding='utf8') as f:
+            f.write(str(self))
+        
+    def read(self, file):
+        array = []
+        with open(file, 'r', encoding='utf8') as f:
+            for line in f:
+                for i in line.split(';'):
+                    array.append(int(i))
+        jeu = np.array((array), dtype=np.int8)
+        return jeu.reshape((SIZE, len(COLONNES)))
 
     def next(self):
         self.joueur = -self.joueur
 
     def adversaire(self, couleur):
         return -couleur
+        
+    def directions(self, jeu, case):
+        """
+        Mise à jour du dictionnaire des directions (key = une direction, value = tranche de jeu pour la case considérée)
+        ex: (1, 0):[self.joueur, BLANC, BLANC, NOIR, BLANC, VIDE]
+        """
+        for (a, b) in self.dico_de_dir.keys():
+            tranche = [self.jeu[case[0]][case[1]]]
+            A, B = case[0]+a, case[1]+b
+            while 0 <= A < SIZE and 0 <= B < len(COLONNES):
+                tranche.append(self.jeu[A][B])
+                A += a
+                B += b
+            self.dico_de_dir[(a, b)] = tranche
+        
+    def direction_a_retourner(self, direction):
+        """
+        La direction est une tranche de jeu.
+        Renvoie une liste des retournables pour la direction donnée,
+        Le premier de la liste correspond à la case regardée, et sera un booléen pour savoir si cette direction est retournables
+        Ensuite, -1 s'il faut retourner, 1 quand ça s'arrête
+        En reprenant l'exemple de self.directions(jeu, case):
+        en supposant que self.joueur = NOIR, alors on aurait [True, -1, -1, 1, BLANC, VIDE]
+        """
+        pass
+        
+    def mise_a_jour(self):
+        """
+        Met à jour le dictionnaire des cases qui donne pour chaque case le dictionnaire des directions
+        """
+        for case in self.dico_de_cases.keys():
+            self.directions(self.jeu, case)
+            self.dico_de_cases[case] = self.dico_de_dir
+    ## A CHANGER ICI: le dico_de_dir est toujours le meme dans le dico_de_cases...
+            
+            
 
     # ATTENTION: il est obligatoire de retourner au moins un pion adverse à chaque tour!
     def casesJouables(self, couleur):
@@ -46,6 +100,9 @@ class Othello:
         # on réalloue un tableau de jeu complet, ça peut être une cause
         # de lenteur; avez-vous envisagé que ça puisse être à l'appelant
         # de passer un jeu en paramètre pour optimiser ces allocations ?
+        ####
+        #   Ce tableau n'est-il pas détruit à la fin de ma fonction??
+        ####
         jouable = []
         for l in range(SIZE):
             jouable.append([])
@@ -174,7 +231,12 @@ class Othello:
         else:
             return False
     
-# oth = Othello()
-# with open('test.txt', 'w') as f:
-    # f.write(str(oth))
+oth = Othello()
+txt = ''
+for case in oth.dico_de_cases.keys():
+    txt += '-'*10 + '\n'
+    txt += f'{case}: {oth.dico_de_cases[case]}'
+    txt += '\n'
+with open('test.txt', 'w') as f:
+    f.write(txt)
     
