@@ -19,6 +19,7 @@ class Othello:
     """
 
     def __init__(self, jeu=None):
+        self.log = 'LOG: \n'
         if jeu:
             self.jeu = jeu
         else:
@@ -26,9 +27,7 @@ class Othello:
             self.jeu[3][4], self.jeu[4][3] = NOIR, NOIR
             self.jeu[3][3], self.jeu[4][4] = BLANC, BLANC
         self.joueur = NOIR
-        self.dico_de_dir = dict({(a,b):[] for (a, b) in DIRECTIONS})
-        del self.dico_de_dir[(0,0)]
-        self.dico_de_cases = dict({(l,c):[] for l in range(SIZE) for c in range(len(COLONNES))})
+        self.dico_de_cases = dict({(l,c):dict() for l in range(SIZE) for c in range(len(COLONNES))})
         self.mise_a_jour()
 
     def __str__(self):
@@ -53,19 +52,22 @@ class Othello:
     def adversaire(self, couleur):
         return -couleur
         
-    def directions(self, jeu, case):
+    def directions(self, case):
         """
-        Mise à jour du dictionnaire des directions (key = une direction, value = tranche de jeu pour la case considérée)
+        Mets à jour le dictionnaire des directions de la case considérée (key = une direction, value = tranche de jeu pour la case considérée)
         ex: (1, 0):[self.joueur, BLANC, BLANC, NOIR, BLANC, VIDE]
         """
-        for (a, b) in self.dico_de_dir.keys():
-            tranche = [self.jeu[case[0]][case[1]]]
-            A, B = case[0]+a, case[1]+b
-            while 0 <= A < SIZE and 0 <= B < len(COLONNES):
-                tranche.append(self.jeu[A][B])
-                A += a
-                B += b
-            self.dico_de_dir[(a, b)] = tranche
+        for (a, b) in DIRECTIONS:
+            if a==b and b==0:
+                pass
+            else:
+                tranche = [self.jeu[case[0]][case[1]]]
+                A, B = case[0]+a, case[1]+b
+                while 0 <= A < SIZE and 0 <= B < len(COLONNES):
+                    tranche.append(self.jeu[A][B])
+                    A += a
+                    B += b
+                self.dico_de_cases[case][(a, b)] = self.direction_a_retourner(tranche)
         
     def direction_a_retourner(self, direction):
         """
@@ -76,16 +78,37 @@ class Othello:
         En reprenant l'exemple de self.directions(jeu, case):
         en supposant que self.joueur = NOIR, alors on aurait [True, -1, -1, 1, BLANC, VIDE]
         """
-        pass
+        txt = ''
+        direction[0] = True
+        if self.joueur in direction[2:]:
+            index = direction[1:].index(self.joueur) + 1
+            txt += f'index={index} // '
+            if index == 1:
+                direction[0] = False
+            direction[index] = 1
+            for i in range(1, index):
+                 txt += f'i={i} // '
+                 if direction[i] == VIDE or index == 1:
+                    direction[0] = False
+                 else:
+                    direction[i] = -1
+                    txt += f'direction[{i}]=-1 // '
+        else:
+            direction[0] = False
+        if direction[0]:
+            self.log += txt + f'direction: {direction}\n'
+        return direction
+            
         
     def mise_a_jour(self):
         """
         Met à jour le dictionnaire des cases qui donne pour chaque case le dictionnaire des directions
         """
         for case in self.dico_de_cases.keys():
-            self.directions(self.jeu, case)
-            self.dico_de_cases[case] = self.dico_de_dir
-    ## A CHANGER ICI: le dico_de_dir est toujours le meme dans le dico_de_cases...
+            self.directions(case)
+            # for (k, v) in self.dico_de_cases[case].items():
+                # self.log += f'{case}: {k}={v}\n'
+            # self.log += '-'*10 + '\n'
             
             
 
@@ -232,11 +255,6 @@ class Othello:
             return False
     
 oth = Othello()
-txt = ''
-for case in oth.dico_de_cases.keys():
-    txt += '-'*10 + '\n'
-    txt += f'{case}: {oth.dico_de_cases[case]}'
-    txt += '\n'
 with open('test.txt', 'w') as f:
-    f.write(txt)
+    f.write(oth.log)
     
