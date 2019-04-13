@@ -33,8 +33,10 @@ class Game(tk.Frame):
         if self.jeu.joueur == self.joueur:
             ligne = int((event.x - zoom)/zoom)
             colonne = int((event.y - zoom)/zoom)
-            case = self.jeu.playJoueur(ligne, colonne)
-            if case:
+            case = self.jeu.playJoueur((ligne, colonne))
+            if case == 'EOG':
+                self.end_of_game()
+            elif case:
                 self.drawtable(self.jeu.jeu)
                 self.set_label_case(case)
             else:
@@ -47,11 +49,17 @@ class Game(tk.Frame):
     def next(self):  # activé par le bouton 'AI'
         if self.jeu.joueur == -self.joueur:
             case = self.jeu.playAI()
+            if case == 'EOG':
+                self.end_of_game()
+                self.nouveau_jeu()
             self.drawtable(self.jeu.jeu)
             self.set_label_case(case)
         else:
             # évitez les backslashes quand c'est possible
             self.message_box("C'est à vous de jouer...")
+            
+    def end_of_game(self):
+        self.message_box(f"Il n'y a plus de case jouable;\nle jeu est fini!\n\nEt le winner is: {couleurs[self.gagnant()]}")
 
     def message_box(self, message):
         """
@@ -80,8 +88,10 @@ class Game(tk.Frame):
 
     def help(self):
         """ Fait apparaître les cases jouables """
-        hilfe = self.jeu.casesJouables(self.jeu.joueur)
-        self.drawtable(hilfe)
+        hilfe = self.jeu.casesJouables()
+        for (l,k) in hilfe:
+            cir = self.C.create_oval(
+                    (l+1)*zoom, (k+1)*zoom, (l+2)*zoom, (k+2)*zoom, fill=couleurs['help'])
 
     def set_label_case(self, text):
         self.label_case_case.destroy()

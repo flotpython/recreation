@@ -67,6 +67,7 @@ class Othello:
                     A += a
                     B += b
                 self.dico_de_cases[case][(a, b)] = self.direction_a_retourner(tranche)
+                
         
     def direction_a_retourner(self, direction):
         """
@@ -91,7 +92,6 @@ class Othello:
                     direction[0] = False
                  else:
                     direction[i] = -1
-                    txt += f'direction[{i}]=-1 // '
         else:
             direction[0] = False
         if direction[0]:
@@ -103,50 +103,75 @@ class Othello:
         """
         Met à jour le dictionnaire des cases qui donne pour chaque case le dictionnaire des directions
         """
+        self.log += '\nMise à jour\n'
         for case in self.dico_de_cases.keys():
-            self.directions(case)
-            # for (k, v) in self.dico_de_cases[case].items():
-                # self.log += f'{case}: {k}={v}\n'
-            # self.log += '-'*10 + '\n'
-            
+            if self.jeu[case[0]][case[1]]==VIDE:
+                self.directions(case)
+            else:
+                for k in self.dico_de_cases[case].keys():
+                    self.dico_de_cases[case][k]=[False,1]
+        with open('test.txt', 'a') as f:
+            f.write(self.log)
             
 
-    # ATTENTION: il est obligatoire de retourner au moins un pion adverse à chaque tour!
     def casesJouables(self):
         """
             renvoie une liste des cases qui sont jouables par le joueur actuel
         """
         liste = []
         for case in self.dico_de_cases.keys():
-            for tranche in self.dico_de_case[case].values():
+            for tranche in self.dico_de_cases[case].values():
                  if tranche[0]:
                     liste.append(case)
                     break
-        self.log += f'casesJouables: {liste}'
         return liste
 
     def meilleurCoup(self):
-        """ renvoie le couple (ligne, colonne) correspondant à la case qui retourne le plus de jetons """
-        pass
+        """ renvoie la case de la liste des possibilities qui retourne le plus de jetons """
+        possibilities = self.casesJouables()
+        if possibilities:
+            best = 0
+            meilleureCase = possibilities[0]  # -> Changer 0 par un random!
+            for case in possibilities:
+                num = 0
+                for tranche in self.dico_de_cases[case].values():
+                    num += tranche.count(-1)
+                    #self.log += f'{case}: num = {num}\n'
+                if num > best:
+                    best = num
+                    meilleureCase = case
+            self.log += f'meilleureCase= {meilleureCase}\n'
+        else: meilleureCase = None
+        return meilleureCase
 
     def score(self):
         """ renvoie le score (NOIR, BLANC) """
         totN = 0
         totB = 0
-        for i in self.jeu:
-            if i == NOIR:
-                totN += 1
-            elif i == BLANC:
-                totB += 1
+        for l in self.jeu:
+            for i in l:
+                if i == NOIR:
+                    totN += 1
+                elif i == BLANC:
+                    totB += 1
         return (totN, totB)
 
-    def jouer(self, ligne, colonne):
+    def jouer(self, case):
         """
             ajoute le jeton de couleur sur la case,
             retourne les pions à retourner
             mets à jour le dictionnaire des tranches de jeu
         """
+        (l, c) = case
+        self.log += f'case jouée: {(l, c)}\n'
+        for (dir, tranche) in self.dico_de_cases[case].items():
+            if tranche[0]:
+                index = tranche[1:].index(1)
+                self.log += f'index des jetons à retourner dans {dir}:{tranche} = {index}\n'
+                for i in range(index+1):
+                    self.jeu[l+dir[0]*i][c+dir[1]*i] = self.joueur   
         self.next()
+        self.mise_a_jour() 
 
     def toString(self, case):
         c = COLONNES[case[0]]
@@ -155,13 +180,30 @@ class Othello:
 
     def playAI(self):
         """ Détermine la case que jouera l'AI """
-        pass
+        self.log += '\n' + '*'*10 + 'AI is playing...' + '*'*10 + '\n'
+        case = self.meilleurCoup()
+        if case:
+            self.jouer(case)
+            t = self.toString(case)
+        else:
+            t = 'EOG'
+        return t
 
-    def playJoueur(self, ligne, colonne):
+    def playJoueur(self, case):
         """ Verifie la jouablilité de la case """
-        pass
+        self.log += '\n' + '*'*10 + 'Joueur is playing...' + '*'*10 + '\n'
+        possibilities = self.casesJouables()
+        if possibilities:
+            if case in possibilities:
+                self.jouer(case)
+                return self.toString(case)
+            else:
+                return False
+        else: return 'EOG'
     
-oth = Othello()
-with open('test.txt', 'w') as f:
-    f.write(oth.log)
+# oth = Othello()
+# oth.playAI()
+# oth.playJoueur((4,2))
+ # with open('test.txt', 'w') as f:
+     # f.write(oth.log)
     
