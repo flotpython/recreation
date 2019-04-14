@@ -14,7 +14,7 @@ couleurs[oth.NOIR] = 'Red'
 couleurs[oth.BLANC] = 'Green'
 couleurs[oth.VIDE] = 'White'
 
-# des valeurs utiles, facilement changeables qui pourront faire partie un jour d'un fichier config
+# des valeurs utiles
 sizeV = oth.SIZE
 sizeH = len(oth.COLONNES)
 zoom = 20
