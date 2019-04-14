@@ -8,10 +8,9 @@ class Tranche:
     """
     
     def __init__(self, table, case, direction):
-        self.table = table
         self.case = case
         self.direction = direction
-        self.tranche = self.get_tranche(self.table, self.case, self.direction)
+        self.tranche = self.get_tranche(table, self.case, self.direction)
        # self.descr = self.description(couleur)
     
     def get_tranche(self, table, case, direction):
@@ -31,6 +30,14 @@ class Tranche:
                 B += b
         return tranche
         
+    def update(self, table):
+        """
+        Mets à jour la tranche
+        Renvoie la tranche complète
+        """
+        self.tranche = self.get_tranche(table, self.case, self.direction)
+        return self
+        
     def description(self, couleur):
         """"
         Donne les infos utiles de la tranche sur sa jouabilité.
@@ -46,6 +53,7 @@ class Tranche:
             if index > 1 and not 0 in self.tranche[1:index]:
                 descr = (True, index)          
         return descr
+
         
         
         

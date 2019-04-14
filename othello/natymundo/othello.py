@@ -19,7 +19,6 @@ class Othello:
     """
 
     def __init__(self, jeu=None, couleur=NOIR):
-        # self.log = '__init__ \n'
         if jeu:
             self.jeu = jeu
         else:
@@ -28,8 +27,8 @@ class Othello:
             self.jeu[3][3], self.jeu[4][4] = BLANC, BLANC
         self.couleur = couleur     # La couleur de Player
         self.joueur = 1 if self.couleur == NOIR else 0  # Le joueur dont c'est le tour de jouer (correspond à l'indice dans JOUEURS)
-        self.dico_de_cases = dict({(l,c):dict() for l in range(SIZE) for c in range(len(COLONNES))})
-        self.mise_a_jour()
+        self.dico_de_tranches = None
+        self.update()
 
     def __str__(self):
         """ renvoie le plateau de jeu sous forme d'un tableau """
@@ -72,33 +71,40 @@ class Othello:
         """ La couleur du joueur """
         return self.couleur if JOUEURS[joueur] == 'Player' else -self.couleur
         
-    def directions(self, case):
+    def directions(self, dico, case):
         """
         Mets à jour le dictionnaire des directions de la case considérée 
         (key = une direction, value = tranche de jeu pour la case considérée)
         """
         for dir in DIRECTIONS:
-            self.dico_de_cases[case][dir] = tranche.Tranche(self.jeu, case, dir)
+            if not dir in dico[case]:
+                dico[case][dir] = tranche.Tranche(self.jeu, case, dir)
+            else:
+                dico[case][dir] = dico[case][dir].update(self.jeu)
+                
     
-    
-    def mise_a_jour(self):
+    def update(self):
         """
-        Met à jour le dictionnaire des cases qui donne pour chaque case le dictionnaire des directions
+        Met à jour le dictionnaire de tranches qui donne pour chaque case le dictionnaire des directions
         """
-        for case in self.dico_de_cases.keys():
-            self.directions(case)
-        # with open('test.txt', 'a') as f:
-            # f.write(self.log)
-        # self.log = ''
+        if not self.dico_de_tranches:
+            self.dico_de_tranches = dict()
+            for l in range(SIZE):
+                for c in range(len(COLONNES)):
+                    self.dico_de_tranches[(l,c)]=dict()
+                    self.directions(self.dico_de_tranches, (l,c))
+        else:
+            for case in self.dico_de_tranches.keys():
+                self.directions(self.dico_de_tranches, case)
 
     def casesJouables(self, couleur):
         """
         renvoie une liste des cases qui sont jouables par la couleur indiquée
         """
         liste = []
-        for case in self.dico_de_cases.keys():
-            if self.jeu[case[0]][case[1]]==VIDE:   # on ne regarde que les cases qui sont vide (gain d'efficacité)
-                for tranche in self.dico_de_cases[case].values():
+        for case in self.dico_de_tranches.keys():
+            if self.jeu[case[0]][case[1]]==VIDE:   # on ne regarde que les cases qui sont vide 
+                for tranche in self.dico_de_tranches[case].values():
                      if tranche.description(couleur)[0]:
                         liste.append(case)
                         break
@@ -112,7 +118,7 @@ class Othello:
             meilleureCase = possibilities[0]  # -> Changer 0 par un random!
             for case in possibilities:
                 num = 0
-                for tranche in self.dico_de_cases[case].values():
+                for tranche in self.dico_de_tranches[case].values():
                     num += tranche.description(couleur)[1]-1
                 if num > best:
                     best = num
@@ -139,13 +145,13 @@ class Othello:
             mets à jour le dictionnaire des tranches de jeu
         """
         (l, c) = case
-        for (dir, tranche) in self.dico_de_cases[case].items():
+        for (dir, tranche) in self.dico_de_tranches[case].items():
             if tranche.description(self.get_couleur(joueur))[0]:
                 index = tranche.description(self.get_couleur(joueur))[1]
                 for i in range(index):
-                    self.jeu[l+dir[0]*i][c+dir[1]*i] = self.get_couleur(joueur)   
+                    self.jeu[l+dir[0]*i][c+dir[1]*i] = self.get_couleur(joueur)
         if self.next():
-            self.mise_a_jour() 
+            self.update() 
             return self.toString(case)
         else:
             return 'EOG'
