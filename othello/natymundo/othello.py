@@ -26,8 +26,8 @@ class Othello:
             self.jeu[3][4], self.jeu[4][3] = NOIR, NOIR
             self.jeu[3][3], self.jeu[4][4] = BLANC, BLANC
         self.joueur = NOIR
-        self.brouillon = None
-        self.update()  # une copie du jeu sur laquelle on écrit plein d'infos utiles
+        self.brouillon = None   # une copie du jeu sur laquelle on écrit plein d'infos utiles
+        self.update()  
 
     def __str__(self):
         return '\n'.join(';'.join(str(i) for i in ligne) for ligne in self.jeu)
@@ -60,20 +60,17 @@ class Othello:
                     self.brouillon[l].append(self.jeu[l][c])
         for l in range(SIZE):
             for c in range(len(COLONNES)):
-                pos = self.isJouable(l, c, self.joueur)
-                if pos:
-                    self.brouillon[l][c] = pos
+                self.brouillon[l][c] = self.isJouable(l, c, self.joueur)
     
    
     def casesAdjacentes(self, ligne, colonne, couleur):
         """ renvoie les couleurs des cases adjacentes """
         couleurs = []
         for (a, b) in DIRECTIONS:
-            if a == b or a == -b:
+            if a==b==0:
                 pass
-            else:
-                if 0 <= ligne+a < SIZE and 0 <= colonne+b < len(COLONNES):
-                    couleurs.append(self.jeu[ligne+a][colonne+b])
+            elif 0 <= ligne+a < SIZE and 0 <= colonne+b < len(COLONNES):
+                couleurs.append(self.jeu[ligne+a][colonne+b])
         return couleurs
 
     def retournera(self, ligne, colonne, couleur):
