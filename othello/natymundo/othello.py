@@ -165,7 +165,6 @@ class Othello:
         """
             ajoute le jeton de couleur sur la case,
             retourne les pions à retourner
-            efface les autres cases jouables
         """
         self.jeu[ligne][colonne] = self.joueur
         for (l, c) in casesARetourner:
