@@ -57,7 +57,7 @@ class Othello:
         """
         self.joueur = -self.joueur
         self.update()
-        return not self.eog
+        return self.eog
 
     def adversaire(self, couleur):
         return -couleur
@@ -82,7 +82,6 @@ class Othello:
                 self.brouillon[l][c] = self.isJouable(l, c, self.joueur)
                 if self.brouillon[l][c]:
                     self.eog = False
-    
    
     def casesAdjacentes(self, ligne, colonne, couleur):
         """ renvoie les couleurs des cases adjacentes """
@@ -181,10 +180,7 @@ class Othello:
         """
         case = self.meilleurCoup(self.joueur)
         self.jouer(case[0], case[1], self.brouillon[case[0]][case[1]])
-        if self.next():
-            return self.toString(case)
-        else:
-            return 'EOG'
+        return (self.toString(case), self.next())
 
     def playJoueur(self, ligne, colonne):
         """ Verifie la jouablilité de la case puis joue ou renvoie False 
@@ -192,10 +188,7 @@ class Othello:
         """
         if not isinstance(self.brouillon[ligne][colonne], (int, np.int8)):
             self.jouer(ligne, colonne, self.brouillon[ligne][colonne])
-            if self.next():
-                return self.toString((ligne, colonne))
-            else:
-                return 'EOG'
+            return (self.toString((ligne, colonne)), self.next())
         else:
             return False
     

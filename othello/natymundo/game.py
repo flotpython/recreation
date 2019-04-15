@@ -1,5 +1,6 @@
 import tkinter as tk
 import othello as oth
+import numpy as np
 
 # un petit dictionnaire de couleurs (c'était pas joli noir et blanc)
 
@@ -17,18 +18,20 @@ couleurs[oth.VIDE] = 'White'
 # des valeurs utiles
 sizeV = oth.SIZE
 sizeH = len(oth.COLONNES)
-zoom = 20
+zoom = 30
 
 
 class Game(tk.Frame):
-    def __init__(self, master=None, couleur=oth.NOIR):
+    def __init__(self, master=None, couleur=oth.NOIR, table=None):
         tk.Frame.__init__(self, master)
         self.master = master
-        self.jeu = oth.Othello()
-        # self.joueur est la couleur du joueur, self.jeu.joueur est la couleur de celui dont c'est le tour
+        self.jeu = oth.Othello(table)
+        # self.joueur est la couleur du joueur physique, 
+        # self.jeu.joueur est le joueur dont c'est le tour
         self.joueur = couleur
         self.create_widgets()
 
+####  Les actions réalisées suite à des commandes sur les widgets  #####
     def jouer(self, event):  # activé par un clic sur la surface de jeu
         if self.jeu.joueur == self.joueur:
             ligne = int((event.x - zoom)/zoom)
@@ -36,23 +39,64 @@ class Game(tk.Frame):
             case = self.jeu.playJoueur(ligne, colonne)
             if case:
                 self.drawtable(self.jeu.jeu)
-                self.set_label_case(case)
+                self.set_label_case(case[0])
+                if case[1]: # eog = true
+                    self.message_box(f"Bravo!!!\n\
+                    Vous avez gagné!\n\
+                    \nVotre score: {self.score(self.joueur)}\
+                    \n(le score de votre adversaire: {self.score(-self.joueur)}")
             else:
-                self.set_label_case(
-                    f'La case {self.jeu.toString((ligne, colonne))} \nn\'est pas jouable...')
+                self.set_label_case(f"La case {self.jeu.toString((ligne, colonne))}\nn'est pas jouable...")
         else:
             self.message_box(
-                'Ce n\'est pas votre tour\n(veuillez cliquer sur le bouton AI)')
+                "Ce n'est pas votre tour\n\
+                (veuillez cliquer sur le bouton 'AI')")
 
     def next(self):  # activé par le bouton 'AI'
         if self.jeu.joueur == -self.joueur:
             case = self.jeu.playAI()
             self.drawtable(self.jeu.jeu)
-            self.set_label_case(case)
+            self.set_label_case(case[0])
+            if case[1]:
+                self.message_box(f"Vous avez perdu\n\
+                    \nVotre score: {self.score(self.joueur)}\
+                    \n(le score de votre adversaire: {self.score(-self.joueur)})")
         else:
-            # évitez les backslashes quand c'est possible
             self.message_box("C'est à vous de jouer...")
+            
+    def nouveau_jeu(self):  # activé par le bouton 'Changer de couleur'
+        """ Commence une nouvelle partie avec l'autre couleur """
+        self.label_couleur_couleur.destroy()
+        self.label_score_score.destroy()
+        self.label_case_case.destroy()
+        self.__init__(master=self.master, couleur=-self.joueur)
 
+    def help(self): # activé par le bouton 'Help'
+        """ Fait apparaître les cases jouables """
+        for l in range(oth.SIZE):
+            for k in range(len(oth.COLONNES)):
+                if not isinstance(self.jeu.brouillon[l][k], (int, np.int8)):
+                    cir = self.C.create_oval(
+                        (l+1)*zoom, (k+1)*zoom, (l+2)*zoom, (k+2)*zoom, fill=couleurs['x'])
+ 
+####  Des petites fonctions utiles  #### 
+    def scoreN(self):
+        """ renvoie le score de oth.NOIR """
+        return self.jeu.score()[0]
+
+    def scoreB(self):
+        """ renvoie le score de oth.BLANC """
+        return self.jeu.score()[1]
+        
+    def score(self, couleur):
+        """ renvoie le score du joueur de couleur donnée """
+        return self.scoreN() if couleur == oth.NOIR else self.scoreB()
+
+    def gagnant(self):
+        """ renvoie la couleur du gagnant"""
+        return oth.NOIR if self.scoreN() > self.scoreB() else oth.VIDE if self.scoreN() == self.scoreB() else oth.BLANC
+
+#### L'interface de jeu : les widgets, les petites fenêtres, etc... ####
     def message_box(self, message):
         """
             pop une fenêtre avec le message à faire passere
@@ -67,44 +111,22 @@ class Game(tk.Frame):
         bouton_ok = tk.Button(m_box, text='Ok', command=m_box_root.destroy)
         bouton_ok.grid(row=2, column=1)
 
-    def nouveau_jeu(self):  # activé par le bouton 'Changer de couleur'
-        """ Commence une nouvelle partie avec l'autre couleur """
-        self.label_couleur_couleur.destroy()
-        self.label_score_score.destroy()
-        self.label_case_case.destroy()
-        self.__init__(master=self.master, couleur=-self.joueur)
-        if self.joueur != self.jeu.joueur:
-            case = self.jeu.playAI()
-            self.set_label_case(case)
-            self.drawtable(self.jeu.jeu)
-
-    def help(self):
-        """ Fait apparaître les cases jouables """
-        hilfe = self.jeu.casesJouables(self.jeu.joueur)
-        self.drawtable(hilfe)
-
     def set_label_case(self, text):
+        """ Change le label de la dernière case jouée """
         self.label_case_case.destroy()
         self.label_case_case = tk.Label(self.master, text=text)
         self.label_case_case.grid(row=6, column=1, rowspan=3, columnspan=2)
 
-    def scoreN(self):
-        return self.jeu.score()[0]
-
-    def scoreB(self):
-        return self.jeu.score()[1]
-
-    def gagnant(self):
-        return oth.NOIR if self.scoreN() > self.scoreB() else oth.VIDE if self.scoreN() == self.scoreB() else oth.BLANC
-
     def set_label_score(self):
+        """ Change le label de score """
         self.label_score_score.destroy()
         self.create_label_score()
 
     def create_label_score(self):
+        """ Affiche le score """
         self.label_score_score = tk.Label(self.master,
-                                          text=f'{couleurs[oth.NOIR]}={self.scoreN()}|{couleurs[oth.BLANC]}={self.scoreB()}',
-                                          fg=couleurs[self.gagnant()])
+           text=f'{couleurs[oth.NOIR]}={self.scoreN()}|{couleurs[oth.BLANC]}={self.scoreB()}',
+           fg=couleurs[self.gagnant()])
         self.label_score_score.grid(row=4, column=1, columnspan=2)
 
     def drawtable(self, table):
@@ -119,28 +141,54 @@ class Game(tk.Frame):
                 cir = self.C.create_oval(
                     (l+1)*zoom, (k+1)*zoom, (l+2)*zoom, (k+2)*zoom, fill=couleurs[table[l][k]])
         self.set_label_score()
-
-    def create_widgets(self):
-        # Définition des widgets
-        self.C = tk.Canvas(self.master, width=(len(oth.COLONNES)+2)*zoom,
-                           height=(oth.SIZE+2)*zoom, bg='white')
-        self.bouton_quit = tk.Button(self.master, text='Quitter', fg='red',
-                                     command=self.master.destroy)
+        
+    def draw_canvas(self, canvas):
+        """
+            Dessine les labels des lignes et des colonnes, 
+            Puis dessine la table de jeu
+        """
+        x, y = 3*zoom/2, zoom/2
+        for a in oth.COLONNES:
+            labelC = canvas.create_text(x, y, text=a)
+            labelC2 = canvas.create_text(x, (sizeV+3/2)*zoom, text=a)
+            x += zoom
+        x, y = zoom/2, 3*zoom/2
+        for i in oth.LIGNES:
+            labelL = canvas.create_text(x, y, text=i)
+            labelL2 = canvas.create_text((sizeH+3/2)*zoom, y, text=i)
+            y += zoom
+        self.drawtable(self.jeu.jeu)
+        
+    def create_boutons(self):
+        """ Les boutons utilisés """
+        self.bouton_quit = tk.Button(
+            self.master, text='Quitter', fg='red',
+            command=self.master.destroy)
+        self.bouton_nouveau = tk.Button(
+            self.master, text='Nouvelle partie', 
+            command=self.nouveau_jeu)
+        self.bouton_help = tk.Button(       ## command à modifier pour s'activer le temps où le bouton est pressé
+            self.master, text='Help', 
+            command=self.help)
+        self.bouton_AI = tk.Button(
+            self.master, text='AI', fg=couleurs[-self.joueur], 
+            command=self.next)
+            
+    def create_labels(self):
+        """ Les differents labels de la fenêtre """
         self.label_couleur_info = tk.Label(self.master, text='Votre couleur: ')
         self.label_couleur_couleur = tk.Label(self.master,
                                               text=couleurs[self.joueur],
                                               bg=couleurs[self.joueur])
-        self.bouton_nouveau = tk.Button(
-            self.master, text='Nouvelle partie', command=self.nouveau_jeu)
-        self.bouton_help = tk.Button(
-            self.master, text='Help', command=self.help)
         self.label_score = tk.Label(self.master, text='SCORE: ')
-        self.bouton_AI = tk.Button(
-            self.master, text='AI', fg=couleurs[-self.joueur], command=self.next)
+        self.create_label_score()
         self.label_case = tk.Label(self.master, text='Dernière case jouée: ')
         self.label_case_case = tk.Label(self.master)
-
-        # Placement des widgets
+        
+    def griding(self):
+        """
+            Placement des widgets avec tk.grid
+        """
         self.C.grid(row=1, column=3, rowspan=sizeV+2,
                     columnspan=sizeH+2, padx=5, pady=5)
         self.bouton_AI.grid(row=sizeV+3, column=3, sticky=tk.W)
@@ -154,73 +202,15 @@ class Game(tk.Frame):
         self.label_case.grid(row=5, column=1, columnspan=2, sticky=tk.W)
         self.rowconfigure(sizeV+4, pad=2)
         self.columnconfigure(sizeH+3, pad=2)
-
-        self.create_label_score()
-
-        # Le Canvas
-        x, y = 3*zoom/2, zoom/2
-        for a in oth.COLONNES:
-            labelC = self.C.create_text(x, y, text=a)
-            labelC2 = self.C.create_text(x, (sizeV+3/2)*zoom, text=a)
-            x += zoom
-        x, y = zoom/2, 3*zoom/2
-        for i in oth.LIGNES:
-            labelL = self.C.create_text(x, y, text=i)
-            labelL2 = self.C.create_text((sizeH+3/2)*zoom, y, text=i)
-            y += zoom
-        self.drawtable(self.jeu.jeu)
-
+    
+    def create_widgets(self):
+        # Définition des widgets
+        self.C = tk.Canvas(self.master, width=(len(oth.COLONNES)+2)*zoom,
+                           height=(oth.SIZE+2)*zoom, bg='white')
+        self.create_boutons()
+        self.create_labels()
+        self.draw_canvas(self.C)
+        # Grid
+        self.griding()
         # Events
         self.C.bind('<Button-1>', self.jouer)
-
-
-# Une classe inutile pour le moment -- en attente de maîtriser les virtual event
-class Nouveau_Jeu(tk.Frame):
-    def __init__(self, master=None, couleur=oth.NOIR):
-        tk.Frame.__init__(self, master)
-        self.master = master
-        self.grid(ipadx=5, ipady=2)
-        self.couleur = couleur
-        self.create_widgets()
-
-    def annul(self):
-        self.master.destroy()
-
-    def valid(self):  # ICI!!
-        self.master.destroy()
-
-    def to_noir(self):
-        self.couleur = oth.NOIR
-
-    def to_blanc(self):
-        self.couleur = oth.BLANC
-
-    def create_widgets(self):
-        # Widgets
-        self.label = tk.Label(
-            self.master, text=f'Choisissez votre couleur:\n({couleurs[oth.NOIR]} commence)')
-        coul = tk.IntVar()
-        coul.set(self.couleur)
-        self.choix_noir = tk.Radiobutton(self.master, text=couleurs[oth.NOIR],
-                                         variable=coul, value=oth.NOIR, fg=couleurs[oth.NOIR],
-                                         command=self.to_noir)
-        self.choix_blanc = tk.Radiobutton(self.master, text=couleurs[oth.BLANC],
-                                          variable=coul, value=oth.BLANC, fg=couleurs[oth.BLANC],
-                                          command=self.to_blanc)
-        self.annul = tk.Button(self.master, text='Annuler', command=self.annul)
-        self.valider = tk.Button(
-            self.master, text='Valider', command=self.valid)
-
-        # Grid
-        self.label.grid(row=1, column=1, columnspan=2)
-        self.choix_noir.grid(row=2, column=1, sticky=tk.W)
-        self.choix_blanc.grid(row=3, column=1, sticky=tk.W)
-        self.annul.grid(row=4, column=2, padx=2, pady=5)
-        self.valider.grid(row=4, column=3, padx=5, pady=5)
-
-
-##
-##root = tk.Tk()
-##jeu = Game(master=root)
-# jeu.master.title('Othello')
-# jeu.mainloop()
