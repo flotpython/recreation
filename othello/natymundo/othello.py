@@ -3,6 +3,8 @@
 import numpy as np
 import tranche
 
+import timeit
+
 VIDE = 0
 NOIR = 1
 BLANC = -1
@@ -10,7 +12,15 @@ SIZE = 8
 COLONNES = 'ABCDEFGH'
 LIGNES = [str(i+1) for i in range(SIZE)]
 # DIRECTIONS = {(a, b) for a in (-1, 0, 1) for b in (-1, 0, 1)}
-DIRECTIONS = ('N', 'S', 'E', 'W', 'NE', 'SE', 'NW', 'SW')
+DIRECTIONS = {'N':(-1,0),
+              'S':(1,0),
+              'E':(0,1), 
+              'W':(0,-1), 
+              'NE':(-1,1), 
+              'SE':(1,1), 
+              'NW':(-1,-1),
+              'SW':(1,-1),
+              }
 JOUEURS = ['AI', 'Player']
 
 
@@ -20,6 +30,7 @@ class Othello:
     """
 
     def __init__(self, jeu=None, couleur=NOIR):
+        # self.log = 'LOG: \n'
         if jeu:
             self.jeu = jeu
         else:
@@ -72,16 +83,42 @@ class Othello:
         """ La couleur du joueur """
         return self.couleur if JOUEURS[joueur] == 'Player' else -self.couleur
         
+    def get_tranche(self, case, direction):
+        """
+        Renvoie une 'tranche' de la table à partir de la case donnée et dans la direction donnée
+        """
+        (l, c) = case
+        if direction == 'E':
+            return self.jeu[l, c:]
+        elif direction == 'W':
+            return self.jeu[l, :c+1]
+        elif direction == 'N':
+            return self.jeu[:l+1, c]
+        elif direction == 'S':
+            return self.jeu[l:, c]
+        elif direction == 'SE':
+            return self.jeu[l:].diagonal(c)
+        elif direction == 'SW':  # A revoir
+            return np.array([self.jeu[i, k] for i, k in zip(range(l, SIZE), range(c))])
+            # print((case, tranche))
+        elif direction == 'NE': # A revoir
+            return np.array([self.jeu[i, k] for i, k in zip(range(l+1), range(c, len(COLONNES)))])
+        elif direction == 'NW': 
+            return self.jeu[:l].diagonal(c-l)
+        else:
+            return np.array([0])
+        
     def directions(self, dico, case):
         """
         Mets à jour le dictionnaire des directions de la case considérée 
         (key = une direction, value = tranche de jeu pour la case considérée)
         """
         for dir in DIRECTIONS:
-            if not dir in dico[case]:
-                dico[case][dir] = tranche.Tranche(self.jeu, case, dir)
-            else:
-                dico[case][dir] = dico[case][dir].update(self.jeu)
+            dico[case][dir] = self.get_tranche(case, dir)
+            # if not dir in dico[case]:
+                # dico[case][dir] = tranche.Tranche(self.jeu, case, dir)
+            # else:
+                # dico[case][dir] = dico[case][dir].update(self.jeu)
                 
     
     def update(self):
@@ -97,6 +134,7 @@ class Othello:
         else:
             for case in self.dico_de_tranches.keys():
                 self.directions(self.dico_de_tranches, case)
+        # self.log += f'{self.dico_de_tranches.items()}\n'
 
     def casesJouables(self, couleur):
         """
@@ -150,7 +188,7 @@ class Othello:
             if tranche.description(self.get_couleur(joueur))[0]:
                 index = tranche.description(self.get_couleur(joueur))[1]
                 for i in range(index):
-                    self.jeu[l+dir[0]*i][c+dir[1]*i] = self.get_couleur(joueur)
+                    self.jeu[l+DIRECTIONS[dir][0]*i][c+DIRECTIONS[dir][1]*i] = self.get_couleur(joueur)
         if self.next():
             self.update() 
             return self.toString(case)
@@ -184,8 +222,8 @@ class Othello:
             return 'EOG'
     
 # oth = Othello()
-# oth.playAI()
-# oth.playJoueur((4,2))
- # with open('test.txt', 'w') as f:
+# with open('test.txt', 'w') as f:
      # f.write(oth.log)
     
+# oth = Othello()
+timeit.timeit('[Othello()]', globals=globals())

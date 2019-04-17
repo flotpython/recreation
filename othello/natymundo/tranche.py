@@ -20,7 +20,6 @@ class Tranche:
         Renvoie une 'tranche' de la table à partir de la case donnée et dans la direction donnée
         """
         (l, c) = case
-        # tranche = table[l][c]
         if direction == 'E':
             tranche = table[l, c:]
         elif direction == 'W':
@@ -29,18 +28,18 @@ class Tranche:
             tranche = table[:l+1, c]
         elif direction == 'S':
             tranche = table[l:, c]
-        elif direction == 'SE':  # Utiliser np.ix_
-            tranche = table[l:, c:]
-        elif direction == 'SW':
-            tranche = table[l:, :c+1]
-        elif direction == 'NE':
-            tranche = table[:l+1, c:]
-        elif direction == 'NW':
-            tranche = table[:l+1, :c+1]
-        # tranche = np.array(tranche)
-        print((direction, tranche))
+        elif direction == 'SE':
+            tranche = table[l:].diagonal(c)
+        elif direction == 'SW':  # A revoir
+            tranche = np.array([table[i, k] for i, k in zip(range(l, len(table)), range(c))])
+            # print((case, tranche))
+        elif direction == 'NE': # A revoir
+            tranche = np.array([table[i, k] for i, k in zip(range(l+1), range(c, len(table)))])
+        elif direction == 'NW': 
+            tranche = table[:l].diagonal(c-l)
         return tranche
         
+        ### inutile d'update: les basic-slices sont des vues, donc mises à jour automatiques!
     def update(self, table):
         """
         Mets à jour la tranche
@@ -54,15 +53,16 @@ class Tranche:
         Donne les infos utiles de la tranche sur sa jouabilité.
         Renvoie (jouable, index) où:
             - jouable est un booléen qui informe sur la jouabilité de la case
-            - index donnes l'index dans la tranche du dernier jeton à retourner
+            - index donne l'index dans la tranche du dernier jeton à retourner
         """
         descr = (False, 0)
-        if self.tranche[0] != 0:
-            pass
-        elif couleur in self.tranche[1:]:
-            index = self.tranche[1:].index(couleur) + 1
-            if index > 1 and not 0 in self.tranche[1:index]:
-                descr = (True, index)          
+        # if len(self.tranche)>0:
+            # if self.tranche[0] != 0:
+                # pass
+            # elif couleur in self.tranche[1:]:
+                # index = self.tranche[1:].tolist().index(couleur) + 1
+                # if index > 1 and not 0 in self.tranche[1:index]:
+                    # descr = (True, index)    
         return descr
 
         
