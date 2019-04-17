@@ -9,7 +9,8 @@ BLANC = -1
 SIZE = 8
 COLONNES = 'ABCDEFGH'
 LIGNES = [str(i+1) for i in range(SIZE)]
-DIRECTIONS = {(a, b) for a in (-1, 0, 1) for b in (-1, 0, 1)}
+# DIRECTIONS = {(a, b) for a in (-1, 0, 1) for b in (-1, 0, 1)}
+DIRECTIONS = ('N', 'S', 'E', 'W', 'NE', 'SE', 'NW', 'SW')
 JOUEURS = ['AI', 'Player']
 
 

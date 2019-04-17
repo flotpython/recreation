@@ -1,3 +1,5 @@
+import numpy as np
+
 class Tranche:
     """
     Une classe qui définit des 'tranches' 
@@ -17,17 +19,26 @@ class Tranche:
         """
         Renvoie une 'tranche' de la table à partir de la case donnée et dans la direction donnée
         """
-        (a, b) = direction
         (l, c) = case
-        tranche = [table[l][c]]
-        if a==b==0:
-            pass
-        else:
-            A, B = l+a, c+b
-            while 0 <= A < len(table) and 0 <= B < len(table[l]):
-                tranche.append(table[A][B])
-                A += a
-                B += b
+        # tranche = table[l][c]
+        if direction == 'E':
+            tranche = table[l, c:]
+        elif direction == 'W':
+            tranche = table[l, :c+1]
+        elif direction == 'N':
+            tranche = table[:l+1, c]
+        elif direction == 'S':
+            tranche = table[l:, c]
+        elif direction == 'SE':  # Utiliser np.ix_
+            tranche = table[l:, c:]
+        elif direction == 'SW':
+            tranche = table[l:, :c+1]
+        elif direction == 'NE':
+            tranche = table[:l+1, c:]
+        elif direction == 'NW':
+            tranche = table[:l+1, :c+1]
+        # tranche = np.array(tranche)
+        print((direction, tranche))
         return tranche
         
     def update(self, table):
