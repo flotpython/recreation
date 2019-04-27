@@ -84,7 +84,7 @@ class Othello:
         
     def get_tranche(self, case, direction):
         """
-        Renvoie une 'tranche' de la table à partir de la case donnée et dans la direction donnée
+        Renvoie une 'tranche' de la table à partir de la case donnée incluse et dans la direction donnée
         """
         (l, c) = case
         if direction == 'E':
@@ -98,13 +98,13 @@ class Othello:
         elif direction == 'SE':
             return self.jeu[l:].diagonal(c)
         elif direction == 'SW':  # A revoir
-            return self.jeu[l:].transpose().diagonal(c)
+            return self.jeu[l:, 0:c+1].transpose().diagonal()  # nop
             # return np.array([self.jeu[i, k] for i, k in zip(range(l, SIZE), range(c))])
         elif direction == 'NE': # A revoir
-            return self.jeu[:l+1].transpose().diagonal(c)
+            return self.jeu[:l+1, c:].transpose().diagonal()  # nop
             # return np.array([self.jeu[i, k] for i, k in zip(range(l+1), range(c, len(COLONNES)))])
         elif direction == 'NW': 
-            return self.jeu[:l].diagonal(c-l)
+            return self.jeu[:l+1].diagonal(c-l)[::-1]
         else:
             return np.array([0])
         
