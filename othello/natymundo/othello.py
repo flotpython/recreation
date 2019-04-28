@@ -1,6 +1,7 @@
 # Othello
 
 import numpy as np
+import random
 # import tranche
 
 import timeit
@@ -68,11 +69,10 @@ class Othello:
         Renvoie True si le jeu peut continuer et passe alors au joueur suivant,
         renvoie False sinon
         """
-        if self.casesJouables(self.get_couleur(self.adversaire(self.joueur))):
+        cases = self.casesJouables(self.get_couleur(self.adversaire(self.joueur)))
+        if cases:
             self.joueur = self.adversaire(self.joueur)
-            return True
-        else:
-            return False
+        return cases
 
     def adversaire(self, joueur):
         """ L'indice de l'adversaire dans JOUEURS """
@@ -90,19 +90,17 @@ class Othello:
         if direction == 'E':
             return self.jeu[l, c:]
         elif direction == 'W':
-            return self.jeu[l, :c+1]
+            return self.jeu[l, :c+1][::-1]
         elif direction == 'N':
-            return self.jeu[:l+1, c]
+            return self.jeu[:l+1, c][::-1]
         elif direction == 'S':
             return self.jeu[l:, c]
         elif direction == 'SE':
             return self.jeu[l:].diagonal(c)
         elif direction == 'SW':  # A revoir
-            return self.jeu[l:, 0:c+1].transpose().diagonal()  # nop
-            # return np.array([self.jeu[i, k] for i, k in zip(range(l, SIZE), range(c))])
+            return np.rot90(self.jeu[l:, 0:c+1]).diagonal() 
         elif direction == 'NE': # A revoir
-            return self.jeu[:l+1, c:].transpose().diagonal()  # nop
-            # return np.array([self.jeu[i, k] for i, k in zip(range(l+1), range(c, len(COLONNES)))])
+            return np.rot90(self.jeu[:l+1, c:], 3).diagonal() 
         elif direction == 'NW': 
             return self.jeu[:l+1].diagonal(c-l)[::-1]
         else:
@@ -115,9 +113,9 @@ class Othello:
         """
         for dir in DIRECTIONS:
             dico[case][dir] = self.get_tranche(case, dir)
-            self.log = f'case:{case} -> {dir}={dico[case][dir]}\n'
-            with open('log.txt', 'a', encoding='utf8') as f:
-                f.write(self.log)
+            # self.log = f'case:{COLONNES[case[1]]}{LIGNES[case[0]]} -> {dir}={dico[case][dir]}\n'
+            # with open('log.txt', 'a', encoding='utf8') as f:
+                # f.write(self.log)
                 
     
     def update(self):
@@ -134,36 +132,49 @@ class Othello:
             for case in self.dico_de_tranches.keys():
                 self.directions(self.dico_de_tranches, case)
         
-    def isJouable(self, tranche, couleur):
+    def isJouable(self, tranche, couleur): ### Utiliser des regex
         """ Booléen de jouabilité de la tranche selon la couleur """
         jouable = False
         if len(tranche)>1:
-            if tranche[0]!=0:
-                if couleur in tranche[1:]:
-                    jouable = True
+            if tranche[0]==0 and tranche[1]==-couleur:
+                if couleur in tranche[2:]:
+                    index = self.get_index(tranche, couleur)
+                    self.log = f'index de {couleur} dans {tranche}: {index}\n'
+                    j = 1
+                    while j < index: 
+                        if tranche[j]!=-couleur:
+                            j = index + 1 
+                        else:
+                            j += 1
+                    if j==index:
+                        jouable = True
+                        self.log += f'tranche {tranche} est jouable par couleur {couleur}\n'
+        with open('log.txt', 'a', encoding='utf8') as f:
+            f.write(self.log)
+            self.log = ''
         return jouable
                 
 
-    def casesJouables(self, couleur):
+    def casesJouables(self, couleur):  
         """ renvoie une liste des cases qui sont jouables par la couleur indiquée """
         liste = []
         for case in self.dico_de_tranches.keys():
             if self.jeu[case[0]][case[1]]==VIDE:   # on ne regarde que les cases qui sont vide 
                 for tranche in self.dico_de_tranches[case].values():
-                     # if tranche.description(couleur)[0]:
-                     if self.isJouable(tranche, couleur):
+                    # if tranche.description(couleur)[0]:
+                    if self.isJouable(tranche, couleur) and not case in liste:
                         liste.append(case)
+                        self.log += f'{case} a été ajouté aux case jouables\n'
                         break
         return liste
         
     def get_index(self, tranche, couleur):
         """ Renvoie l'index de la couleur cherchée dans la tranche considérée """
-        index = 0
-        if self.isJouable(tranche, couleur):
-            index = tranche[1:].tolist().index(couleur) + 1
-            if index > 1 and not 0 in self.tranche[1:index]:
-                pass
-            else: index = 0
+        # index = 0
+        index = tranche.tolist().index(couleur)
+        # if index > 1 and not 0 in tranche[1:index]:
+            # pass
+        # else: index = 0
         return index
 
     def meilleurCoup(self, couleur):
@@ -171,7 +182,7 @@ class Othello:
         possibilities = self.casesJouables(couleur)
         if possibilities:
             best = 0
-            meilleureCase = possibilities[random(len(possibilities))] 
+            meilleureCase = possibilities[random.randrange(len(possibilities))] 
             for case in possibilities:
                 num = 0
                 for tranche in self.dico_de_tranches[case].values():
@@ -179,7 +190,8 @@ class Othello:
                 if num > best:
                     best = num
                     meilleureCase = case
-        else: meilleureCase = None
+        else: 
+            meilleureCase = None
         return meilleureCase
 
     def score(self):
@@ -202,8 +214,8 @@ class Othello:
         """
         (l, c) = case
         for (dir, tranche) in self.dico_de_tranches[case].items():
-            if tranche.description(self.get_couleur(joueur))[0]:
-                index = tranche.description(self.get_couleur(joueur))[1]
+            if self.isJouable(tranche, self.get_couleur(joueur)):
+                index = self.get_index(tranche, self.get_couleur(joueur))
                 for i in range(index):
                     self.jeu[l+DIRECTIONS[dir][0]*i][c+DIRECTIONS[dir][1]*i] = self.get_couleur(joueur)
         if self.next():
@@ -219,7 +231,7 @@ class Othello:
 
     def playAI(self):
         """ Détermine la case que jouera l'AI puis joue """
-      #  self.log += '\n' + '* '*10 + 'AI is playing' + ' *'*10 + '\n'
+        self.log += '\n' + '* '*10 + 'AI is playing' + ' *'*10 + '\n'
         case = self.meilleurCoup(-self.couleur)
         if case:
             return self.jouer(case, 0)
@@ -228,7 +240,7 @@ class Othello:
 
     def playJoueur(self, case):
         """ Verifie la jouablilité de la case """
-       # self.log += '\n' + '* '*10 + 'Joueur is playing' + ' *'*10 + '\n'
+        self.log += '\n' + '* '*10 + 'Joueur is playing' + ' *'*10 + '\n'
         possibilities = self.casesJouables(self.couleur)
         if possibilities:
             if case in possibilities:
