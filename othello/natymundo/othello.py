@@ -2,7 +2,7 @@
 
 import numpy as np
 import random
-# import tranche
+import re
 
 import timeit
 
@@ -40,7 +40,8 @@ class Othello:
         self.couleur = couleur     # La couleur de Player
         self.joueur = 1 if self.couleur == NOIR else 0  # Le joueur dont c'est le tour de jouer (correspond à l'indice dans JOUEURS)
         self.dico_de_tranches = None
-        self.update()
+        cases = None
+        self.update(cases)
 
     def __str__(self):
         """ renvoie le plateau de jeu sous forme d'un tableau """
@@ -64,16 +65,6 @@ class Othello:
         jeu = np.array((array), dtype=np.int8)
         return jeu.reshape((SIZE, len(COLONNES)))
 
-    def next(self):
-        """
-        Renvoie True si le jeu peut continuer et passe alors au joueur suivant,
-        renvoie False sinon
-        """
-        cases = self.casesJouables(self.get_couleur(self.adversaire(self.joueur)))
-        if cases:
-            self.joueur = self.adversaire(self.joueur)
-        return cases
-
     def adversaire(self, joueur):
         """ L'indice de l'adversaire dans JOUEURS """
         return 1-joueur
@@ -82,9 +73,21 @@ class Othello:
         """ La couleur du joueur """
         return self.couleur if JOUEURS[joueur] == 'Player' else -self.couleur
         
+    def score(self):
+        """ renvoie le score (NOIR, BLANC) """
+        totN = 0
+        totB = 0
+        for l in self.jeu:
+            for i in l:
+                if i == NOIR:
+                    totN += 1
+                elif i == BLANC:
+                    totB += 1
+        return (totN, totB)
+        
     def get_tranche(self, case, direction):
         """
-        Renvoie une 'tranche' de la table à partir de la case donnée incluse et dans la direction donnée
+        Renvoie une 'tranche' de la table à partir de la case donnée -incluse- et dans la direction donnée
         """
         (l, c) = case
         if direction == 'E':
@@ -106,78 +109,83 @@ class Othello:
         else:
             return np.array([0])
         
-    def directions(self, dico, case):
-        """
-        Mets à jour le dictionnaire des directions de la case considérée 
-        (key = une direction, value = tranche de jeu pour la case considérée)
-        """
-        for dir in DIRECTIONS:
-            dico[case][dir] = self.get_tranche(case, dir)
-            # self.log = f'case:{COLONNES[case[1]]}{LIGNES[case[0]]} -> {dir}={dico[case][dir]}\n'
-            # with open('log.txt', 'a', encoding='utf8') as f:
-                # f.write(self.log)
-                
+    # def directions(self, dico, case):
+        # """
+        # Mets à jour le dictionnaire des directions de la case considérée 
+        # (key = une direction, value = tranche de jeu pour la case considérée)
+        # """
+        # for dir in DIRECTIONS:
+            # dico[case][dir] = self.get_tranche(case, dir)                
     
-    def update(self):
+    def update(self, cases):
         """
         Met à jour le dictionnaire de tranches qui donne pour chaque case le dictionnaire des directions
         """
-        if not self.dico_de_tranches:
-            self.dico_de_tranches = dict()
-            for l in range(SIZE):
-                for c in range(len(COLONNES)):
-                    self.dico_de_tranches[(l,c)]=dict()
-                    self.directions(self.dico_de_tranches, (l,c))
+        couleur = self.get_couleur(self.joueur)
+        if self.dico_de_tranches:
+            for key in self.dico_de_tranches.keys():
+                dict.clear(self.dico_de_tranches[key])
         else:
-            for case in self.dico_de_tranches.keys():
-                self.directions(self.dico_de_tranches, case)
-        
-    def isJouable(self, tranche, couleur): ### Utiliser des regex
-        """ Booléen de jouabilité de la tranche selon la couleur """
-        jouable = False
-        if len(tranche)>1:
-            if tranche[0]==0 and tranche[1]==-couleur:
-                if couleur in tranche[2:]:
-                    index = self.get_index(tranche, couleur)
-                    self.log = f'index de {couleur} dans {tranche}: {index}\n'
-                    j = 1
-                    while j < index: 
-                        if tranche[j]!=-couleur:
-                            j = index + 1 
-                        else:
-                            j += 1
-                    if j==index:
-                        jouable = True
-                        self.log += f'tranche {tranche} est jouable par couleur {couleur}\n'
+            self.dico_de_tranches = dict()
+        if not cases:
+            cases = self.casesJouables(couleur)
+        for case in cases:
+            for dir in DIRECTIONS:
+                t = self.get_tranche(case, dir)
+                if self.isJouable(t, couleur):
+                    if not case in self.dico_de_tranches:
+                        self.dico_de_tranches[case] = dict()
+                    self.dico_de_tranches[case][dir]=t
+            self.log += f'self.dico_de_tranches[{case}]={self.dico_de_tranches[case]}\n'
         with open('log.txt', 'a', encoding='utf8') as f:
             f.write(self.log)
-            self.log = ''
-        return jouable
+            self.log = '/'*10 + '\n'
+        
+    def isJouable(self, tranche, couleur): ### Utiliser des regex !!
+        """ Booléen de jouabilité de la tranche selon la couleur """
+        # jouable = False
+        # if len(tranche)>1:
+            # if tranche[0]==0 and tranche[1]==-couleur:
+                # if couleur in tranche[2:]:
+                    # index = self.get_index(tranche, couleur)
+                    # j = 1
+                    # while j < index: 
+                        # if tranche[j]!=-couleur:
+                            # j = index + 1 
+                        # else:
+                            # j += 1
+                    # if j==index:
+                        # jouable = True
+        # return jouable
+        if couleur == 1:
+            pattern = '^0(-1+)(1+)'
+        else:
+            pattern = '^0(1+)(-1+)'
+        txt = ''
+        for i in tranche:
+            txt += str(i)
+        # self.log += f'{pattern} match {txt}: {re.match(pattern, txt)}\n'
+        return re.match(pattern, txt)
+        
                 
 
     def casesJouables(self, couleur):  
         """ renvoie une liste des cases qui sont jouables par la couleur indiquée """
         liste = []
-        for case in self.dico_de_tranches.keys():
-            if self.jeu[case[0]][case[1]]==VIDE:   # on ne regarde que les cases qui sont vide 
-                for tranche in self.dico_de_tranches[case].values():
-                    # if tranche.description(couleur)[0]:
-                    if self.isJouable(tranche, couleur) and not case in liste:
-                        liste.append(case)
-                        self.log += f'{case} a été ajouté aux case jouables\n'
-                        break
+        for l in range(SIZE):
+            for c in range(len(COLONNES)):
+                if self.jeu[l][c]==VIDE:   # on ne regarde que les cases vides 
+                    for dir in DIRECTIONS:
+                        t = self.get_tranche((l,c), dir)
+                        if self.isJouable(t, couleur) and not (l,c) in liste:
+                            liste.append((l,c))
         return liste
         
     def get_index(self, tranche, couleur):
         """ Renvoie l'index de la couleur cherchée dans la tranche considérée """
-        # index = 0
-        index = tranche.tolist().index(couleur)
-        # if index > 1 and not 0 in tranche[1:index]:
-            # pass
-        # else: index = 0
-        return index
+        return tranche.tolist().index(couleur)
 
-    def meilleurCoup(self, couleur):
+    def meilleurCoup(self, couleur):  ## utiliser le dico
         """ renvoie la case de la liste des possibilities qui retourne le plus de jetons """
         possibilities = self.casesJouables(couleur)
         if possibilities:
@@ -193,18 +201,16 @@ class Othello:
         else: 
             meilleureCase = None
         return meilleureCase
-
-    def score(self):
-        """ renvoie le score (NOIR, BLANC) """
-        totN = 0
-        totB = 0
-        for l in self.jeu:
-            for i in l:
-                if i == NOIR:
-                    totN += 1
-                elif i == BLANC:
-                    totB += 1
-        return (totN, totB)
+        
+    def next(self):
+        """
+        Renvoie True si le jeu peut continuer et passe alors au joueur suivant,
+        renvoie False sinon
+        """
+        cases = self.casesJouables(self.get_couleur(self.adversaire(self.joueur)))
+        if cases:
+            self.joueur = self.adversaire(self.joueur)
+        return cases
 
     def jouer(self, case, joueur):
         """
@@ -213,13 +219,15 @@ class Othello:
             mets à jour le dictionnaire des tranches de jeu
         """
         (l, c) = case
+        self.log += f'Case jouée: {case}\n'
         for (dir, tranche) in self.dico_de_tranches[case].items():
-            if self.isJouable(tranche, self.get_couleur(joueur)):
-                index = self.get_index(tranche, self.get_couleur(joueur))
-                for i in range(index):
-                    self.jeu[l+DIRECTIONS[dir][0]*i][c+DIRECTIONS[dir][1]*i] = self.get_couleur(joueur)
-        if self.next():
-            self.update() 
+            index = self.get_index(tranche, self.get_couleur(joueur))
+            self.log += f'Tranche retournée: {dir}, index={index}\n'
+            for i in range(index):
+                self.jeu[l+DIRECTIONS[dir][0]*i][c+DIRECTIONS[dir][1]*i] = self.get_couleur(joueur)
+        next_cases = self.next()
+        if next_cases:
+            self.update(next_cases) 
             return self.toString(case)
         else:
             return 'EOG'

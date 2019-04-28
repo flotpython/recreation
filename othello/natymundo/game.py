@@ -69,7 +69,7 @@ class Game(tk.Frame):
 
     def message_box(self, message):
         """
-            pop une fenêtre avec le message à faire passere
+            pop une fenêtre avec le message à faire passer
             et un bouton ok qui détruit la fenêtre
         """
         m_box_root = tk.Tk()
