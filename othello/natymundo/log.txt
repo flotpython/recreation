@@ -1,79 +1,31 @@
 LOG:
-self.dico_de_tranches[(2, 3)]={'S': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(3, 2)]={'E': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(4, 5)]={'W': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(5, 4)]={'N': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
+dico:
+{}
+
+self.dico_de_tranches[D3]={'S': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
+self.dico_de_tranches[C4]={'E': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
+self.dico_de_tranches[F5]={'W': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
+self.dico_de_tranches[E6]={'N': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
 //////////
 
 * * * * * * * * * * Joueur is playing * * * * * * * * * *
-Case jouée: (2, 3)
-Tranche retournée: S, index=2
-self.dico_de_tranches[(2, 2)]={'SE': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(2, 4)]={'S': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(4, 2)]={'E': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
+Case jouée: C4
+Tranche retournée: E:[ 0 -1  1  0  0  0], index=2
+dico:
+{}
+
+self.dico_de_tranches[C3]={'SE': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
+self.dico_de_tranches[E3]={'S': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
+self.dico_de_tranches[C5]={'E': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
 //////////
 
 * * * * * * * * * * AI is playing * * * * * * * * * *
-Case jouée: (2, 2)
-Tranche retournée: SE, index=2
-self.dico_de_tranches[(2, 1)]={'E': array([ 0, -1,  1,  0,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(3, 2)]={'E': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(4, 5)]={'W': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(5, 4)]={'N': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
-//////////
+Case jouée: C3
+Tranche retournée: SE:[ 0  1 -1  0  0  0], index=2
+dico:
+{}
 
-* * * * * * * * * * Joueur is playing * * * * * * * * * *
-Case jouée: (2, 1)
-Tranche retournée: E, index=2
-self.dico_de_tranches[(1, 1)]={'SE': array([ 0,  1, -1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(1, 3)]={'S': array([ 0,  1, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(2, 4)]={'S': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(3, 5)]={'W': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(4, 2)]={'E': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(5, 3)]={'N': array([ 0,  1, -1,  1,  0,  0], dtype=int8)}
-//////////
-
-* * * * * * * * * * AI is playing * * * * * * * * * *
-Case jouée: (1, 1)
-Tranche retournée: SE, index=2
-self.dico_de_tranches[(0, 1)]={'S': array([ 0, -1,  1,  0,  0,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(3, 2)]={'E': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(4, 5)]={'W': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(5, 4)]={'N': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
-//////////
-
-* * * * * * * * * * Joueur is playing * * * * * * * * * *
-Case jouée: (0, 1)
-Tranche retournée: S, index=2
-self.dico_de_tranches[(0, 0)]={'SE': array([ 0,  1, -1, -1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(1, 3)]={'S': array([ 0,  1, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(2, 0)]={'E': array([ 0,  1, -1,  1,  0,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(2, 4)]={'S': array([ 0,  1, -1,  0,  0,  0], dtype=int8), 'W': array([ 0,  1, -1,  1,  0], dtype=int8)}
-self.dico_de_tranches[(3, 5)]={'W': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(4, 2)]={'E': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(5, 3)]={'N': array([ 0,  1, -1,  1,  0,  0], dtype=int8)}
-//////////
-
-* * * * * * * * * * AI is playing * * * * * * * * * *
-Case jouée: (2, 4)
-Tranche retournée: S, index=2
-Tranche retournée: W, index=0
-self.dico_de_tranches[(2, 5)]={'W': array([ 0, -1,  1, -1,  1,  0], dtype=int8), 'SW': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(4, 5)]={'W': array([ 0, -1,  1,  0,  0,  0], dtype=int8), 'NW': array([ 0, -1,  1,  0,  1], dtype=int8)}
-//////////
-
-* * * * * * * * * * Joueur is playing * * * * * * * * * *
-Case jouée: (2, 5)
-Tranche retournée: W, index=2
-Tranche retournée: SW, index=0
-self.dico_de_tranches[(0, 0)]={'SE': array([ 0,  1, -1, -1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(1, 2)]={'SE': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(1, 3)]={'S': array([ 0,  1, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(1, 4)]={'S': array([ 0,  1, -1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(1, 5)]={'SW': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(1, 6)]={'SW': array([ 0,  1, -1,  1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(2, 0)]={'E': array([ 0,  1, -1,  1,  1,  1,  0,  0], dtype=int8)}
-self.dico_de_tranches[(2, 6)]={'W': array([ 0,  1,  1,  1, -1,  1,  0], dtype=int8)}
-self.dico_de_tranches[(4, 2)]={'E': array([ 0,  1, -1,  0,  0,  0], dtype=int8)}
-self.dico_de_tranches[(5, 2)]={'NE': array([ 0,  1, -1,  1,  0,  0], dtype=int8)}
-self.dico_de_tranches[(5, 3)]={'N': array([ 0,  1, -1,  1,  0,  0], dtype=int8)}
+self.dico_de_tranches[C2]={'S': array([ 0, -1,  1,  0,  0,  0,  0], dtype=int8)}
+self.dico_de_tranches[D3]={'S': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
+self.dico_de_tranches[F5]={'W': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
+self.dico_de_tranches[E6]={'N': array([ 0, -1,  1,  0,  0,  0], dtype=int8)}
