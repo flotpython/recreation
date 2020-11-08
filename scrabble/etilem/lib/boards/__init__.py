@@ -1,1 +1,1 @@
-from .zynga import Board
+from .official import Board

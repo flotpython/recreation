@@ -2,7 +2,7 @@
 from itertools import combinations
 from .dicts import Dict
 from copy import deepcopy
-
+import multiprocessing
 
 class Solver():
 
@@ -23,14 +23,15 @@ class Solver():
         for num in board.diagonal():
             for mask, horiz in self._get_line_masks(num, board):
                 for anagram in self.find_anagrams(tiles, list(self._get_chunks(mask))):
-                    for x, y in self._get_line_anchors(num, horiz, board):
-                        vec = (x, y, horiz)
-                        full_word = self.get_evenword(anagram, vec, board)
-                        if self._valid(full_word):
-                            vec = self._get_new_vec(full_word, anagram, vec)
-                            if board.validate(tiles, full_word, vec):
-                                if self._validate_vicinity(full_word, vec, board):
-                                    yield full_word, vec
+                    with multiprocessing.Pool():
+                        for x, y in self._get_line_anchors(num, horiz, board):
+                            vec = (x, y, horiz)
+                            full_word = self.get_evenword(anagram, vec, board)
+                            if self._valid(full_word):
+                                vec = self._get_new_vec(full_word, anagram, vec)
+                                if board.validate(tiles, full_word, vec):
+                                    if self._validate_vicinity(full_word, vec, board):
+                                        yield full_word, vec
 
     def get_evenword(self, word, vec, board):
         virtual = deepcopy(board)
