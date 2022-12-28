@@ -327,8 +327,8 @@ Y = [symbol_counter[symbol] for card in all_cards for symbol in card]
 
 
 # %%
-def show_map(X, Y):
-    plt.figure(figsize=(8, 8))
+def show_map(X, Y, figsize=(8, 8)):
+    plt.figure(figsize=figsize)
     plt.title(f"N={SYMBOLS_PER_CARD} X= {N_CARDS} cards, Y= {N_SYMBOLS} symbols")
     plt.scatter(X, Y, marker='.', c='red')
     plt.savefig(f"drawing-{SYMBOLS_PER_CARD:02}.svg")
@@ -345,35 +345,160 @@ show_map(X, Y)
 
 # %%
 symbol0 = less_often_first[0][0]
+print(f"{symbol0=}")
+
+# %%
+symbol0 = 'zebre'
+
+
+# %%
+def compute_x_y(symbol0):
+
+    # we need an ordered set, so we use a dict with a True value
+    symbols_foo = {symbol0: True}
+    cards_foo = {}
+
+    while (len(symbols_foo) < N_SYMBOLS) or (len(cards_foo) < N_CARDS):
+        new_symbols = {}
+        for symbol in symbols_foo.copy():
+            for card in symbol_to_cards[symbol]:
+                if card in cards_foo:
+                    continue
+                cards_foo[card] = True
+                for symbol in card:
+                    if symbol in symbols_foo:
+                        continue
+                    new_symbols[symbol] = True
+#        for symbol in sorted(new_symbols, key=lambda s: len(symbol_to_cards[s])):
+        for symbol in new_symbols:
+            symbols_foo[symbol] = True
+
+    X = []
+    for n in range(1, N_CARDS+1):
+        X += [n] * SYMBOLS_PER_CARD
+
+    # the order in which the cards appear in X
+    ordered_cards = list(cards_foo.keys())
+
+    def swapx(n1, n2):
+        # we pass indices that start at 1
+        n1, n2 = n1-1, n2-1
+        ordered_cards[n1], ordered_cards[n2] = ordered_cards[n2], ordered_cards[n1]
+                
+    # the order in which the symbols appear in Y
+    symbol_counter = {symbol: counter for counter, symbol in enumerate(symbols_foo, 1)}
+
+    def swapy(n1, n2):
+        for k, v in symbol_counter.items():
+            if v == n1:
+                symbol_counter[k] = n2
+            elif v == n2:
+                symbol_counter[k] = n1
+
+    
+    Y = []
+    for card in ordered_cards:
+        for symbol in card:
+            Y.append(symbol_counter[symbol])
+
+    print(f"{len(X)=} and {len(Y)=}")
+    
+    return X, Y
+
+X, Y = compute_x_y(symbol0)
+show_map(X, Y, figsize=(9, 6))
+
+# %%
+symbol0 = 'bonhommedeneige'
 
 # we need an ordered set, so we use a dict with a True value
 symbols_foo = {symbol0: True}
 cards_foo = {}
 
-while len(symbols_foo) < N_SYMBOLS:
+while (len(symbols_foo) < N_SYMBOLS) or (len(cards_foo) < N_CARDS):
     for symbol in symbols_foo.copy():
         for card in symbol_to_cards[symbol]:
-            if card in cards_foo:
-                continue
             cards_foo[card] = True
             for symbol in card:
-                if symbol in symbols_foo:
-                    continue
                 symbols_foo[symbol] = True
                 #print(f"added symbol {symbol}")
 
-# %%
 X = []
 for n in range(1, N_CARDS+1):
-    X += SYMBOLS_PER_CARD * [n]
+    X += [n] * SYMBOLS_PER_CARD
 
 symbol_counter = {symbol: counter for counter, symbol in enumerate(symbols_foo, 1)}
+
+
+def swapy(n1, n2):
+    for k, v in symbol_counter.items():
+        if v == n1:
+            symbol_counter[k] = n2
+        elif v == n2:
+            symbol_counter[k] = n1
+
+def swapx(n1, n2):
+    # we pass indices that start at 1
+    n1, n2 = n1-1, n2-1
+    ordered_cards[n1], ordered_cards[n2] = ordered_cards[n2], ordered_cards[n1]
+
+# beware this is not commutative so the order here is important
+swapy(9, 12)
+swapy(16, 18)
+swapy(23, 29)
+swapy(10, 13)
+swapy(19, 17)
+swapy(24, 28)
+swapy(15, 11)
+swapy(14, 12)
+swapy(15, 13)
+swapy(14, 15)
+swapy(19, 21)
+swapy(25, 28)
+swapy(26, 27)
+swapy(29, 27)
+swapy(31, 33)
+swapy(32, 36)
+swapy(33, 34)
+swapy(34, 36)
+swapy(38, 42)
+swapy(39, 40)
+swapy(40, 41)
+swapy(41, 42)
+
+ordered_cards = list(cards_foo.keys())
+
+swapx(14, 17)
+swapx(16, 20)
+swapx(18, 19)
+swapx(21, 22)
+swapx(23, 27)
+swapx(24, 27)
+swapx(28, 30)
+swapx(29, 32)
+swapx(30, 32)
+swapx(31, 32)
+swapx(32, 33)
+swapx(35, 36)
+swapx(36, 41)
+swapx(37, 39)
+swapx(39, 41)
+swapx(40, 41)
+swapx(42, 48)
+swapx(44, 47)
+swapx(45, 47)
+swapx(49, 53)
+swapx(50, 51)
+swapx(51, 52)
+swapx(52, 54)
+swapx(53, 55)
+swapx(54, 55)
+
 Y = []
-for card in cards_foo.keys():
+for card in ordered_cards:
     for symbol in card:
         Y.append(symbol_counter[symbol])
         
-len(X), len(Y)
+print(f"{len(X)=} and {len(Y)=}")
 
-# %%
-show_map(X, Y)
+show_map(X, Y, figsize=(9, 6))
