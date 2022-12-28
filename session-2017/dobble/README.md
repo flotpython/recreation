@@ -14,3 +14,10 @@ L'idée consiste donc à rétro-concevoir le mécanisme de fabrication des carte
 . même question alors sur le nombre de cartes et le nombre de symboles, quels choix a-t-on ?
 
 c'est sans doute plus des maths que de l'info, mais comme je n'ai pas l'idée mathématique, je trouve que l'utilisation de python pour trifouiller dans ces données peut apporter quelque chose, surtout dans un notebook.
+
+---
+un brouillon à ce sujet se trouve dans `dobble-nb.py`; c'est un notebook jupyter, il faut avoir installé au préalable ceci
+
+```shell
+pip install jupyter jupytext
+```
