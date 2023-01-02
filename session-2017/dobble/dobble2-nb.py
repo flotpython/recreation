@@ -59,7 +59,7 @@ class Symbol:
         self.string = string
         self.frequency = 0
         self.cards = set()
-        self.Y = -1
+        self.X = -1
 
     def __repr__(self):
         text = f"{self.string}"
@@ -88,7 +88,7 @@ class Card(set):
         super().__init__(*args, **kwds)
         # the sum of frequencies
         self.frequency = 0
-        self.X = -1
+        self.Y = -1
         
     def compute_frequency(self):
         self.frequency = sum(symbol.frequency for symbol in self)
@@ -153,7 +153,7 @@ def read_cards(filename):
 # ## construction du paquet de cartes
 
 # %%
-FILENAME = "cards06.txt"
+FILENAME = "cards05.txt"
 
 # computed later on
 N_SYMBOLS = 0
@@ -189,7 +189,9 @@ for i, symbol in enumerate(sorted(SYMBOLS)):
 # ## vérifications
 
 # %%
-print(f"CARDS: {len(CARDS)==EXPECTED} and SYMBOLS: {len(SYMBOLS)==EXPECTED}")
+# le nombre de cartes et de symboles
+print(f"CARDS: {len(CARDS)==EXPECTED} "
+      f"and SYMBOLS: {len(SYMBOLS)==EXPECTED}")
 
 # %% [markdown]
 # ### toutes les cartes ont le bon nombre de symboles
@@ -285,7 +287,10 @@ def missing_cards():
             avoid.append(result)
             
             
-solutions = missing_cards()
+if len(CARDS) == EXPECTED:
+    print("you're all set")
+else:
+    solutions = missing_cards()
 
 
 # %% [markdown]
@@ -409,27 +414,78 @@ for n in range(1, 10):
 # on met un point pour chaque symbole sur une carte
 
 # %%
+def x(n):
+    return n
+def xs(L):
+    return [x(_) for _ in L]
+def y(n):
+    return EXPECTED-n
+def ys(L):
+    return [y(_) for _ in L]
+
 def show_map(figsize=(8, 8)):
 
-    y_labels = sorted(SYMBOLS, key=lambda s: s.Y)
+    y_labels = sorted(SYMBOLS, key=lambda s: s.X)
     
-    X, Y = [], []
+    X, Y, colors = [], [], []
     for card in CARDS:
         for symbol in card:
-            X.append(card.X)
-            Y.append(symbol.Y)
+            X.append(x(symbol.X))
+            Y.append(y(card.Y))
+            colors.append(color(card.Y, symbol.X))
     
     fig, ax = plt.subplots(figsize=figsize)
     plt.title(f"N={SYMBOLS_PER_CARD} X={N_CARDS} cards, Y={N_SYMBOLS} symbols")
     if y_labels:
         ax.set_yticklabels(y_labels)
-        ax.set_yticks(range(N_SYMBOLS))
+        ax.set_yticks(ys(range(N_SYMBOLS)))
         ax.tick_params(axis='both', which='major', labelsize=8)
         ax.tick_params(axis='both', which='minor', labelsize=6)
-        
-    plt.scatter(X, Y, marker='o', c='red')
+    
+    plt.scatter(X, Y, marker='o', c=colors)
+    # la grille
+    for i in range(1, N):
+        step = 1+i*(N-1)-0.5
+        plt.plot(xs([-0.5, EXPECTED-0.5]), 
+                 ys([step, step]), 
+                 'k-', linewidth=0.5)
+        plt.plot(xs([step, step]),
+                 ys([-0.5, EXPECTED-0.5]),
+                 'k-', linewidth=0.5)
     plt.savefig(f"drawing-{SYMBOLS_PER_CARD:02}.svg")
     plt.savefig(f"drawing-{SYMBOLS_PER_CARD:02}.png")    
+
+
+# %%
+def is_in(n, card):
+    for s in card:
+        if s.string == str(n):
+            return True
+
+# need to be extended if n > 6
+
+COLORS = ['blue', 'green', 'pink', 'lightblue', 'red', 'orange']
+def color(x, y, verbose=False):
+    qx = (x-1)//(N-1)
+    qy = (y-1)//(N-1)
+    rx, ry = (x-1)%(N-1), (y-1)%(N-1)
+    if (qx <= 0) or (qy <= 0):
+        return COLORS[0]
+    elif (qx == 1) or (qy == 1):
+        return COLORS[1]
+    else:
+        verbose and print(f"{x=} {rx=}")
+        first_line = x - rx
+        card = CARDS[first_line]
+        # what is the offset on that line
+        first_column = y - ry + 1
+        verbose and print(f"{first_column=}, {first_line=}", card)
+        for i in range(N-1):
+            verbose and print("trying", first_column + i)
+            if is_in(first_column + i, card):
+                verbose and print(f"bingo {i=}")
+                return COLORS[2+(i-1)]
+        return 'black'
 
 
 # %% [markdown]
@@ -437,9 +493,9 @@ def show_map(figsize=(8, 8)):
 
 # %%
 for index, card in enumerate(CARDS):
-    card.X = index
+    card.Y = index
 for index, symbol in enumerate(SYMBOLS):
-    symbol.Y = index
+    symbol.X = index
 
 # %%
 show_map()
@@ -482,10 +538,10 @@ def compute_x_y(symbol0):
             
     # the order in which the cards appear in X
     for index, card in enumerate(cards_dictset.keys()):
-        card.X = index
+        card.Y = index
     # the order in which the symbols appear in Y
     for index, symbol in enumerate(symbols_dictset):
-        symbol.Y = index
+        symbol.X = index
 
     # smallest occurence is equal to the number of vertical bars on the left
     S = symbol0.frequency
