@@ -28,6 +28,9 @@
 # ![dobble](dobble.png)
 
 # %%
+from pathlib import Path
+
+# %%
 import matplotlib.pyplot as plt
 # somehow ipympl will result in a JS error..
 # %matplotlib notebook
@@ -153,7 +156,7 @@ def read_cards(filename):
 # ## construction du paquet de cartes
 
 # %%
-FILENAME = "cards05.txt"
+FILENAME = "cards08.txt"
 
 # computed later on
 N_SYMBOLS = 0
@@ -290,7 +293,8 @@ def missing_cards():
 if len(CARDS) == EXPECTED:
     print("you're all set")
 else:
-    solutions = missing_cards()
+    pass
+    #solutions = missing_cards()
 
 
 # %% [markdown]
@@ -327,6 +331,18 @@ def complete_card(*partial_items):
 #complete_card(4, 7, 15);
 
     
+
+# %% [markdown]
+# ### trouver quelques cartes manquantes
+
+# %%
+# xxx
+
+def missing_few_cards():
+    # find out symbol couples that do not show up
+    # and build cards from there
+    pass
+
 
 # %% [markdown]
 # ## nombre de fois qu'un symbole est un point commun
@@ -377,6 +393,23 @@ def show_matches_count():
 show_matches_count()            
 
 # %% [markdown]
+# ### une remarque
+
+# %% [markdown]
+# C'est troublant tout de même que tous ces nombres d'occurrences font partie de la même suite:
+
+# %%
+# (1, 3, 6, 10,) 15, 21, 28
+for n in range(1, 10):
+    print(n*(n+1)//2, end=" ")
+
+# %%
+# CARDS
+
+# %%
+# SYMBOLS
+
+# %% [markdown]
 # ## une petite vérification
 
 # %%
@@ -390,23 +423,6 @@ total_pairs
 # qu'on vient de calculer
 sum(MATCHES.values())
 
-# %% [markdown]
-# ## une remarque
-
-# %% [markdown]
-# C'est troublant tout de même que tous ces nombres d'occurrences font partie de la même suite:
-
-# %%
-# (1, 3, 6, 10,) 15, 21, 28
-for n in range(1, 10):
-    print(n*(n+1)//2)
-
-
-# %%
-# CARDS
-
-# %%
-# SYMBOLS
 
 # %% [markdown]
 # ## dessiner
@@ -452,8 +468,9 @@ def show_map(figsize=(8, 8)):
         plt.plot(xs([step, step]),
                  ys([-0.5, EXPECTED-0.5]),
                  'k-', linewidth=0.5)
-    plt.savefig(f"drawing-{SYMBOLS_PER_CARD:02}.svg")
-    plt.savefig(f"drawing-{SYMBOLS_PER_CARD:02}.png")    
+    plt.savefig(Path(FILENAME).with_suffix('.svg'))
+    plt.savefig(Path(FILENAME).with_suffix('.png'))
+
 
 
 # %%
